@@ -1,5 +1,11 @@
 var library = require("../message_library");
 
+/*
+
+UNIT TESTS
+
+*/
+
 //check that the EventList var exists
 exports.testEventsListExists = function (test) {
     var list = library.listEvents;
@@ -74,16 +80,12 @@ exports.testAttributeAssignment = function (test) {
             test.equals(JSON.parse(json).payload.meeting.id, "bbb");
             test.equals(JSON.parse(json).payload.session, "ccc");
         }
-        /*else
-		{
-			console.log(list[i]+" does not have section 'meeting' or 'session'!!!");
-		}	*/
     }
     test.done();
 }
 
 //check how {meetingName, meetingID, sessionID} are assigned (or not) to events which do not have the required section in their structure
-exports.testHeaderPayload = function (test) {
+exports.testAttributeAssignment = function (test) {
     var list = library.listEvents;
     var listLength = Object.keys(list).length;
 
@@ -91,11 +93,12 @@ exports.testHeaderPayload = function (test) {
         var json = library.returnJsonOf(list[i], "aaa", "bbb", "ccc");
 
         if (JSON.parse(json).payload.meeting === undefined || JSON.parse(json).payload.session === undefined) {
-            console.log("_____" + list[i] + " does not have section 'meeting' or 'session'!!!");
+            console.log("________" + list[i] + " does not have section 'meeting' or 'session'!!!");
         }
 
-        /*test.notEqual(JSON.parse(json).payload.meeting, undefined);
-		test.notEqual(JSON.parse(json).payload.session, undefined);*/
+        //TODO when I resolve the missing sections, I will uncomment the following:
+        //test.notEqual(JSON.parse(json).payload.meeting, undefined);
+        //test.notEqual(JSON.parse(json).payload.session, undefined);
     }
     test.done();
 }
@@ -134,25 +137,29 @@ exports.testValidJSON = function (test) {
 
 //check that the left hand side of the assignments does not contain "-"
 exports.testDoesNotContain_Sample = function (test) {
-    var json = library.returnJsonOf("share_presentation_event", "", "", "");
-    var JSObject = JSON.parse(json);
+    var list = library.listEvents;
+    var listLength = Object.keys(list).length;
 
-    var temp = [];
-    blalala(JSObject);
+    for (var i = 1; i < listLength; i++) {
+        var json = library.returnJsonOf(list[i], "", "", "");
+        var JSObject = JSON.parse(json);
 
-    function blalala(jso) {
-        for (var key in jso) {
-            temp.push(key);
-            if (typeof jso[key] === 'object') {
-                blalala(jso[key]);
+        var temp = [];
+        blalala(JSObject);
+
+        function blalala(jso) {
+            for (var key in jso) {
+                temp.push(key);
+                if (typeof jso[key] === 'object') {
+                    blalala(jso[key]);
+                }
             }
         }
-    }
 
-    for (index in temp) {
-        var containsChar = temp[index].indexOf("-")>-1;        
-        test.notEqual(containsChar, true);
+        for (index in temp) {
+            var containsChar = temp[index].indexOf("-") > -1;
+            test.notEqual(containsChar, true);
+        }
     }
-
     test.done();
 }
