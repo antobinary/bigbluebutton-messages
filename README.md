@@ -14,3 +14,8 @@ comments where I have modified the original message structure
 Note: space characters are omitted before transmitting the json
 message. Strings containing \s will appear with merged:
 "text":"This is a sample message" //#Thisisasamplemessage
+
+##Testing
+cd tests/
+
+nodeunit myTests.js
