@@ -1,0 +1,19 @@
+/*
+ok-check that the EventList var exists
+ok-check that is has the correct value for a random pick
+
+ok-check what happens if no name is given to the event_type
+ok-check what happens if a name that does not match is given to the event_type
+
+ok-check that when given proper name for event_type an object (not "-1") is created and that object has the correct event_type
+-check that when given proper name for event_type the correct object is created (x numEvents?!)
+
+ok-check that the correct {meetingName, meetingID, sessionID} is assigned where appropriate
+
+notOK (some of them don't have the sections) -check how {meetingName, meetingID, sessionID} are assigned (or not) to events which do not have the required section in their structure
+ok-check if all event messages have their structure separated in a header and a payload
+
+ok-check that all messages validate to correct JSON
+ok-check that the left hand side of the assignments does not contain "-"
+
+*/

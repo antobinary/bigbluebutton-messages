@@ -12,6 +12,9 @@
     "type": "git",
     "url": "git://github.com/antobinary/bigbluebutton-messages.git"
   },
+  "dependencies": {
+    "nodeunit" : "0.8.4"
+  },
   "homepage": "https://github.com/antobinary/bigbluebutton-messages",
   "readme": "bigbluebutton-messages\n===================\n\nThis is a library of messages used in BigBlueButton.\nThe messages are structured as Javascript objects and\nare converted into JSON.\n\nThis library was developed to be used with a webpage tool.\nBoth the library and the tool are under construction.\n\nNote: some of the properties of the javasctipt objects contain\ncomments where I have modified the original message structure\n\nNote: space characters are omitted before transmitting the json\nmessage. Strings containing \\s will appear with merged:\n\"text\":\"This is a sample message\" //#Thisisasamplemessage\n",
   "readmeFilename": "README.md",

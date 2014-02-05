@@ -1941,6 +1941,7 @@ module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sess
         break;
 
     default:
-        alert("could not match a value from event_selector");
+        //could not match a value from event_selector
+        return -1;
     }
 }
