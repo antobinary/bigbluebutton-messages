@@ -1,57 +1,108 @@
-
 var WHITEBOARD_DRAW_EVENT = "whiteboard_draw_event";
 var WHITEBOARD_UPDATE_EVENT = "whiteboard_update_event";
+var CREATE_MEETING_REQUEST = "create_meeting_request";
+var CREATE_MEETING_RESPONSE = "create_meeting_response";
+var MEETING_CREATED_EVENT = "meeting_created_event";
+var END_MEETING_REQUEST = "end_meeting_request";
+var END_MEETING_RESPONSE = "end_meeting_response";
+var END_MEETING_WARNING_EVENT = "end_meeting_warning_event";
+var MEETING_ENDED_EVENT = "meeting_ended_event";
+var REGISTER_USER_REQUEST = "meeting_ended_event";
+var REGISTER_USER_RESPONSE = "register_user_response";
+var USER_REGISTERED_EVENT = "user_registered_event";
+var USER_JOIN_REQUEST = "user_join_request";
+var USER_JOIN_RESPONSE = "user_join_response";
+var USER_JOINED_EVENT = "user_joined_event";
+var USER_LEAVE_EVENT = "user_leave_event";
+var USER_LEFT_EVENT = "user_left_event";
+var GET_USERS_REQUEST = "get_users_request";
+var GET_USERS_RESPONSE = "get_users_response";
+var RAISE_USER_HAND_REQUEST = "raise_user_hand_request";
+var USER_RAISED_HAND_EVENT = "user_raised_hand_event";
+var ASSIGN_PRESENTER_REQUEST = "assign_presenter_request";
+var PRESENTER_ASSIGNED_EVENT = "presenter_assigned_event";
+var MUTE_USER_REQUEST = "mute_user_request";
+var MUTE_USER_REQUEST_EVENT = "mute_user_request_event";
+var MUTE_VOICE_USER_REQUEST = "mute_voice_user_request";
+var VOICE_USER_MUTED_EVENT = "voice_user_muted_event";
+var USER_MUTED_EVENT = "user_muted_event";
+var USER_PUBLISH_STREAM_REQUEST = "user_publish_stream_request";
+var PUBLISH_STREAM_REQUEST = "publish_stream_request";
+var PUBLISH_STREAM_RESPONSE = "publish_stream_response";
+var USER_PUBLISH_STREAM_RESPONSE = "user_publish_stream_response";
+var PUBLISHED_STREAM_EVENT = "published_stream_event";
+var USER_PUBLISHED_STREAM_EVENT = "user_published_stream_event";
+var UNPUBLISHED_STREAM_EVENT = "unpublished_stream_event";
+var USER_UNPUBLISHED_STREAM_EVENT = "user_unpublished_stream_event";
+var PUBLIC_CHAT_MESSAGE_EVENT = "public_chat_message_event";
+var BROADCAST_PUBLIC_CHAT_MESSAGE_EVENT = "broadcast_public_chat_message_event";
+var PRIVATE_CHAT_MESSAGE_EVENT = "private_chat_message_event";
+var BROADCAST_PRIVATE_CHAT_MESSAGE_EVENT = "broadcast_private_chat_message_event";
+var BROADCAST_WHITEBOARD_DRAW_EVENT = "broadcast_whiteboard_draw_event";
+var BROADCAST_WHITEBOARD_UPDATE_EVENT = "broadcast_whiteboard_update_event";
+var WHITEBOARD_CURSOR_EVENT = "whiteboard_cursor_event";
+var BROADCAST_WHITEBOARD_CURSOR_EVENT = "broadcast_whiteboard_cursor_event";
+var SHARE_PRESENTATION_EVENT = "share_presentation_event";
+var BROADCAST_SHARE_PRESENTATION_EVENT = "broadcast_share_presentation_event";
+var RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = "resize_and_move_page_presentation_event";
+var BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = "broadcast_resize_and_move_page_presentation_event";
 
 //list of events to be selected from
-module.exports.getEvents = {
+
+
+
+
+//module.exports.getEvents = {
+module.exports.listEvents = {
+    0: 'Please select an event type',
     1: WHITEBOARD_DRAW_EVENT,
     2: WHITEBOARD_UPDATE_EVENT,
-    3: 'create_meeting_request',
-    4: 'create_meeting_response',
-    5: 'meeting_created_event',
-    6: 'end_meeting_request',
-    7: 'end_meeting_response',
-    8: 'end_meeting_warning_event',
-    9: 'meeting_ended_event',
-    10: 'register_user_request',
-    11: 'register_user_response',
-    12: 'user_registered_event',
-    13: 'user_join_request',
-    14: 'user_join_response',
-    15: 'user_joined_event',
-    16: 'user_leave_event',
-    17: 'user_left_event',
-    18: 'get_users_request',
-    19: 'get_users_response',
-    20: 'raise_user_hand_request',
-    21: 'user_raised_hand_event',
-    22: 'assign_presenter_request',
-    23: 'presenter_assigned_event',
-    24: 'mute_user_request',
-    25: 'mute_user_request_event',
-    26: 'mute_voice_user_request',
-    27: 'voice_user_muted_event',
-    28: 'user_muted_event',
-    29: 'user_publish_stream_request',
-    30: 'publish_stream_request',
-    31: 'publish_stream_response',
-    32: 'user_publish_stream_response',
-    33: 'published_stream_event',
-    34: 'user_published_stream_event',
-    35: 'unpublished_stream_event',
-    36: 'user_unpublished_stream_event',
-    37: 'public_chat_message_event',
-    38: 'broadcast_public_chat_message_event',
-    39: 'private_chat_message_event',
-    40: 'broadcast_private_chat_message_event',
-    41: 'broadcast_whiteboard_draw_event',
-    42: 'broadcast_whiteboard_update_event',
-    43: 'whiteboard_cursor_event',
-    44: 'broadcast_whiteboard_cursor_event',
-    45: 'share_presentation_event',
-    46: 'broadcast_share_presentation_event',
-    47: 'resize_and_move_page_presentation_event',
-    48: 'broadcast_resize_and_move_page_presentation_event'
+    3: CREATE_MEETING_REQUEST,
+    4: CREATE_MEETING_RESPONSE,
+    5: MEETING_CREATED_EVENT,
+    6: END_MEETING_REQUEST,
+    7: END_MEETING_RESPONSE,
+    8: END_MEETING_WARNING_EVENT,
+    9: MEETING_ENDED_EVENT,
+    10: REGISTER_USER_REQUEST,
+    11: REGISTER_USER_RESPONSE,
+    12: USER_REGISTERED_EVENT,
+    13: USER_JOIN_REQUEST,
+    14: USER_JOIN_RESPONSE,
+    15: USER_JOINED_EVENT,
+    16: USER_LEAVE_EVENT,
+    17: USER_LEFT_EVENT,
+    18: GET_USERS_REQUEST,
+    19: GET_USERS_RESPONSE,
+    20: RAISE_USER_HAND_REQUEST,
+    21: USER_RAISED_HAND_EVENT,
+    22: ASSIGN_PRESENTER_REQUEST,
+    23: PRESENTER_ASSIGNED_EVENT,
+    24: MUTE_USER_REQUEST,
+    25: MUTE_USER_REQUEST_EVENT,
+    26: MUTE_VOICE_USER_REQUEST,
+    27: VOICE_USER_MUTED_EVENT,
+    28: USER_MUTED_EVENT,
+    29: USER_PUBLISH_STREAM_REQUEST,
+    30: PUBLISH_STREAM_REQUEST,
+    31: PUBLISH_STREAM_RESPONSE,
+    32: USER_PUBLISH_STREAM_RESPONSE,
+    33: PUBLISHED_STREAM_EVENT,
+    34: USER_PUBLISHED_STREAM_EVENT,
+    35: UNPUBLISHED_STREAM_EVENT,
+    36: USER_UNPUBLISHED_STREAM_EVENT,
+    37: PUBLIC_CHAT_MESSAGE_EVENT,
+    38: BROADCAST_PUBLIC_CHAT_MESSAGE_EVENT,
+    39: PRIVATE_CHAT_MESSAGE_EVENT,
+    40: BROADCAST_PRIVATE_CHAT_MESSAGE_EVENT,
+    41: BROADCAST_WHITEBOARD_DRAW_EVENT,
+    42: BROADCAST_WHITEBOARD_UPDATE_EVENT,
+    43: WHITEBOARD_CURSOR_EVENT,
+    44: BROADCAST_WHITEBOARD_CURSOR_EVENT,
+    45: SHARE_PRESENTATION_EVENT,
+    46: BROADCAST_SHARE_PRESENTATION_EVENT,
+    47: RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT,
+    48: BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT
 };
 
 function paramExist(param) {
@@ -63,7 +114,7 @@ function paramExist(param) {
 
 // TODO: Add some documentation using http://usejsdoc.org/
 // Document requried and optional parameters
-module.exports.whiteboardDrawEventToJson(params, onSuccess, onFailure) {
+/*module.exports.whiteboardDrawEventToJson(params, onSuccess, onFailure) {
 
   // TODO: Check for required params
 
@@ -110,10 +161,10 @@ module.exports.whiteboardDrawEventToJson(params, onSuccess, onFailure) {
 
     onSucccess(JSON.stringify(message));  
   }
-}
+}*/
 
 // TODO: Do the same thing to convert from JSON to JS Object
-module.exports.whiteboardDrawEventFromJson(message, onSuccess, onFailure) {
+//module.exports.whiteboardDrawEventFromJson(message, onSuccess, onFailure) {
 /*
   if (message is NOT valid) {
     onFailure(errors)
@@ -121,7 +172,7 @@ module.exports.whiteboardDrawEventFromJson(message, onSuccess, onFailure) {
     onSuccess(msgObject)
   }
 */
-}
+//}
 
 
 
@@ -2015,6 +2066,7 @@ module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sess
         break;
 
     default:
-        alert("could not match a value from event_selector");
+        //alert("could not match a value from event_selector");
+        return -1;
     }
 }
