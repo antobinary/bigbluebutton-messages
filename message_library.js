@@ -1,8 +1,11 @@
+
+var WHITEBOARD_DRAW_EVENT = "whiteboard_draw_event";
+var WHITEBOARD_UPDATE_EVENT = "whiteboard_update_event";
+
 //list of events to be selected from
-module.exports.listEvents = {
-    0: 'Please select an event type',
-    1: 'whiteboard_draw_event',
-    2: 'whiteboard_update_event',
+module.exports.getEvents = {
+    1: WHITEBOARD_DRAW_EVENT,
+    2: WHITEBOARD_UPDATE_EVENT,
     3: 'create_meeting_request',
     4: 'create_meeting_response',
     5: 'meeting_created_event',
@@ -50,6 +53,77 @@ module.exports.listEvents = {
     47: 'resize_and_move_page_presentation_event',
     48: 'broadcast_resize_and_move_page_presentation_event'
 };
+
+function paramExist(param) {
+  if (params.meetingId == undefined || params.meetingId == null || params.meetingId == "") {
+    return false;
+  }   
+  return true;
+}
+
+// TODO: Add some documentation using http://usejsdoc.org/
+// Document requried and optional parameters
+module.exports.whiteboardDrawEventToJson(params, onSuccess, onFailure) {
+
+  // TODO: Check for required params
+
+  var errors = new Array();
+  if (! paramExist(meetingId)) {
+    errors.push("Missing parameter [meetingId]"); 
+  }
+  
+  if (errors.length > 1) {
+    onFailure(errors);
+  } else {    
+    header = {};
+    header.destination = {};
+    header.destination.to = params.channels;
+    header.name = WHITEBOARD_DRAW_EVENT;
+    header.timestamp = "2013-12-23T08:50Z"; // TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+    header.source = param.source;
+    payload = {};
+    payload.meeting = {}; //TODO these were not in the original json from the scala page
+    payload.meeting.name = param.meetingName; //TODO these were not in the original json from the scala page
+    payload.meeting.id = param.meetingId; //TODO these were not in the original json from the scala page
+    payload.session = param.sessionId; //TODO these were not in the original json from the scala page
+    payload.whiteboard_id = param.whiteboardId;
+    payload.shape_id = param.shapreId;
+    payload.shape_type = param.shapeType;
+    data = {};
+    data.coordinate = {};
+    data.coordinate.first_x = param.firstX;
+    data.coordinate.first_y = param.firstY;
+    data.coordinate.last_x = param.lastX;
+    data.coordinate.last_y = param.lastY;
+    data.line = {};
+    data.line.line_type = "solid";
+    data.line.color = param.lineColor;
+    data.weight = param.lineWeight;
+    payload.data = data;
+
+    payload.by = {};
+    payload.by.id = param.byId;
+    payload.by.name = param.byName;
+    message = {};
+    message.header = header;
+    message.payload = payload;
+
+    onSucccess(JSON.stringify(message));  
+  }
+}
+
+// TODO: Do the same thing to convert from JSON to JS Object
+module.exports.whiteboardDrawEventFromJson(message, onSuccess, onFailure) {
+/*
+  if (message is NOT valid) {
+    onFailure(errors)
+  } else {
+    onSuccess(msgObject)
+  }
+*/
+}
+
+
 
 module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sessionID) {
     switch (event_type) {
