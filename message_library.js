@@ -1,3 +1,18 @@
+//TODO check again if these vars are going to interfere with the other modules' scope
+
+/*
+--check on documentation
+--check how to insert today's date for timestamp
+
+--CREATE THE REVERSE FUNCTIONALITY JSON->JavaScriptObject
+
+
+
+
+*/
+
+
+
 var WHITEBOARD_DRAW_EVENT = "whiteboard_draw_event";
 var WHITEBOARD_UPDATE_EVENT = "whiteboard_update_event";
 var CREATE_MEETING_REQUEST = "create_meeting_request";
@@ -47,13 +62,21 @@ var BROADCAST_SHARE_PRESENTATION_EVENT = "broadcast_share_presentation_event";
 var RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = "resize_and_move_page_presentation_event";
 var BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = "broadcast_resize_and_move_page_presentation_event";
 
+
+
+
+module.exports.WHITEBOARD_DRAW_EVENT = WHITEBOARD_DRAW_EVENT;
+module.exports.WHITEBOARD_UPDATE_EVENT = WHITEBOARD_UPDATE_EVENT;
+module.exports.CREATE_MEETING_REQUEST = CREATE_MEETING_REQUEST;
+module.exports.CREATE_MEETING_RESPONSE = CREATE_MEETING_RESPONSE;
+
+
+
+
+
+
 //list of events to be selected from
-
-
-
-
-//module.exports.getEvents = {
-module.exports.listEvents = {
+module.exports.getEvents = {
     0: 'Please select an event type',
     1: WHITEBOARD_DRAW_EVENT,
     2: WHITEBOARD_UPDATE_EVENT,
@@ -106,267 +129,310 @@ module.exports.listEvents = {
 };
 
 function paramExist(param) {
-  if (params.meetingId == undefined || params.meetingId == null || params.meetingId == "") {
+  if (typeof param === "undefined" || param === null || param === "") {   //TODO == or ===
+    //TODO if false or if 0 causes this to return false and not accept the value
+    //console.log(param + " is not a reasonable value");
     return false;
   }   
+
+  //console.log(param + " is a reasonable value");
   return true;
 }
 
 // TODO: Add some documentation using http://usejsdoc.org/
 // Document requried and optional parameters
-/*module.exports.whiteboardDrawEventToJson(params, onSuccess, onFailure) {
+module.exports.whiteboardDrawEventToJson = function(params, onSuccess, onFailure) {
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = ["meetingId", "sessionId", "channels", "source", "meetingName", "whiteboardId", "shapeId", "shapeType",
+        "firstX", "firstY", "lastX", "lastY", "lineColor", "lineWeight", "lineType", 
+        "background_visible", "background_color", "background_alpha", "square", "byId", "byName"
+    ];
 
-  // TODO: Check for required params
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg="Missing parameter [" + requiredParams[key] + "]=\""+params[requiredParams[key]]+"\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
 
-  var errors = new Array();
-  if (! paramExist(meetingId)) {
-    errors.push("Missing parameter [meetingId]"); 
-  }
-  
-  if (errors.length > 1) {
-    onFailure(errors);
-  } else {    
-    header = {};
-    header.destination = {};
-    header.destination.to = params.channels;
-    header.name = WHITEBOARD_DRAW_EVENT;
-    header.timestamp = "2013-12-23T08:50Z"; // TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
-    header.source = param.source;
-    payload = {};
-    payload.meeting = {}; //TODO these were not in the original json from the scala page
-    payload.meeting.name = param.meetingName; //TODO these were not in the original json from the scala page
-    payload.meeting.id = param.meetingId; //TODO these were not in the original json from the scala page
-    payload.session = param.sessionId; //TODO these were not in the original json from the scala page
-    payload.whiteboard_id = param.whiteboardId;
-    payload.shape_id = param.shapreId;
-    payload.shape_type = param.shapeType;
-    data = {};
-    data.coordinate = {};
-    data.coordinate.first_x = param.firstX;
-    data.coordinate.first_y = param.firstY;
-    data.coordinate.last_x = param.lastX;
-    data.coordinate.last_y = param.lastY;
-    data.line = {};
-    data.line.line_type = "solid";
-    data.line.color = param.lineColor;
-    data.weight = param.lineWeight;
-    payload.data = data;
+    if (errors.length > 0) {
+        onFailure(errors); //TODO improve this
+        
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channels;
+        header.name = WHITEBOARD_DRAW_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; // TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+        header.source = params.source;
+        payload = {};
+        payload.meeting = {}; //TODO these were not in the original json from the scala page
+        payload.meeting.name = params.meetingName; //TODO these were not in the original json from the scala page
+        payload.meeting.id = params.meetingId; //TODO these were not in the original json from the scala page
+        payload.session = params.sessionId; //TODO these were not in the original json from the scala page
+        payload.whiteboard_id = params.whiteboardId;
+        payload.shape_id = params.shapeId;
+        payload.shape_type = params.shapeType;
+        data = {};
+        data.coordinate = {};
+        data.coordinate.first_x = params.firstX;
+        data.coordinate.first_y = params.firstY;
+        data.coordinate.last_x = params.lastX;
+        data.coordinate.last_y = params.lastY;
+        data.line = {};
+        data.line.line_type = params.lineType;
+        data.line.color = params.lineColor;
+        data.weight = params.lineWeight;
+        
+        data.background={};
+        data.background.visible=params.background_visible;
+        data.background.color=params.background_color;
+        data.background.alpha=params.background_alpha;
+        data.square=params.square;
 
-    payload.by = {};
-    payload.by.id = param.byId;
-    payload.by.name = param.byName;
-    message = {};
-    message.header = header;
-    message.payload = payload;
 
-    onSucccess(JSON.stringify(message));  
-  }
-}*/
+        payload.data = data;
+
+        payload.by = {};
+        payload.by.id = params.byId;
+        payload.by.name = params.byName;
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));//TODO improve this
+    }
+}
 
 // TODO: Do the same thing to convert from JSON to JS Object
 //module.exports.whiteboardDrawEventFromJson(message, onSuccess, onFailure) {
 /*
-  if (message is NOT valid) {
-    onFailure(errors)
-  } else {
-    onSuccess(msgObject)
-  }
+  REDOOOO
 */
-//}
+
+// TODO: Add some documentation using http://usejsdoc.org/
+// Document requried and optional parameters
+module.exports.whiteboardUpdateEventToJson = function(params, onSuccess, onFailure) {
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = ["meetingId", "sessionId", "channels", "source", "meetingName", "whiteboardId", "shapeId", "shapeType",
+        "firstX", "firstY", "lastX", "lastY", "lineColor", "lineWeight", "lineType", 
+        "background_visible", "background_color", "background_alpha", "square", "byId", "byName"
+    ];
+
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg="Missing parameter [" + requiredParams[key] + "]=\""+params[requiredParams[key]]+"\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors); //TODO improve this
+        
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channels;
+        header.name = WHITEBOARD_UPDATE_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; // TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+        header.source = params.source;
+        payload = {};
+        payload.meeting = {}; //TODO these were not in the original json from the scala page
+        payload.meeting.name = params.meetingName; //TODO these were not in the original json from the scala page
+        payload.meeting.id = params.meetingId; //TODO these were not in the original json from the scala page
+        payload.session = params.sessionId; //TODO these were not in the original json from the scala page
+        payload.whiteboard_id = params.whiteboardId;
+        payload.shape_id = params.shapeId;
+        payload.shape_type = params.shapeType;
+        data = {};
+        data.coordinate = {};
+        data.coordinate.first_x = params.firstX;
+        data.coordinate.first_y = params.firstY;
+        data.coordinate.last_x = params.lastX;
+        data.coordinate.last_y = params.lastY;
+        data.line = {};
+        data.line.line_type = params.lineType;
+        data.line.color = params.lineColor;
+        data.weight = params.lineWeight;
+        
+        data.background={};
+        data.background.visible=params.background_visible;
+        data.background.color=params.background_color;
+        data.background.alpha=params.background_alpha;
+        data.square=params.square;
+
+        payload.data = data;
+
+        payload.by = {};
+        payload.by.id = params.byId;
+        payload.by.name = params.byName;
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));//TODO improve this
+    }
+}
+
+
+module.exports.createMeetingRequestToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = ["channelsDestination", "channelsReply", "correlationId", "source",
+        "descriptorName", "descriptorExternalId", "descriptorRecord", "descriptorWelcome",
+        "descriptorLogout", "descriptorAvatar", "descriptorMaxUsers", "durationLength",
+        "durationAllowExtend", "durationMaxMinutes", "voiceConfPin", "voiceConfNumber", "phoneNumbers",
+        "metadataCustomerId", "metadataCustomerName"//, "name", "timestamp"
+    ];
+
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg="Missing parameter [" + requiredParams[key] + "]=\""+params[requiredParams[key]]+"\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+        header.reply = {};
+        header.reply.to = params.channelsReply;
+        header.reply.correlation_id = params.correlationId;
+        header.name = CREATE_MEETING_REQUEST;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting_descriptor = {};
+        payload.meeting_descriptor.name = params.descriptorName;
+        payload.meeting_descriptor.external_id = params.descriptorExternalId;
+        payload.meeting_descriptor.record = params.descriptorRecord;
+        payload.meeting_descriptor.welcome_message = params.descriptorWelcome;
+        payload.meeting_descriptor.logout_url = params.descriptorLogout;
+        payload.meeting_descriptor.avatar_url = params.descriptorAvatar;
+        payload.meeting_descriptor.max_users = params.descriptorMaxUsers;
+        payload.meeting_descriptor.duration = {};
+        payload.meeting_descriptor.duration.length_in_minutes = params.durationLength;
+        payload.meeting_descriptor.duration.allow_extend = params.durationAllowExtend;
+        payload.meeting_descriptor.duration.max_minutes = params.durationMaxMinutes;
+        payload.meeting_descriptor.voice_conference = {};
+        payload.meeting_descriptor.voice_conference.pin = params.voiceConfPin;
+        payload.meeting_descriptor.voice_conference.number = params.voiceConfNumber;
+        payload.meeting_descriptor.phone_numbers = params.phoneNumbers;
+
+        payload.meeting_descriptor.metadata = {};
+        payload.meeting_descriptor.metadata.customer_id = params.metadataCustomerId;
+        payload.meeting_descriptor.metadata.customer_name = params.metadataCustomerName;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+
+
+module.exports.createMeetingResponseToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = ["channelsDestination", "meetingName", "meetingId", "sessionId", "resultSuccess", "resultMessage", "correlationId", "source",
+        "descriptorName", "descriptorExternalId", "descriptorRecord", "descriptorWelcome",
+        "descriptorLogout", "descriptorAvatar", "descriptorMaxUsers", "durationLength",
+        "durationAllowExtend", "durationMaxMinutes", "voiceConfPin", "voiceConfNumber", "phoneNumbers",
+        "metadataCustomerId", "metadataCustomerName"//, "name", "timestamp"
+
+
+
+    ];
+
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg="Missing parameter [" + requiredParams[key] + "]=\""+params[requiredParams[key]]+"\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+        header.destination.correlation_id = params.correlationId;
+        header.name = CREATE_MEETING_RESPONSE;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.result = {};
+        payload.result.success = params.resultSuccess;
+        payload.result.message = params.resultMessage;
+
+        payload.meeting_descriptor = {};
+        payload.meeting_descriptor.name = params.descriptorName;
+        payload.meeting_descriptor.external_id = params.descriptorExternalId;
+        payload.meeting_descriptor.record = params.descriptorRecord;
+        payload.meeting_descriptor.welcome_message = params.descriptorWelcome;
+        payload.meeting_descriptor.logout_url = params.descriptorLogout;
+        payload.meeting_descriptor.avatar_url = params.descriptorAvatar;
+        payload.meeting_descriptor.max_users = params.descriptorMaxUsers;
+        payload.meeting_descriptor.duration = {};
+        payload.meeting_descriptor.duration.length_in_minutes = params.durationLength;
+        payload.meeting_descriptor.duration.allow_extend = params.durationAllowExtend;
+        payload.meeting_descriptor.duration.max_minutes = params.durationMaxMinutes;
+        payload.meeting_descriptor.voice_conference = {};
+        payload.meeting_descriptor.voice_conference.pin = params.voiceConfPin;
+        payload.meeting_descriptor.voice_conference.number = params.voiceConfNumber;
+        payload.meeting_descriptor.phone_numbers = params.phoneNumbers;
+        
+        payload.meeting_descriptor.metadata = {};
+        payload.meeting_descriptor.metadata.customer_id = params.metadataCustomerId;
+        payload.meeting_descriptor.metadata.customer_name = params.metadataCustomerName;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+
+
+
+
+
+
+
+
 
 
 
 module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sessionID) {
     switch (event_type) {
-    case "whiteboard_draw_event":
-        var event_name = "whiteboard_draw_event";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = "";
-        payload = {};
-        payload.meeting = {}; //TODO these were not in the original json from the scala page
-        payload.meeting.name = meetingName; //TODO these were not in the original json from the scala page
-        payload.meeting.id = meetingID; //TODO these were not in the original json from the scala page
-        payload.session = sessionID; //TODO these were not in the original json from the scala page
-        payload.whiteboard_id = "presentation_id/page_num";
-        payload.shape_id = "";
-        payload.shape_type = "rectangle";
-        data = {};
-        data.coordinate = {};
-        data.coordinate.first_x = 0.016025641025641028;
-        data.coordinate.first_y = 0.982905982905983;
-        data.coordinate.last_x = 2.33;
-        data.coordinate.last_y = 3.45;
-        data.line = {};
-        data.line.line_type = "solid";
-        data.line.color = 0;
-        data.weight = 18;
-        payload.data = data;
-
-        payload.by = {};
-        payload.by.id = "";
-        payload.by.name = "";
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-
-        break;
-    case "whiteboard_update_event":
-        var event_name = "whiteboard_update_event";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = "";
-        payload = {};
-        payload.meeting = {}; //TODO these were not in the original json from the scala page
-        payload.meeting.name = meetingName; //TODO these were not in the original json from the scala page
-        payload.meeting.id = meetingID; //TODO these were not in the original json from the scala page
-        payload.session = sessionID; //TODO these were not in the original json from the scala page
-        payload.whiteboard_id = "presentation_id/page_num";
-        payload.shape_id = "";
-        payload.shape_type = "rectangle";
-        data = {};
-        data.coordinate = {};
-        data.coordinate.first_x = 0.016025641025641028;
-        data.coordinate.first_y = 0.982905982905983;
-        data.coordinate.last_x = 2.33;
-        data.coordinate.last_y = 3.45;
-        data.line = {};
-        data.line.line_type = "solid";
-        data.line.color = 0;
-        data.weight = 18;
-        payload.data = data;
-        payload.by = {};
-        payload.by.id = "";
-        payload.by.name = "";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "create_meeting_request":
-
-        var event_name = "create_meeting_request";
-        var source_of_event = "web-api";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-        header.reply = {};
-        header.reply.to = "apps_channel";
-        header.reply.correlation_id = "abc";
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting_descriptor = {};
-        payload.meeting_descriptor.name = "English 101";
-        payload.meeting_descriptor.external_id = "english_101";
-        payload.meeting_descriptor.record = true;
-        payload.meeting_descriptor.welcome_message = "Welcome to English 101";
-        payload.meeting_descriptor.logout_url = "http://www.bigbluebutton.org";
-        payload.meeting_descriptor.avatar_url = "http://www.gravatar.com/bigbluebutton";
-        payload.meeting_descriptor.max_users = 20;
-        payload.meeting_descriptor.duration = {};
-        payload.meeting_descriptor.duration.length_in_minutes = 120;
-        payload.meeting_descriptor.duration.allow_extend = false;
-        payload.meeting_descriptor.duration.max_minutes = 240;
-        payload.meeting_descriptor.voice_conference = {};
-        payload.meeting_descriptor.voice_conference.pin = 123456;
-        payload.meeting_descriptor.voice_conference.number = 85115;
-        payload.meeting_descriptor.phone_numbers = [];
-        var a = {
-            "number": "613-520-7600",
-            "description": "Ottawa"
-        };
-        var b = {
-            "number": "1-888-555-7890",
-            "description": "NA Toll-Free"
-        };
-        payload.meeting_descriptor.phone_numbers[0] = a;
-        payload.meeting_descriptor.phone_numbers[1] = b;
-
-        payload.meeting_descriptor.metadata = {};
-        payload.meeting_descriptor.metadata.customer_id = "acme-customer";
-        payload.meeting_descriptor.metadata.customer_name = "ACME";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "create_meeting_response":
-        var event_name = "create_meeting_response";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-        header.destination.correlation_id = "abc";
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.result = {};
-        payload.result.success = true;
-        payload.result.message = "Success";
-
-        payload.meeting_descriptor = {};
-        payload.meeting_descriptor.name = "English 101";
-        payload.meeting_descriptor.external_id = "english_101";
-        payload.meeting_descriptor.record = true;
-        payload.meeting_descriptor.welcome_message = "Welcome to English 101";
-        payload.meeting_descriptor.logout_url = "http://www.bigbluebutton.org";
-        payload.meeting_descriptor.avatar_url = "http://www.gravatar.com/bigbluebutton";
-        payload.meeting_descriptor.max_users = 20;
-        payload.meeting_descriptor.duration = {};
-        payload.meeting_descriptor.duration.length_in_minutes = 120;
-        payload.meeting_descriptor.duration.allow_extend = false;
-        payload.meeting_descriptor.duration.max_minutes = 240;
-        payload.meeting_descriptor.voice_conference = {};
-        payload.meeting_descriptor.voice_conference.pin = 123456;
-        payload.meeting_descriptor.voice_conference.number = 85115;
-        payload.meeting_descriptor.phone_numbers = [];
-        var a = {
-            "number": "613-520-7600",
-            "description": "Ottawa"
-        };
-        var b = {
-            "number": "1-888-555-7890",
-            "description": "NA Toll-Free"
-        };
-        payload.meeting_descriptor.phone_numbers[0] = a;
-        payload.meeting_descriptor.phone_numbers[1] = b;
-
-        payload.meeting_descriptor.metadata = {};
-        payload.meeting_descriptor.metadata.customer_id = "acme-customer";
-        payload.meeting_descriptor.metadata.customer_name = "ACME";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
+    
+    
+    
     case "meeting_created_event":
         var event_name = "meeting_created_event";
         var source_of_event = "bbb-apps";
@@ -1546,10 +1612,10 @@ module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sess
 
         payload = {}; //TODO shouldn't there be a meeting=session section here?!?!?!
 
-        /*payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;*/
+        //payload.meeting = {};
+        //payload.meeting.name = meetingName;
+        //payload.meeting.id = meetingID;
+        //payload.session = sessionID;
 
 
         payload.chat_message = {};
@@ -1588,10 +1654,10 @@ module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sess
 
         payload = {}; //TODO shouldn't there be a meeting=session section here?!?!?!
 
-        /*payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;*/
+        //payload.meeting = {};
+        //payload.meeting.name = meetingName;
+        //payload.meeting.id = meetingID;
+        //payload.session = sessionID;
 
         payload.chat_message = {};
         payload.chat_message.id = "msg1234";
@@ -1638,10 +1704,10 @@ module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sess
 
         payload = {}; //TODO shouldn't there be a meeting=session section here?!?!?!
 
-        /*payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;*/
+        //payload.meeting = {};
+        //payload.meeting.name = meetingName;
+        //payload.meeting.id = meetingID;
+        //payload.session = sessionID;
 
         payload.chat_message = {};
         payload.chat_message.correlation_id = "user1-msg1";
@@ -1683,10 +1749,10 @@ module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sess
 
         payload = {}; //TODO shouldn't there be a meeting=session section here?!?!?!
 
-        /*payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;*/
+        //payload.meeting = {};
+        //payload.meeting.name = meetingName;
+        //payload.meeting.id = meetingID;
+        //payload.session = sessionID;
 
         payload.chat_message = {};
         payload.chat_message.id = "msg1234";
@@ -2069,4 +2135,46 @@ module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sess
         //alert("could not match a value from event_selector");
         return -1;
     }
+}
+
+
+
+
+
+/*
+//JSON to JavaScriptObject
+function isValidJSON(message) {
+    //I could use the regEx from https://github.com/douglascrockford/JSON-js/blob/master/json2.js : ~450
+    //but for now will do the simple check
+    try {        
+        var tmp = JSON.parse(message);
+    } catch (err) {
+        return false;
+    }
+    return true;
+}*/
+
+module.exports.whiteboardDrawEvent_fromJSON = function(message, onSuccess, onFailure) {
+
+
+/*   // if (message is NOT valid) 
+    if(! isValidJSON(message))
+    {
+        onFailure(errors);
+    } 
+    else 
+    {
+        var msgObject = JSON.parse(message);
+        onSuccess(msgObject);
+    }*/
+
+    try {        
+        var msgObject = JSON.parse(message);
+        onSuccess(msgObject);
+    } catch (err) {
+        onFailure(err);
+    }
+
+    
+
 }
