@@ -63,16 +63,57 @@ var RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = "resize_and_move_page_presentation
 var BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = "broadcast_resize_and_move_page_presentation_event";
 
 
-
-
 module.exports.WHITEBOARD_DRAW_EVENT = WHITEBOARD_DRAW_EVENT;
 module.exports.WHITEBOARD_UPDATE_EVENT = WHITEBOARD_UPDATE_EVENT;
 module.exports.CREATE_MEETING_REQUEST = CREATE_MEETING_REQUEST;
 module.exports.CREATE_MEETING_RESPONSE = CREATE_MEETING_RESPONSE;
+module.exports.MEETING_CREATED_EVENT = MEETING_CREATED_EVENT;
 
-
-
-
+module.exports.END_MEETING_REQUEST = END_MEETING_REQUEST;
+module.exports.END_MEETING_RESPONSE = END_MEETING_RESPONSE;
+module.exports.END_MEETING_WARNING_EVENT = END_MEETING_WARNING_EVENT;
+module.exports.END_MEETING_REQUEST = END_MEETING_REQUEST;
+module.exports.END_MEETING_RESPONSE = END_MEETING_RESPONSE;
+module.exports.END_MEETING_WARNING_EVENT = END_MEETING_WARNING_EVENT;
+module.exports.REGISTER_USER_REQUEST = REGISTER_USER_REQUEST;
+module.exports.REGISTER_USER_RESPONSE = REGISTER_USER_RESPONSE;
+module.exports.USER_REGISTERED_EVENT = USER_REGISTERED_EVENT;
+module.exports.USER_JOIN_REQUEST = USER_JOIN_REQUEST;
+module.exports.USER_JOIN_RESPONSE = USER_JOIN_RESPONSE;
+module.exports.USER_JOINED_EVENT = USER_JOINED_EVENT;
+module.exports.USER_LEAVE_EVENT = USER_LEAVE_EVENT;
+module.exports.USER_LEFT_EVENT = USER_LEFT_EVENT;
+module.exports.GET_USERS_REQUEST = GET_USERS_REQUEST;
+module.exports.GET_USERS_RESPONSE = GET_USERS_RESPONSE;
+module.exports.RAISE_USER_HAND_REQUEST = RAISE_USER_HAND_REQUEST;
+module.exports.USER_RAISED_HAND_EVENT = USER_RAISED_HAND_EVENT;
+module.exports.ASSIGN_PRESENTER_REQUEST = ASSIGN_PRESENTER_REQUEST;
+module.exports.PRESENTER_ASSIGNED_EVENT = PRESENTER_ASSIGNED_EVENT;
+module.exports.MUTE_USER_REQUEST = MUTE_USER_REQUEST;
+module.exports.MUTE_USER_REQUEST_EVENT = MUTE_USER_REQUEST_EVENT;
+module.exports.MUTE_VOICE_USER_REQUEST = MUTE_VOICE_USER_REQUEST;
+module.exports.VOICE_USER_MUTED_EVENT = VOICE_USER_MUTED_EVENT;
+module.exports.USER_MUTED_EVENT = USER_MUTED_EVENT;
+module.exports.USER_PUBLISH_STREAM_REQUEST = USER_PUBLISH_STREAM_REQUEST;
+module.exports.PUBLISH_STREAM_REQUEST = PUBLISH_STREAM_REQUEST;
+module.exports.PUBLISH_STREAM_RESPONSE = PUBLISH_STREAM_RESPONSE;
+module.exports.USER_PUBLISH_STREAM_RESPONSE = USER_PUBLISH_STREAM_RESPONSE;
+module.exports.PUBLISHED_STREAM_EVENT = PUBLISHED_STREAM_EVENT;
+module.exports.USER_PUBLISHED_STREAM_EVENT = USER_PUBLISHED_STREAM_EVENT;
+module.exports.UNPUBLISHED_STREAM_EVENT = UNPUBLISHED_STREAM_EVENT;
+module.exports.USER_UNPUBLISHED_STREAM_EVENT = USER_UNPUBLISHED_STREAM_EVENT;
+module.exports.PUBLIC_CHAT_MESSAGE_EVENT = PUBLIC_CHAT_MESSAGE_EVENT;
+module.exports.BROADCAST_PUBLIC_CHAT_MESSAGE_EVENT = BROADCAST_PUBLIC_CHAT_MESSAGE_EVENT;
+module.exports.PRIVATE_CHAT_MESSAGE_EVENT = PRIVATE_CHAT_MESSAGE_EVENT;
+module.exports.BROADCAST_PRIVATE_CHAT_MESSAGE_EVENT = BROADCAST_PRIVATE_CHAT_MESSAGE_EVENT;
+module.exports.BROADCAST_WHITEBOARD_DRAW_EVENT = BROADCAST_WHITEBOARD_DRAW_EVENT;
+module.exports.BROADCAST_WHITEBOARD_UPDATE_EVENT = BROADCAST_WHITEBOARD_UPDATE_EVENT;
+module.exports.WHITEBOARD_CURSOR_EVENT = WHITEBOARD_CURSOR_EVENT;
+module.exports.BROADCAST_WHITEBOARD_CURSOR_EVENT = BROADCAST_WHITEBOARD_CURSOR_EVENT;
+module.exports.SHARE_PRESENTATION_EVENT = SHARE_PRESENTATION_EVENT;
+module.exports.BROADCAST_SHARE_PRESENTATION_EVENT = BROADCAST_SHARE_PRESENTATION_EVENT;
+module.exports.RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT;
+module.exports.BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT;
 
 
 //list of events to be selected from
@@ -129,13 +170,9 @@ module.exports.getEvents = {
 };
 
 function paramExist(param) {
-  if (typeof param === "undefined" || param === null || param === "") {   //TODO == or ===
-    //TODO if false or if 0 causes this to return false and not accept the value
-    //console.log(param + " is not a reasonable value");
+  if (typeof param === "undefined" || param === null || param === "") {
     return false;
   }   
-
-  //console.log(param + " is a reasonable value");
   return true;
 }
 
@@ -208,9 +245,6 @@ module.exports.whiteboardDrawEventToJson = function(params, onSuccess, onFailure
 
 // TODO: Do the same thing to convert from JSON to JS Object
 //module.exports.whiteboardDrawEventFromJson(message, onSuccess, onFailure) {
-/*
-  REDOOOO
-*/
 
 // TODO: Add some documentation using http://usejsdoc.org/
 // Document requried and optional parameters
@@ -353,9 +387,6 @@ module.exports.createMeetingResponseToJson = function (params, onSuccess, onFail
         "descriptorLogout", "descriptorAvatar", "descriptorMaxUsers", "durationLength",
         "durationAllowExtend", "durationMaxMinutes", "voiceConfPin", "voiceConfNumber", "phoneNumbers",
         "metadataCustomerId", "metadataCustomerName"//, "name", "timestamp"
-
-
-
     ];
 
     for (var key in requiredParams) {
@@ -417,6 +448,232 @@ module.exports.createMeetingResponseToJson = function (params, onSuccess, onFail
     }
 }
 
+module.exports.meetingCreatedEventToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = ["channelsDestination", "source", "meetingName", "meetingId", "sessionId",
+        "descriptorName", "descriptorExternalId", "descriptorRecord", "descriptorWelcome",
+        "descriptorLogout", "descriptorAvatar", "descriptorMaxUsers", "durationLength",
+        "durationAllowExtend", "durationMaxMinutes", "voiceConfPin", "voiceConfNumber", "phoneNumbers",
+        "metadataCustomerId", "metadataCustomerName"//, "name", "timestamp"
+    ];
+    
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg="Missing parameter [" + requiredParams[key] + "]=\""+params[requiredParams[key]]+"\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+        header.name = MEETING_CREATED_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingID;
+        payload.session = params.sessionID;
+
+        payload.meeting_descriptor = {};
+        payload.meeting_descriptor.name = params.descriptorName;
+        payload.meeting_descriptor.external_id = params.descriptorExternalId;
+        payload.meeting_descriptor.record = params.descriptorRecord;
+        payload.meeting_descriptor.welcome_message = params.descriptorWelcome;
+        payload.meeting_descriptor.logout_url = params.descriptorLogout;
+        payload.meeting_descriptor.avatar_url = params.descriptorAvatar;
+        payload.meeting_descriptor.max_users = params.descriptorMaxUsers;
+        payload.meeting_descriptor.duration = {};
+        payload.meeting_descriptor.duration.length_in_minutes = params.durationLength;
+        payload.meeting_descriptor.duration.allow_extend = params.durationAllowExtend;
+        payload.meeting_descriptor.duration.max_minutes = params.durationMaxMinutes;
+        payload.meeting_descriptor.voice_conference = {};
+        payload.meeting_descriptor.voice_conference.pin = params.voiceConfPin;
+        payload.meeting_descriptor.voice_conference.number = params.voiceConfNumber;
+        payload.meeting_descriptor.phone_numbers = params.phoneNumbers;
+
+        payload.meeting_descriptor.metadata = {};
+        payload.meeting_descriptor.metadata.customer_id = params.metadataCustomerId;
+        payload.meeting_descriptor.metadata.customer_name = params.metadataCustomerName;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+
+module.exports.endMeetingRequestToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "channelsReply", "correlationId","force", "warnUsers"
+    ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.reply = {};
+        header.reply.to = params.channelsReply;
+        header.reply.correlation_id = params.correlationId;
+
+
+        header.name = END_MEETING_REQUEST;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.force = params.force;
+        payload.warn_users = params.warnUsers;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+
+module.exports.endMeetingResponseToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "correlationId", "success", "message"
+    ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+        header.destination.correlation_id=params.correlationId;
+
+        header.name = END_MEETING_RESPONSE;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.result={};
+        payload.result.success = params.success;
+        payload.result.message = params.message;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+module.exports.endMeetingWarningToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "timeLeft", "timeUnit", "allowExtend"
+    ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = END_MEETING_WARNING_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.time_left = params.timeLeft;
+        payload.time_unit = params.timeUnit;
+        payload.allow_extend = params.allowExtend;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -430,151 +687,7 @@ module.exports.createMeetingResponseToJson = function (params, onSuccess, onFail
 
 module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sessionID) {
     switch (event_type) {
-    
-    
-    
-    case "meeting_created_event":
-        var event_name = "meeting_created_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-        //header.destination.correlation_id = "abc";
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.meeting_descriptor = {};
-        payload.meeting_descriptor.name = "English 101";
-        payload.meeting_descriptor.external_id = "english_101";
-        payload.meeting_descriptor.record = true;
-        payload.meeting_descriptor.welcome_message = "Welcome to English 101";
-        payload.meeting_descriptor.logout_url = "http://www.bigbluebutton.org";
-        payload.meeting_descriptor.avatar_url = "http://www.gravatar.com/bigbluebutton";
-        payload.meeting_descriptor.max_users = 20;
-        payload.meeting_descriptor.duration = {};
-        payload.meeting_descriptor.duration.length_in_minutes = 120;
-        payload.meeting_descriptor.duration.allow_extend = false;
-        payload.meeting_descriptor.duration.max_minutes = 240;
-        payload.meeting_descriptor.voice_conference = {};
-        payload.meeting_descriptor.voice_conference.pin = 123456;
-        payload.meeting_descriptor.voice_conference.number = 85115;
-        payload.meeting_descriptor.phone_numbers = [];
-        var a = {
-            "number": "613-520-7600",
-            "description": "Ottawa"
-        };
-        var b = {
-            "number": "1-888-555-7890",
-            "description": "NA Toll-Free"
-        };
-        payload.meeting_descriptor.phone_numbers[0] = a;
-        payload.meeting_descriptor.phone_numbers[1] = b;
-
-        payload.meeting_descriptor.metadata = {};
-        payload.meeting_descriptor.metadata.customer_id = "acme-customer";
-        payload.meeting_descriptor.metadata.customer_name = "ACME";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "end_meeting_request":
-        var event_name = "end_meeting_request";
-        var source_of_event = "bbb-web";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-        header.reply = {};
-        header.reply.to = "apps_channel";
-        header.reply.correlation_id = "abc";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.force = true;
-        payload.warn_users = true;
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "end_meeting_response":
-        var event_name = "end_meeting_response";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-        header.destination.correlation_id = "abc";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.result = {};
-        payload.result.success = true;
-        payload.result.message = "Ending the meeting. Please wait several seconds to complete the request.";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "end_meeting_warning_event":
-        var event_name = "end_meeting_warning_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.time_left = 30;
-        payload.time_unit = "seconds";
-        payload.allow_extend = false;
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
+  
     case "meeting_ended_event":
         var event_name = "meeting_ended_event";
         var source_of_event = "bbb-apps";
