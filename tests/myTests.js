@@ -1295,12 +1295,6 @@ exports.testUserLeftEvent = function (test) {
     test.done();
 }
 
-
-
-
-
-
-//new
 function sampleGetUsersRequest() {
     var params = {};
 
@@ -1362,6 +1356,412 @@ exports.testGetUsersRequest = function (test) {
 
     extras.isString(testValue.payload.requester.id);
     extras.isString(testValue.payload.requester.name);
+
+    test.done();
+}
+
+function sampleGetUsersResponse() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+
+    params.listUsers = [];
+
+    var a = {};
+    a.id = "juanid";
+    a.external_id = "userjuan";
+    a.name = "Juan Tamad";
+    a.role = "MODERATOR";
+    a.pin = 12345;
+    a.welcome_message = "Welcome Juan";
+    a.logout_url = "http://www.example.com";
+    a.avatar_url = "http://www.example.com/avatar.png";
+    a.is_presenter = true;
+    a.status = {};
+    a.status.hand_raised = false;
+    a.status.muted = false;
+    a.status.locked = false;
+    a.status.talking = false;
+    a.caller_id = {};
+    a.caller_id.name = "Juan Tamad";
+    a.caller_id.number = "011-63-917-555-1234";
+
+    a.media_streams = [];
+
+    var one = {};
+    one.media_type = "audio";
+    one.uri = "http://cdn.bigbluebutton.org/stream/a1234";
+    one.metadata = {};
+    one.metadata.foo = "bar";
+
+    var two = {};
+    two.media_type = "video";
+    two.uri = "http://cdn.bigbluebutton.org/stream/v1234";
+    two.metadata = {};
+    two.metadata.foo = "bar";
+
+    var three = {};
+    three.media_type = "screen";
+    three.uri = "http://cdn.bigbluebutton.org/stream/s1234";
+    three.metadata = {};
+    three.metadata.foo = "bar";
+
+    a.media_streams[0] = one;
+    a.media_streams[1] = two;
+    a.media_streams[2] = three;
+
+    a.metadata = {};
+    a.metadata.student_id = "54321";
+    a.metadata.program = "engineering";
+
+    params.listUsers[0] = a;
+
+    return params;
+}
+
+exports.testGetUsersResponse = function (test) {
+
+    var event_type = library.GET_USERS_RESPONSE;
+    var params = sampleGetUsersResponse();
+
+    var testingJson;
+    library.getUsersResponseToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+
+
+    //Users testing
+    var isArray = testValue.payload.users.constructor.toString().indexOf("Array");
+    test.notEqual(-1, isArray, "\"users\" does not look like an array");
+
+    if (isArray) {
+        var users = testValue.payload.users;
+        for (index in users) {
+            var aUser = users[index];
+
+            extras.isNotUndefined(aUser.id);
+            extras.isNotNull(aUser.id);
+            test.notEqual("", aUser.id);
+            extras.isString(aUser.id);
+
+            extras.isNotUndefined(aUser.external_id);
+            extras.isNotNull(aUser.external_id);
+            test.notEqual("", aUser.external_id);
+            extras.isString(aUser.external_id);
+
+            extras.isNotUndefined(aUser.name);
+            extras.isNotNull(aUser.name);
+            test.notEqual("", aUser.name);
+            extras.isString(aUser.name);
+
+            extras.isNotUndefined(aUser.role);
+            extras.isNotNull(aUser.role);
+            test.notEqual("", aUser.role);
+            extras.isString(aUser.role);
+
+            extras.isNotUndefined(aUser.pin);
+            extras.isNotNull(aUser.pin);
+            extras.isNumber(aUser.pin);
+
+            extras.isNotUndefined(aUser.welcome_message);
+            extras.isNotNull(aUser.welcome_message);
+            test.notEqual("", aUser.welcome_message);
+            extras.isString(aUser.welcome_message);
+
+            extras.isNotUndefined(aUser.logout_url);
+            extras.isNotNull(aUser.logout_url);
+            test.notEqual("", aUser.logout_url);
+            extras.isString(aUser.logout_url);
+
+            extras.isNotUndefined(aUser.avatar_url);
+            extras.isNotNull(aUser.avatar_url);
+            test.notEqual("", aUser.avatar_url);
+            extras.isString(aUser.avatar_url);
+
+            extras.isNotUndefined(aUser.is_presenter);
+            extras.isNotNull(aUser.is_presenter);
+            extras.isBoolean(aUser.is_presenter);
+
+            extras.isNotUndefined(aUser.status);
+            extras.isNotNull(aUser.status);
+            extras.isObject(aUser.status);
+
+            extras.isNotUndefined(aUser.status.hand_raised);
+            extras.isNotNull(aUser.status.hand_raised);
+            extras.isBoolean(aUser.status.hand_raised);
+
+            extras.isNotUndefined(aUser.status.muted);
+            extras.isNotNull(aUser.status.muted);
+            extras.isBoolean(aUser.status.muted);
+
+            extras.isNotUndefined(aUser.status.locked);
+            extras.isNotNull(aUser.status.locked);
+            extras.isBoolean(aUser.status.locked);
+
+            extras.isNotUndefined(aUser.status.talking);
+            extras.isNotNull(aUser.status.talking);
+            extras.isBoolean(aUser.status.talking);
+
+
+            extras.isNotUndefined(aUser.caller_id);
+            extras.isNotNull(aUser.caller_id);
+            extras.isObject(aUser.caller_id);
+
+            extras.isNotUndefined(aUser.caller_id.name);
+            extras.isNotNull(aUser.caller_id.name);
+            test.notEqual("", aUser.caller_id.name);
+            extras.isString(aUser.caller_id.name);
+
+            extras.isNotUndefined(aUser.caller_id.number);
+            extras.isNotNull(aUser.caller_id.number);
+            test.notEqual("", aUser.caller_id.number);
+            extras.isString(aUser.caller_id.number);
+
+            //Media streams testing
+            var isArrayStreams = testValue.payload.users[index].media_streams.constructor.toString().indexOf("Array");
+
+            test.notEqual(-1, isArrayStreams, "\"media_streams\" does not look like an array");
+
+            if (isArrayStreams) {
+                var streams = testValue.payload.users[index].media_streams;
+                for (i in streams) {
+                    var aStream = streams[i];
+
+                    //TODO must be either audio/video/screen
+                    extras.isNotUndefined(aStream.media_type);
+                    extras.isNotNull(aStream.media_type);
+                    test.notEqual("", aStream.media_type);
+                    extras.isString(aStream.media_type);
+
+                    extras.isNotUndefined(aStream.uri);
+                    extras.isNotNull(aStream.uri);
+                    test.notEqual("", aStream.uri);
+                    extras.isString(aStream.uri);
+
+                    extras.isNotUndefined(aStream.metadata);
+                    extras.isNotNull(aStream.metadata);
+                    extras.isObject(aStream.metadata);
+
+                    extras.isNotUndefined(aStream.metadata.foo);
+                    extras.isNotNull(aStream.metadata.foo);
+                    test.notEqual("", aStream.metadata.foo);
+                    extras.isString(aStream.metadata.foo);
+                }
+            }
+
+        }
+    }
+
+
+
+
+    test.done();
+}
+
+function sampleRaiseUserHandRequest() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.raise=true;
+
+    params.requesterId="juanid";
+    params.requesterName="Juan Tamad";
+
+    return params;
+}
+
+exports.testRaiseUserHandRequest = function (test) {
+
+    var event_type = library.RAISE_USER_HAND_REQUEST;
+    var params = sampleRaiseUserHandRequest();
+
+    var testingJson;
+    library.raiseUserHandRequestToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isBoolean(testValue.payload.raise);
+
+    extras.isString(testValue.payload.requester.id);
+    extras.isString(testValue.payload.requester.name);
+
+    test.done();
+}
+
+function sampleUserRaisedHandEvent() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.raise=true;
+
+    params.requesterId="juanid";
+    params.requesterName="Juan Tamad";
+
+    return params;
+}
+
+exports.testUserRaisedHandEvent = function (test) {
+
+    var event_type = library.USER_RAISED_HAND_EVENT;
+    var params = sampleUserRaisedHandEvent();
+
+    var testingJson;
+    library.userRaisedHandEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isBoolean(testValue.payload.raise);
+
+    extras.isString(testValue.payload.requester.id);
+    extras.isString(testValue.payload.requester.name);
+
+    test.done();
+}
+
+
+
+
+
+
+
+//new
+function sampleAssignedPresenterRequest() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.presenterId="user1";
+    params.presenterName="Guga";
+
+    params.assignedById="user2";
+    params.assignedByName="Juan";
+
+    return params;
+}
+
+exports.testAssignedPresenterRequest = function (test) {
+
+    var event_type = library.ASSIGN_PRESENTER_REQUEST;
+    var params = sampleAssignedPresenterRequest();
+
+    var testingJson;
+    library.assignedPresenterRequestToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.presenter.id);
+    extras.isString(testValue.payload.presenter.name);
+
+    extras.isString(testValue.payload.assigned_by.id);
+    extras.isString(testValue.payload.assigned_by.name);
 
     test.done();
 }
