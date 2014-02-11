@@ -76,8 +76,8 @@ module.exports.REGISTER_USER_REQUEST = REGISTER_USER_REQUEST;
 module.exports.REGISTER_USER_RESPONSE = REGISTER_USER_RESPONSE;
 module.exports.USER_REGISTERED_EVENT = USER_REGISTERED_EVENT;
 module.exports.USER_JOIN_REQUEST = USER_JOIN_REQUEST;
-
 module.exports.USER_JOIN_RESPONSE = USER_JOIN_RESPONSE;
+
 module.exports.USER_JOINED_EVENT = USER_JOINED_EVENT;
 module.exports.USER_LEAVE_EVENT = USER_LEAVE_EVENT;
 module.exports.USER_LEFT_EVENT = USER_LEFT_EVENT;
@@ -1008,85 +1008,84 @@ module.exports.userJoinResponseToJson = function (params, onSuccess, onFailure) 
     }
 }
 
+module.exports.userJoinedEventToJson = function (params, onSuccess, onFailure) {
 
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "studentId", "program", "userId", "userExternalId",
+        "userName", "role", "pin", "welcome", "logoutUrl", "avatarUrl",
+        "isPresenter", "handRaised", "muted", "locked", "talking",
+        "callerName", "callerNumber", "mediaStreams"
+    ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = USER_JOINED_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.user = {};
+        payload.user.id =params.userId; 
+        payload.user.external_id = params.userExternalId;
+        payload.user.name = params.userName;
+        payload.user.role = params.role;
+        payload.user.pin = params.pin;
+        payload.user.welcome_message=params.welcome; 
+        payload.user.logout_url = params.logoutUrl;
+        payload.user.avatar_url = params.avatarUrl;
+        payload.user.is_presenter = params.isPresenter;
+        payload.user.status = {};
+        payload.user.status.hand_raised = params.handRaised;
+        payload.user.status.muted = params.muted;
+        payload.user.status.locked = params.locked;
+        payload.user.status.talking = params.talking;
+        payload.user.caller_id = {};
+        payload.user.caller_id.name =params.callerName;
+        payload.user.caller_id.number = params.callerNumber;
+
+        payload.user.media_streams = params.mediaStreams;
+
+        payload.user.metadata = {};
+        payload.user.metadata.student_id = params.studentId;
+        payload.user.metadata.program = params.program;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
 
 
 
 module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sessionID) {
     switch (event_type) {
  
-    case "user_joined_event":
-        var event_name = "user_joined_event";
-        var source_of_event = "web-api";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.user = {}; //?!?! TODO shouldn't this be user_descriptor?!?!?!
-        payload.user.id = "juanid";
-        payload.user.external_id = "userjuan";
-        payload.user.name = "Juan Tamad"; //?!?! TODO shouldn't this be user_descriptor?!?!?!
-        payload.user.role = "MODERATOR";
-        payload.user.pin = 12345;
-        payload.user.welcome_message = "Welcome to English 101"; //?!?! TODO shouldn't this be user_descriptor?!?!?!
-        payload.user.logout_url = "http://www.example.com";
-        payload.user.avatar_url = "http://www.example.com/avatar.png";
-        payload.user.is_presenter = true;
-        payload.user.status = {};
-        payload.user.status.hand_raised = false;
-        payload.user.status.muted = false;
-        payload.user.status.locked = false;
-        payload.user.status.talking = false;
-        payload.user.caller_id = {};
-        payload.user.caller_id.name = "Juan Tamad";
-        payload.user.caller_id.number = "011-63-917-555-1234";
-
-        payload.user.media_streams = [];
-
-        var a = {};
-        a.media_type = "audio";
-        a.uri = "http://cdn.bigbluebutton.org/stream/a1234";
-        a.metadata = {}
-        a.metadata.foo = "bar";
-
-        var b = {};
-        b.media_type = "video";
-        b.uri = "http://cdn.bigbluebutton.org/stream/v1234";
-        b.metadata = {}
-        b.metadata.foo = "bar";
-
-        var c = {};
-        c.media_type = "screen";
-        c.uri = "http://cdn.bigbluebutton.org/stream/s1234";
-        c.metadata = {}
-        c.metadata.foo = "bar";
-
-        payload.user.media_streams[0] = a;
-        payload.user.media_streams[1] = b;
-        payload.user.media_streams[2] = c;
-
-        payload.user.metadata = {}; //?!?! TODO shouldn't this be user_descriptor?!?!?!
-        payload.user.metadata.student_id = "54321";
-        payload.user.metadata.program = "engineering"; //?!?! TODO shouldn't this be user_descriptor?!?!?!
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-
+    
     case "user_leave_event":
         var event_name = "user_leave_event";
         var source_of_event = "web-api";

@@ -1016,8 +1016,6 @@ exports.testUserJoinRequest = function(test){
     test.done();
 }
 
-
-//new
 function sampleUserJoinResponse () {
     var params = {};
 
@@ -1093,6 +1091,159 @@ exports.testUserJoinResponse = function(test){
     extras.isString(testValue.payload.user_descriptor.avatar_url  );
     extras.isString(testValue.payload.user_descriptor.metadata.student_id  ); //TODO should this remain a string or become Number?
     extras.isString(testValue.payload.user_descriptor.metadata.program);
+
+    test.done();
+}
+
+
+
+
+
+
+//new
+function sampleUserJoinedEvent () {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source="bbb-web";
+
+
+params.userId = "juanid";
+params.userExternalId =  "userjuan";
+params.userName ="Juan Tamad";
+params.role="MODERATOR";
+params.pin=12345;
+params.welcome= "Welcome to English 101";
+params.logoutUrl="http://www.example.com";
+
+params.avatarUrl="http://www.example.com/avatar.png";
+params.isPresenter=true;
+params.handRaised=false;
+params.muted=false;
+params.locked=false;
+params.talking=false;
+params.callerName= "Juan Tamad";
+params.callerNumber="011-63-917-555-1234";
+
+params.mediaStreams=[];
+
+        var a = {};
+        a.media_type = "audio";
+        a.uri = "http://cdn.bigbluebutton.org/stream/a1234";
+        a.metadata = {}
+        a.metadata.foo = "bar";
+
+        var b = {};
+        b.media_type = "video";
+        b.uri = "http://cdn.bigbluebutton.org/stream/v1234";
+        b.metadata = {}
+        b.metadata.foo = "bar";
+
+        var c = {};
+        c.media_type = "screen";
+        c.uri = "http://cdn.bigbluebutton.org/stream/s1234";
+        c.metadata = {}
+        c.metadata.foo = "bar";
+
+        params.mediaStreams[0] = a;
+        params.mediaStreams[1] = b;
+        params.mediaStreams[2] = c;
+
+
+
+params.studentId="54321";
+params.program="engineering";
+
+
+
+    return params;
+}
+
+exports.testUserJoinedEvent = function(test){
+
+    var event_type = library.USER_JOINED_EVENT;
+    var params = sampleUserJoinedEvent();
+
+    var testingJson;
+    library.userJoinedEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+extras.isString(testValue.payload.user.id   );
+extras.isString(testValue.payload.user.external_id   );
+extras.isString(testValue.payload.user.name   );
+extras.isString(testValue.payload.user.role   );
+extras.isNumber(testValue.payload.user.pin   );
+extras.isString(testValue.payload.user.welcome_message   );
+extras.isString(testValue.payload.user.logout_url   );
+extras.isString(testValue.payload.user.avatar_url    );
+extras.isBoolean(testValue.payload.user.is_presenter   );
+extras.isBoolean(testValue.payload.user.status.hand_raised   );
+extras.isBoolean(testValue.payload.user.status.muted   );
+extras.isBoolean(testValue.payload.user.status.locked   );
+extras.isBoolean(testValue.payload.user.status.talking   );
+extras.isString(testValue.payload.user.caller_id.name   );
+extras.isString(testValue.payload.user.caller_id.number   );
+
+    //Media streams testing
+    var isArray = testValue.payload.user.media_streams.constructor.toString().indexOf("Array");
+
+    test.notEqual(-1, isArray, "\"media_streams\" does not look like an array");
+
+    if (isArray) {
+        var streams = testValue.payload.user.media_streams;
+        for (index in streams) {
+            var aStream = streams[index];
+
+            //TODO must be either audio/video/screen
+            extras.isNotUndefined(aStream.media_type);
+            extras.isNotNull(aStream.media_type);
+            test.notEqual("", aStream.media_type);
+            extras.isString(aStream.media_type);
+
+            extras.isNotUndefined(aStream.uri);
+            extras.isNotNull(aStream.uri);
+            test.notEqual("", aStream.uri);
+            extras.isString(aStream.uri);
+
+            extras.isNotUndefined(aStream.metadata);
+            extras.isNotNull(aStream.metadata);
+            extras.isObject(aStream.metadata);
+
+            extras.isNotUndefined(aStream.metadata.foo);
+            extras.isNotNull(aStream.metadata.foo);
+            test.notEqual("", aStream.metadata.foo);
+            extras.isString(aStream.metadata.foo);
+        }
+    }
+
+extras.isString(testValue.payload.user.metadata.student_id   );//TODO not a # ?!
+extras.isString(testValue.payload.user.metadata.program   );
 
     test.done();
 }
