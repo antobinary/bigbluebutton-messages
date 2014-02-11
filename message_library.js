@@ -77,10 +77,10 @@ module.exports.REGISTER_USER_RESPONSE = REGISTER_USER_RESPONSE;
 module.exports.USER_REGISTERED_EVENT = USER_REGISTERED_EVENT;
 module.exports.USER_JOIN_REQUEST = USER_JOIN_REQUEST;
 module.exports.USER_JOIN_RESPONSE = USER_JOIN_RESPONSE;
-
 module.exports.USER_JOINED_EVENT = USER_JOINED_EVENT;
 module.exports.USER_LEAVE_EVENT = USER_LEAVE_EVENT;
 module.exports.USER_LEFT_EVENT = USER_LEFT_EVENT;
+
 module.exports.GET_USERS_REQUEST = GET_USERS_REQUEST;
 module.exports.GET_USERS_RESPONSE = GET_USERS_RESPONSE;
 module.exports.RAISE_USER_HAND_REQUEST = RAISE_USER_HAND_REQUEST;
@@ -310,7 +310,6 @@ module.exports.whiteboardUpdateEventToJson = function(params, onSuccess, onFailu
     }
 }
 
-
 module.exports.createMeetingRequestToJson = function (params, onSuccess, onFailure) {
 
     // TODO: Check for required params
@@ -373,8 +372,6 @@ module.exports.createMeetingRequestToJson = function (params, onSuccess, onFailu
         onSuccess(JSON.stringify(message));
     }
 }
-
-
 
 module.exports.createMeetingResponseToJson = function (params, onSuccess, onFailure) {
 
@@ -512,7 +509,6 @@ module.exports.meetingCreatedEventToJson = function (params, onSuccess, onFailur
     }
 }
 
-
 module.exports.endMeetingRequestToJson = function (params, onSuccess, onFailure) {
 
     // TODO: Check for required params
@@ -564,7 +560,6 @@ module.exports.endMeetingRequestToJson = function (params, onSuccess, onFailure)
         onSuccess(JSON.stringify(message));
     }
 }
-
 
 module.exports.endMeetingResponseToJson = function (params, onSuccess, onFailure) {
 
@@ -1080,100 +1075,198 @@ module.exports.userJoinedEventToJson = function (params, onSuccess, onFailure) {
     }
 }
 
+module.exports.userLeaveEventToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "userId", "userName"
+    ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = USER_LEAVE_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.user = {};
+        payload.user.id =params.userId; 
+        payload.user.name = params.userName;
+        
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+module.exports.userLeftEventToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "userId", "userName"
+    ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = USER_LEFT_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.user = {};
+        payload.user.id =params.userId; 
+        payload.user.name = params.userName;
+        
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+
+
+
+
+module.exports.getUsersRequestToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "userId", "userName", "channelsReply", "correlationId",
+        "requesterId", "requesterName"
+    ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+
+ header.reply = {};
+        header.reply.to = params.channelsReply;
+        header.reply.correlation_id = params.correlationId;
+
+        header.name = GET_USERS_REQUEST;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.user = {};
+        payload.user.id =params.userId; 
+        payload.user.name = params.userName;
+
+ payload.requester = {}; 
+        payload.requester.id = params.requesterId;
+        payload.requester.name =params.requesterName;
+
+        
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sessionID) {
     switch (event_type) {
- 
-    
-    case "user_leave_event":
-        var event_name = "user_leave_event";
-        var source_of_event = "web-api";
 
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.user = {}; //?!?! TODO shouldn't this be user_descriptor?!?!?!
-        payload.user.id = "juanid";
-        payload.user.name = "Juan Tamad"; //?!?! TODO shouldn't this be user_descriptor?!?!?!
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "user_left_event":
-        var event_name = "user_left_event";
-        var source_of_event = "web-api";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.user = {}; //?!?! TODO shouldn't this be user_descriptor?!?!?!
-        payload.user.id = "juanid";
-        payload.user.name = "Juan Tamad"; //?!?! TODO shouldn't this be user_descriptor?!?!?!
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "get_users_request":
-        var event_name = "get_users_request";
-        var source_of_event = "bbb-web";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.reply = {};
-        header.reply.to = "apps_channel";
-        header.reply.correlation_id = "abc";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.requester = {}; //?!?! TODO shouldn't this be user_descriptor?!?!?!
-        payload.requester.id = "juanid";
-        payload.requester.name = "Juan Tamad"; //?!?! TODO shouldn't this be user_descriptor?!?!?!
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
     case "get_users_response":
         var event_name = "get_users_response";
         var source_of_event = "web-api";
