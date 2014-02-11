@@ -68,14 +68,13 @@ module.exports.WHITEBOARD_UPDATE_EVENT = WHITEBOARD_UPDATE_EVENT;
 module.exports.CREATE_MEETING_REQUEST = CREATE_MEETING_REQUEST;
 module.exports.CREATE_MEETING_RESPONSE = CREATE_MEETING_RESPONSE;
 module.exports.MEETING_CREATED_EVENT = MEETING_CREATED_EVENT;
+module.exports.END_MEETING_REQUEST = END_MEETING_REQUEST;
+module.exports.END_MEETING_RESPONSE = END_MEETING_RESPONSE;
+module.exports.END_MEETING_WARNING_EVENT = END_MEETING_WARNING_EVENT;
+module.exports.MEETING_ENDED_EVENT = MEETING_ENDED_EVENT;
 
-module.exports.END_MEETING_REQUEST = END_MEETING_REQUEST;
-module.exports.END_MEETING_RESPONSE = END_MEETING_RESPONSE;
-module.exports.END_MEETING_WARNING_EVENT = END_MEETING_WARNING_EVENT;
-module.exports.END_MEETING_REQUEST = END_MEETING_REQUEST;
-module.exports.END_MEETING_RESPONSE = END_MEETING_RESPONSE;
-module.exports.END_MEETING_WARNING_EVENT = END_MEETING_WARNING_EVENT;
 module.exports.REGISTER_USER_REQUEST = REGISTER_USER_REQUEST;
+
 module.exports.REGISTER_USER_RESPONSE = REGISTER_USER_RESPONSE;
 module.exports.USER_REGISTERED_EVENT = USER_REGISTERED_EVENT;
 module.exports.USER_JOIN_REQUEST = USER_JOIN_REQUEST;
@@ -665,11 +664,114 @@ module.exports.endMeetingWarningToJson = function (params, onSuccess, onFailure)
     }
 }
 
+module.exports.meetingEndedEventToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId"
+    ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = MEETING_ENDED_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
 
 
 
+module.exports.registerUserRequestToJson = function (params, onSuccess, onFailure) {
 
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "correlationId", "channelsReply",
+        "descriptorName", "descriptorExternalId", "descriptorRole",
+        "descriptorPin", "descriptorWelcome", "descriptorAvatar",
+        "descriptorLogout", "studentId", "program"
+    ];
 
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.reply = {};
+        header.reply.to = params.channelsReply;
+        header.reply.correlation_id = params.correlationId;
+
+        header.name = REGISTER_USER_REQUEST;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.user_descriptor = {};
+        payload.user_descriptor.external_id = params.descriptorExternalId;
+        payload.user_descriptor.name = params.descriptorName;
+        payload.user_descriptor.role = params.descriptorRole;
+        payload.user_descriptor.pin = params.descriptorPin;
+        payload.user_descriptor.welcome_message = params.descriptorWelcome;
+        payload.user_descriptor.logout_url = params.descriptorLogout;
+        payload.user_descriptor.avatar_url = params.descriptorAvatar;
+        payload.user_descriptor.metadata = {};
+        payload.user_descriptor.metadata.student_id = params.studentId;
+        payload.user_descriptor.metadata.program = params.program;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
 
 
 
@@ -688,69 +790,7 @@ module.exports.endMeetingWarningToJson = function (params, onSuccess, onFailure)
 module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sessionID) {
     switch (event_type) {
   
-    case "meeting_ended_event":
-        var event_name = "meeting_ended_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "register_user_request":
-        var event_name = "register_user_request";
-        var source_of_event = "bbb-web";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-        header.reply = {};
-        header.reply.to = "apps_channel";
-        header.reply.correlation_id = "abc";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.user_descriptor = {};
-        payload.user_descriptor.external_id = "user1";
-        payload.user_descriptor.name = "Guga";
-        payload.user_descriptor.role = "MODERATOR";
-        payload.user_descriptor.pin = 12345;
-        payload.user_descriptor.welcome_message = "Welcome to English 101";
-        payload.user_descriptor.logout_url = "http://www.example.com";
-        payload.user_descriptor.avatar_url = "http://www.example.com/avatar.png";
-        payload.user_descriptor.metadata = {};
-        payload.user_descriptor.metadata.student_id = "54321";
-        payload.user_descriptor.metadata.program = "engineering";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
+   
     case "register_user_response":
         var event_name = "register_user_response";
         var source_of_event = "bbb-apps";

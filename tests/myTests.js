@@ -530,10 +530,8 @@ exports.testMeetingCreatedEvent_001 = function(test){
     extras.isString(testValue.payload.meeting_descriptor.metadata.customer_name);
 
     test.done();
-
 }
 
-//new
 function sampleEndMeetingRequest () {
     var params = {};
 
@@ -640,7 +638,7 @@ exports.testEndMeetingResponse_001 = function(test){
     test.done();
 }
 
-//new
+
 function sampleEndMeetingWarning () {
     var params = {};
 
@@ -693,9 +691,126 @@ exports.testEndMeetingWarning_001 = function(test){
     test.done();
 }
 
+function sampleMeetingEndedEvent () {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source="bbb-apps";
+
+    return params;
+}
+
+exports.testMeetingEndedEvent_001 = function(test){
+
+    var event_type = library.MEETING_ENDED_EVENT;
+    var params = sampleMeetingEndedEvent();
+
+    var testingJson;
+    library.meetingEndedEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    test.done();
+}
+
+//new
+function sampleRegisterUserRequest () {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source="bbb-web";
+
+    params.channelsReply = "apps_channel";
+    params.correlationId = "abc";
 
 
+    params.descriptorName = "Guga";
+    params.descriptorExternalId = "user1";
 
+    params.descriptorRole = "MODERATOR";
+    params.descriptorPin = 12345;
+
+    params.descriptorWelcome = "Welcome to English 101";
+    params.descriptorLogout = "http://www.bigbluebutton.org";
+    params.descriptorAvatar = "http://www.gravatar.com/bigbluebutton";
+
+    params.studentId = "54321";
+    params.program ="engineering";
+
+
+    return params;
+}
+
+exports.testRegisterUserRequest_001 = function(test){
+
+    var event_type = library.MEETING_ENDED_EVENT;
+    var params = sampleRegisterUserRequest();
+
+    var testingJson;
+    library.registerUserRequestToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+    extras.isString(testValue.header.reply.to);
+    extras.isString(testValue.header.reply.correlation_id);
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.user_descriptor.external_id  );
+    extras.isString(testValue.payload.user_descriptor.name  );
+    extras.isString(testValue.payload.user_descriptor.role  );
+    extras.isNumber(testValue.payload.user_descriptor.pin  );
+    extras.isString(testValue.payload.user_descriptor.welcome_message  );
+    extras.isString(testValue.payload.user_descriptor.logout_url  );
+    extras.isString(testValue.payload.user_descriptor.avatar_url  );
+    extras.isString(testValue.payload.user_descriptor.metadata.student_id  ); //TODO should this remain a string or become Number?
+    extras.isString(testValue.payload.user_descriptor.metadata.program);
+
+    test.done();
+}
 
 
 
