@@ -8,6 +8,11 @@ var extras = require("node-assert-extras");
 UNIT TESTS
 
 --documentation
+--turn the sample function into a Setup.
+     Perhaps implement tearDown as well
+--improve naming convention
+
+
 
 for each event_type
  --valid date in timestamp
@@ -112,7 +117,7 @@ function sampleCreateMeetingRequestEvent() {
     return params;
 }
 
-exports.testWhiteboardDraw_001 = function (test) {
+exports.testWhiteboardDraw = function (test) {
     var event_type = library.WHITEBOARD_DRAW_EVENT;
     var params = sampleWhiteBoardDrawEvent();
 
@@ -161,7 +166,7 @@ exports.testWhiteboardDraw_001 = function (test) {
     test.done();
 }
 
-exports.testWhiteboardUpdate_001 = function (test) {
+exports.testWhiteboardUpdate = function (test) {
     var event_type = library.WHITEBOARD_UPDATE_EVENT;
     var params = sampleWhiteBoardUpdateEvent();
 
@@ -211,7 +216,7 @@ exports.testWhiteboardUpdate_001 = function (test) {
     test.done();
 }
 
-exports.testCreateMeetingRequest_001 = function (test) {
+exports.testCreateMeetingRequest = function (test) {
     var event_type = library.CREATE_MEETING_REQUEST;
     var params = sampleCreateMeetingRequestEvent();
 
@@ -282,7 +287,7 @@ exports.testCreateMeetingRequest_001 = function (test) {
     test.done();
 }
 
-exports.testCreateMeetingResponse_001 = function (test) {
+exports.testCreateMeetingResponse = function (test) {
     var event_type = library.CREATE_MEETING_RESPONSE;
     var params = sampleCreateMeetingResponseEvent();
 
@@ -459,7 +464,7 @@ function sampleMeetingCreatedEvent () {
     return params;
 }
 
-exports.testMeetingCreatedEvent_001 = function(test){
+exports.testMeetingCreatedEvent = function(test){
 
     var event_type = library.MEETING_CREATED_EVENT;
     var params = sampleMeetingCreatedEvent();
@@ -548,7 +553,7 @@ function sampleEndMeetingRequest () {
     return params;
 }
 
-exports.testEndMeetingRequest_001 = function(test){
+exports.testEndMeetingRequest = function(test){
 
     var event_type = library.END_MEETING_REQUEST;
     var params = sampleEndMeetingRequest();
@@ -601,7 +606,7 @@ function sampleEndMeetingResponse () {
     return params;
 }
 
-exports.testEndMeetingResponse_001 = function(test){
+exports.testEndMeetingResponse = function(test){
 
     var event_type = library.END_MEETING_RESPONSE;
     var params = sampleEndMeetingResponse();
@@ -638,7 +643,6 @@ exports.testEndMeetingResponse_001 = function(test){
     test.done();
 }
 
-
 function sampleEndMeetingWarning () {
     var params = {};
 
@@ -654,7 +658,7 @@ function sampleEndMeetingWarning () {
     return params;
 }
 
-exports.testEndMeetingWarning_001 = function(test){
+exports.testEndMeetingWarning = function(test){
 
     var event_type = library.END_MEETING_WARNING_EVENT;
     var params = sampleEndMeetingWarning();
@@ -703,7 +707,7 @@ function sampleMeetingEndedEvent () {
     return params;
 }
 
-exports.testMeetingEndedEvent_001 = function(test){
+exports.testMeetingEndedEvent = function(test){
 
     var event_type = library.MEETING_ENDED_EVENT;
     var params = sampleMeetingEndedEvent();
@@ -736,7 +740,6 @@ exports.testMeetingEndedEvent_001 = function(test){
     test.done();
 }
 
-//new
 function sampleRegisterUserRequest () {
     var params = {};
 
@@ -767,9 +770,9 @@ function sampleRegisterUserRequest () {
     return params;
 }
 
-exports.testRegisterUserRequest_001 = function(test){
+exports.testRegisterUserRequest = function(test){
 
-    var event_type = library.MEETING_ENDED_EVENT;
+    var event_type = library.REGISTER_USER_REQUEST;
     var params = sampleRegisterUserRequest();
 
     var testingJson;
@@ -812,9 +815,284 @@ exports.testRegisterUserRequest_001 = function(test){
     test.done();
 }
 
+function sampleRegisterUserResponse () {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.correlationId = "abc";
+
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source="bbb-web";
+
+
+    params.token = "guga-token";
+    params.success = true;
+    params.message ="Success";
+  
+    params.descriptorName = "Guga";
+    params.descriptorExternalId = "user1";
+    params.descriptorRole = "MODERATOR";
+    params.descriptorPin = 12345;
+    params.descriptorWelcome = "Welcome to English 101";
+    params.descriptorLogout = "http://www.bigbluebutton.org";
+    params.descriptorAvatar = "http://www.gravatar.com/bigbluebutton";
+
+    params.studentId = "54321";
+    params.program ="engineering";
+
+
+    return params;
+}
+
+exports.testRegisterUserResponse = function(test){
+
+    var event_type = library.REGISTER_USER_RESPONSE;
+    var params = sampleRegisterUserResponse();
+
+    var testingJson;
+    library.registerUserResponseToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+    extras.isString(testValue.header.destination.correlation_id);
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.user_descriptor.external_id  );
+    extras.isString(testValue.payload.user_descriptor.name  );
+    extras.isString(testValue.payload.user_descriptor.role  );
+    extras.isNumber(testValue.payload.user_descriptor.pin  );
+    extras.isString(testValue.payload.user_descriptor.welcome_message  );
+    extras.isString(testValue.payload.user_descriptor.logout_url  );
+    extras.isString(testValue.payload.user_descriptor.avatar_url  );
+    extras.isString(testValue.payload.user_descriptor.metadata.student_id  ); //TODO should this remain a string or become Number?
+    extras.isString(testValue.payload.user_descriptor.metadata.program);
+
+    extras.isString(testValue.payload.user_token);
+    extras.isBoolean(testValue.payload.result.success);
+    extras.isString(testValue.payload.result.message);
+
+    test.done();
+}
+
+function sampleUserRegisteredEvent () {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source="bbb-web";
+
+    params.descriptorName = "Guga";
+    params.descriptorExternalId = "user1";
+    params.descriptorRole = "MODERATOR";
+    params.descriptorPin = 12345;
+    params.descriptorWelcome = "Welcome to English 101";
+    params.descriptorLogout = "http://www.bigbluebutton.org";
+    params.descriptorAvatar = "http://www.gravatar.com/bigbluebutton";
+
+    params.studentId = "54321";
+    params.program ="engineering";
+
+
+    return params;
+}
+
+exports.testUserRegisteredEvent = function(test){
+
+    var event_type = library.USER_REGISTERED_EVENT;
+    var params = sampleUserRegisteredEvent();
+
+    var testingJson;
+    library.userRegisteredEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.user_descriptor.external_id  );
+    extras.isString(testValue.payload.user_descriptor.name  );
+    extras.isString(testValue.payload.user_descriptor.role  );
+    extras.isNumber(testValue.payload.user_descriptor.pin  );
+    extras.isString(testValue.payload.user_descriptor.welcome_message  );
+    extras.isString(testValue.payload.user_descriptor.logout_url  );
+    extras.isString(testValue.payload.user_descriptor.avatar_url  );
+    extras.isString(testValue.payload.user_descriptor.metadata.student_id  ); //TODO should this remain a string or become Number?
+    extras.isString(testValue.payload.user_descriptor.metadata.program);
+
+    test.done();
+}
+
+function sampleUserJoinRequest () {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source="bbb-web";
+
+    params.channelsReply= "bbb-web";
+    params.correlationId= "someCorId";
+    params.token = "user1-token-1";
+
+    return params;
+}
+
+exports.testUserJoinRequest = function(test){
+
+    var event_type = library.USER_JOIN_REQUEST;
+    var params = sampleUserJoinRequest();
+
+    var testingJson;
+    library.userJoinRequestToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.header.reply.to);
+    extras.isString(testValue.header.reply.correlation_id);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.token);
+
+    test.done();
+}
+
+
+//new
+function sampleUserJoinResponse () {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source="bbb-web";
+
+    params.correlationId= "someCorId";
+
+    params.success=true;
+    params.message="Success";
+
+    params.descriptorName = "Guga";
+    params.descriptorExternalId = "user1";
+    params.descriptorRole = "MODERATOR";
+    params.descriptorPin = 12345;
+    params.descriptorWelcome = "Welcome to English 101";
+    params.descriptorLogout = "http://www.bigbluebutton.org";
+    params.descriptorAvatar = "http://www.gravatar.com/bigbluebutton";
+
+    params.studentId = "54321";
+    params.program ="engineering";
 
 
 
+    return params;
+}
 
+exports.testUserJoinResponse = function(test){
 
+    var event_type = library.USER_JOIN_RESPONSE;
+    var params = sampleUserJoinResponse();
 
+    var testingJson;
+    library.userJoinResponseToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+    extras.isString(testValue.header.destination.correlation_id);
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isBoolean(testValue.payload.result.success);
+    extras.isString(testValue.payload.result.message);
+
+    extras.isString(testValue.payload.user_descriptor.external_id  );
+    extras.isString(testValue.payload.user_descriptor.name  );
+    extras.isString(testValue.payload.user_descriptor.role  );
+    extras.isNumber(testValue.payload.user_descriptor.pin  );
+    extras.isString(testValue.payload.user_descriptor.welcome_message  );
+    extras.isString(testValue.payload.user_descriptor.logout_url  );
+    extras.isString(testValue.payload.user_descriptor.avatar_url  );
+    extras.isString(testValue.payload.user_descriptor.metadata.student_id  ); //TODO should this remain a string or become Number?
+    extras.isString(testValue.payload.user_descriptor.metadata.program);
+
+    test.done();
+}
