@@ -1700,13 +1700,6 @@ exports.testUserRaisedHandEvent = function (test) {
     test.done();
 }
 
-
-
-
-
-
-
-//new
 function sampleAssignedPresenterRequest() {
     var params = {};
 
@@ -1762,6 +1755,193 @@ exports.testAssignedPresenterRequest = function (test) {
 
     extras.isString(testValue.payload.assigned_by.id);
     extras.isString(testValue.payload.assigned_by.name);
+
+    test.done();
+}
+
+function samplePresenterAssignedEvent() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.presenterId="user1";
+    params.presenterName="Guga";
+
+    params.assignedById="user2";
+    params.assignedByName="Juan";
+
+    return params;
+}
+
+exports.testPresenterAssignedEvent = function (test) {
+
+    var event_type = library.PRESENTER_ASSIGNED_EVENT;
+    var params = samplePresenterAssignedEvent();
+
+    var testingJson;
+    library.presenterAssignedEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.presenter.id);
+    extras.isString(testValue.payload.presenter.name);
+
+    extras.isString(testValue.payload.assigned_by.id);
+    extras.isString(testValue.payload.assigned_by.name);
+
+    test.done();
+}
+
+function sampleMuteUserRequest() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.userId="user1";
+    params.userName="Guga";
+
+    params.requesterId="user2";
+    params.requesterName="Juan";
+
+    params.mute=true;
+
+    return params;
+}
+
+exports.testMuteUserRequest = function (test) {
+
+    var event_type = library.MUTE_USER_REQUEST;
+    var params = sampleMuteUserRequest();
+
+    var testingJson;
+    library.muteUserRequestToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.user.id);
+    extras.isString(testValue.payload.user.name);
+
+    extras.isString(testValue.payload.requester.id);
+    extras.isString(testValue.payload.requester.name);
+
+    extras.isBoolean(testValue.payload.mute);
+
+    test.done();
+}
+
+
+//new
+function sampleMuteUserRequestEvent() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.userId="user1";
+    params.userName="Guga";
+
+    params.requesterId="user2";
+    params.requesterName="Juan";
+
+    params.mute=true;
+
+    return params;
+}
+
+exports.testMuteUserRequestEvent = function (test) {
+
+    var event_type = library.MUTE_USER_REQUEST_EVENT;
+    var params = sampleMuteUserRequestEvent();
+
+    var testingJson;
+    library.muteUserRequestEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.user.id);
+    extras.isString(testValue.payload.user.name);
+
+    extras.isString(testValue.payload.requester.id);
+    extras.isString(testValue.payload.requester.name);
+
+    extras.isBoolean(testValue.payload.mute);
 
     test.done();
 }

@@ -83,12 +83,12 @@ module.exports.USER_LEFT_EVENT = USER_LEFT_EVENT;
 module.exports.GET_USERS_REQUEST = GET_USERS_REQUEST;
 module.exports.GET_USERS_RESPONSE = GET_USERS_RESPONSE;
 module.exports.RAISE_USER_HAND_REQUEST = RAISE_USER_HAND_REQUEST;
-
 module.exports.USER_RAISED_HAND_EVENT = USER_RAISED_HAND_EVENT;
 module.exports.ASSIGN_PRESENTER_REQUEST = ASSIGN_PRESENTER_REQUEST;
 module.exports.PRESENTER_ASSIGNED_EVENT = PRESENTER_ASSIGNED_EVENT;
 module.exports.MUTE_USER_REQUEST = MUTE_USER_REQUEST;
 module.exports.MUTE_USER_REQUEST_EVENT = MUTE_USER_REQUEST_EVENT;
+
 module.exports.MUTE_VOICE_USER_REQUEST = MUTE_VOICE_USER_REQUEST;
 module.exports.VOICE_USER_MUTED_EVENT = VOICE_USER_MUTED_EVENT;
 module.exports.USER_MUTED_EVENT = USER_MUTED_EVENT;
@@ -1376,10 +1376,6 @@ module.exports.userRaisedHandEventToJson = function (params, onSuccess, onFailur
     }
 }
 
-
-
-
-
 module.exports.assignedPresenterRequestToJson = function (params, onSuccess, onFailure) {
 
     // TODO: Check for required params
@@ -1433,7 +1429,168 @@ module.exports.assignedPresenterRequestToJson = function (params, onSuccess, onF
     }
 }
 
+module.exports.presenterAssignedEventToJson = function (params, onSuccess, onFailure) {
 
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "presenterId", "presenterName",
+        "assignedById", "assignedByName"
+    ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = PRESENTER_ASSIGNED_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.presenter = {}; 
+        payload.presenter.id = params.presenterId;
+        payload.presenter.name =params.presenterName;
+
+        payload.assigned_by = {}; 
+        payload.assigned_by.id = params.assignedById;
+        payload.assigned_by.name =params.assignedByName;
+        
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+module.exports.muteUserRequestToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "userId", "userName",
+        "requesterId", "requesterName", "mute"
+    ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = MUTE_USER_REQUEST;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.user = {}; 
+        payload.user.id = params.userId;
+        payload.user.name =params.userName;
+
+        payload.requester = {}; 
+        payload.requester.id = params.requesterId;
+        payload.requester.name =params.requesterName;
+        
+        payload.mute = params.mute;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+module.exports.muteUserRequestEventToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "userId", "userName",
+        "requesterId", "requesterName", "mute"
+    ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = MUTE_USER_REQUEST_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.user = {}; 
+        payload.user.id = params.userId;
+        payload.user.name =params.userName;
+
+        payload.requester = {}; 
+        payload.requester.id = params.requesterId;
+        payload.requester.name =params.requesterName;
+        
+        payload.mute = params.mute;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
 
 
 
@@ -1454,108 +1611,7 @@ module.exports.assignedPresenterRequestToJson = function (params, onSuccess, onF
 
 module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sessionID) {
     switch (event_type) {
-
-
-    case "presenter_assigned_event":
-        var event_name = "presenter_assigned_event";
-        var source_of_event = "web-api";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.presenter = {};
-        payload.presenter.id = "user1";
-        payload.presenter.name = "Guga";
-
-        payload.assigned_by = {};
-        payload.assigned_by.id = "user2";
-        payload.assigned_by.name = "Juan";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "mute_user_request":
-        var event_name = "mute_user_request";
-        var source_of_event = "web-api";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.user = {};
-        payload.user.id = "user1";
-        payload.user.name = "Guga";
-
-        payload.requester = {};
-        payload.requester.id = "user2";
-        payload.requester.name = "Juan";
-
-        payload.mute = true; //TODO maybe this should be "muteD"?!!!
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "mute_user_request_event":
-        var event_name = "mute_user_request_event";
-        var source_of_event = "web-api";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.user = {};
-        payload.user.id = "user1";
-        payload.user.name = "Guga";
-
-        payload.requester = {};
-        payload.requester.id = "user2";
-        payload.requester.name = "Juan";
-
-        payload.mute = true; //TODO maybe this should be "muteD"?!!!
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
+    
     case "mute_voice_user_request":
         var event_name = "mute_voice_user_request";
         var source_of_event = "web-api";
