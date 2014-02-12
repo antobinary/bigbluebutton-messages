@@ -1881,8 +1881,6 @@ exports.testMuteUserRequest = function (test) {
     test.done();
 }
 
-
-//new
 function sampleMuteUserRequestEvent() {
     var params = {};
 
@@ -1942,6 +1940,269 @@ exports.testMuteUserRequestEvent = function (test) {
     extras.isString(testValue.payload.requester.name);
 
     extras.isBoolean(testValue.payload.mute);
+
+    test.done();
+}
+//feb12
+function sampleMuteVoiceUserRequest() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.userId="user1";
+    params.userName="Guga";
+
+    params.mute=true;
+
+    params.freeSWITCH_IPv4 = "192.168.0.166"; //// had to change - to _
+    params.conference_Name = "72382"; //// had to change - to _
+    params.conference_Unique_ID = "480d3f7c-224f-11e0-ae04-fbe97e271da0"; //// had to change - to _
+    params.conference_member_id = "1";
+
+    return params;
+}
+
+exports.testMuteVoiceUserRequest = function (test) {
+
+    var event_type = library.MUTE_VOICE_USER_REQUEST;
+    var params = sampleMuteVoiceUserRequest();
+
+    var testingJson;
+    library.muteVoiceUserRequestToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.user_metadata.id);
+    extras.isString(testValue.payload.user_metadata.name);
+
+    extras.isBoolean(testValue.payload.mute);
+
+    extras.isString(testValue.payload.voice_metadata.FreeSWITCH_IPv4);
+    extras.isString(testValue.payload.voice_metadata.Conference_Name);
+    extras.isString(testValue.payload.voice_metadata.Conference_Unique_ID);
+    extras.isString(testValue.payload.voice_metadata.conference_member_id);
+
+    console.log("wednesday");
+
+    test.done();
+}
+
+function sampleVoiceUserMutedEvent() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.userId="user1";
+    params.userName="Guga";
+
+    params.mute=true;
+
+    params.freeSWITCH_IPv4 = "192.168.0.166"; //// had to change - to _
+    params.conference_Name = "72382"; //// had to change - to _
+    params.conference_Unique_ID = "480d3f7c-224f-11e0-ae04-fbe97e271da0"; //// had to change - to _
+    params.conference_member_id = "1";
+
+    return params;
+}
+
+exports.testVoiceUserMutedEvent = function (test) {
+
+    var event_type = library.VOICE_USER_MUTED_EVENT;
+    var params = sampleVoiceUserMutedEvent();
+
+    var testingJson;
+    library.voiceUserMutedEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.user_metadata.id);
+    extras.isString(testValue.payload.user_metadata.name);
+
+    extras.isBoolean(testValue.payload.mute);
+
+    extras.isString(testValue.payload.voice_metadata.FreeSWITCH_IPv4);
+    extras.isString(testValue.payload.voice_metadata.Conference_Name);
+    extras.isString(testValue.payload.voice_metadata.Conference_Unique_ID);
+    extras.isString(testValue.payload.voice_metadata.conference_member_id);
+
+    test.done();
+}
+
+function sampleUserMutedEvent() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.userId="user1";
+    params.userName="Guga";
+
+    params.mute=true;
+
+    return params;
+}
+
+exports.testUserMutedEvent = function (test) {
+
+    var event_type = library.USER_MUTED_EVENT;
+    var params = sampleUserMutedEvent();
+
+    var testingJson;
+    library.userMutedEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.user.id);
+    extras.isString(testValue.payload.user.name);
+
+    extras.isBoolean(testValue.payload.mute);
+
+    test.done();
+}
+
+
+
+
+
+//new
+function sampleUserPublishStreamRequest() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.userId="user1";
+    params.userName="Guga";
+
+    params.channelsReply="apps_channel";
+    params.correlationId="abc";
+
+    params.mediaType="video";
+    params.metadataFoo="bar";
+
+    return params;
+}
+
+exports.testUserPublishStreamRequest = function (test) {
+
+    var event_type = library.USER_PUBLISH_STREAM_REQUEST;
+    var params = sampleUserPublishStreamRequest();
+
+    var testingJson;
+    library.userPublishStreamRequestToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.user.id);
+    extras.isString(testValue.payload.user.name);
+
+    extras.isString(testValue.header.reply.to);
+    extras.isString(testValue.header.reply.correlation_id);
+
+    extras.isString(testValue.payload.media.media_type);//TODO make it one of video/ / ..
+    extras.isString(testValue.payload.media.metadata.foo);
 
     test.done();
 }

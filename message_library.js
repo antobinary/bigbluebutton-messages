@@ -89,29 +89,6 @@ module.exports.PRESENTER_ASSIGNED_EVENT = PRESENTER_ASSIGNED_EVENT;
 module.exports.MUTE_USER_REQUEST = MUTE_USER_REQUEST;
 module.exports.MUTE_USER_REQUEST_EVENT = MUTE_USER_REQUEST_EVENT;
 
-module.exports.MUTE_VOICE_USER_REQUEST = MUTE_VOICE_USER_REQUEST;
-module.exports.VOICE_USER_MUTED_EVENT = VOICE_USER_MUTED_EVENT;
-module.exports.USER_MUTED_EVENT = USER_MUTED_EVENT;
-module.exports.USER_PUBLISH_STREAM_REQUEST = USER_PUBLISH_STREAM_REQUEST;
-module.exports.PUBLISH_STREAM_REQUEST = PUBLISH_STREAM_REQUEST;
-module.exports.PUBLISH_STREAM_RESPONSE = PUBLISH_STREAM_RESPONSE;
-module.exports.USER_PUBLISH_STREAM_RESPONSE = USER_PUBLISH_STREAM_RESPONSE;
-module.exports.PUBLISHED_STREAM_EVENT = PUBLISHED_STREAM_EVENT;
-module.exports.USER_PUBLISHED_STREAM_EVENT = USER_PUBLISHED_STREAM_EVENT;
-module.exports.UNPUBLISHED_STREAM_EVENT = UNPUBLISHED_STREAM_EVENT;
-module.exports.USER_UNPUBLISHED_STREAM_EVENT = USER_UNPUBLISHED_STREAM_EVENT;
-module.exports.PUBLIC_CHAT_MESSAGE_EVENT = PUBLIC_CHAT_MESSAGE_EVENT;
-module.exports.BROADCAST_PUBLIC_CHAT_MESSAGE_EVENT = BROADCAST_PUBLIC_CHAT_MESSAGE_EVENT;
-module.exports.PRIVATE_CHAT_MESSAGE_EVENT = PRIVATE_CHAT_MESSAGE_EVENT;
-module.exports.BROADCAST_PRIVATE_CHAT_MESSAGE_EVENT = BROADCAST_PRIVATE_CHAT_MESSAGE_EVENT;
-module.exports.BROADCAST_WHITEBOARD_DRAW_EVENT = BROADCAST_WHITEBOARD_DRAW_EVENT;
-module.exports.BROADCAST_WHITEBOARD_UPDATE_EVENT = BROADCAST_WHITEBOARD_UPDATE_EVENT;
-module.exports.WHITEBOARD_CURSOR_EVENT = WHITEBOARD_CURSOR_EVENT;
-module.exports.BROADCAST_WHITEBOARD_CURSOR_EVENT = BROADCAST_WHITEBOARD_CURSOR_EVENT;
-module.exports.SHARE_PRESENTATION_EVENT = SHARE_PRESENTATION_EVENT;
-module.exports.BROADCAST_SHARE_PRESENTATION_EVENT = BROADCAST_SHARE_PRESENTATION_EVENT;
-module.exports.RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT;
-module.exports.BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT;
 
 
 //list of events to be selected from
@@ -1593,6 +1570,323 @@ module.exports.muteUserRequestEventToJson = function (params, onSuccess, onFailu
 }
 
 
+module.exports.MUTE_VOICE_USER_REQUEST = MUTE_VOICE_USER_REQUEST;
+module.exports.VOICE_USER_MUTED_EVENT = VOICE_USER_MUTED_EVENT;
+module.exports.USER_MUTED_EVENT = USER_MUTED_EVENT;
+module.exports.USER_PUBLISH_STREAM_REQUEST = USER_PUBLISH_STREAM_REQUEST;
+
+module.exports.PUBLISH_STREAM_REQUEST = PUBLISH_STREAM_REQUEST;
+module.exports.PUBLISH_STREAM_RESPONSE = PUBLISH_STREAM_RESPONSE;
+module.exports.USER_PUBLISH_STREAM_RESPONSE = USER_PUBLISH_STREAM_RESPONSE;
+module.exports.PUBLISHED_STREAM_EVENT = PUBLISHED_STREAM_EVENT;
+module.exports.USER_PUBLISHED_STREAM_EVENT = USER_PUBLISHED_STREAM_EVENT;
+module.exports.UNPUBLISHED_STREAM_EVENT = UNPUBLISHED_STREAM_EVENT;
+module.exports.USER_UNPUBLISHED_STREAM_EVENT = USER_UNPUBLISHED_STREAM_EVENT;
+module.exports.PUBLIC_CHAT_MESSAGE_EVENT = PUBLIC_CHAT_MESSAGE_EVENT;
+module.exports.BROADCAST_PUBLIC_CHAT_MESSAGE_EVENT = BROADCAST_PUBLIC_CHAT_MESSAGE_EVENT;
+module.exports.PRIVATE_CHAT_MESSAGE_EVENT = PRIVATE_CHAT_MESSAGE_EVENT;
+module.exports.BROADCAST_PRIVATE_CHAT_MESSAGE_EVENT = BROADCAST_PRIVATE_CHAT_MESSAGE_EVENT;
+module.exports.BROADCAST_WHITEBOARD_DRAW_EVENT = BROADCAST_WHITEBOARD_DRAW_EVENT;
+module.exports.BROADCAST_WHITEBOARD_UPDATE_EVENT = BROADCAST_WHITEBOARD_UPDATE_EVENT;
+module.exports.WHITEBOARD_CURSOR_EVENT = WHITEBOARD_CURSOR_EVENT;
+module.exports.BROADCAST_WHITEBOARD_CURSOR_EVENT = BROADCAST_WHITEBOARD_CURSOR_EVENT;
+module.exports.SHARE_PRESENTATION_EVENT = SHARE_PRESENTATION_EVENT;
+module.exports.BROADCAST_SHARE_PRESENTATION_EVENT = BROADCAST_SHARE_PRESENTATION_EVENT;
+module.exports.RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT;
+module.exports.BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT;
+
+
+module.exports.muteVoiceUserRequestToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "userId", "userName",
+        "mute", "freeSWITCH_IPv4", "conference_Name", "conference_Unique_ID", "conference_member_id"
+    ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = MUTE_VOICE_USER_REQUEST;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.user_metadata = {}; 
+        payload.user_metadata.id = params.userId;
+        payload.user_metadata.name =params.userName;
+      
+        payload.mute = params.mute;
+
+        payload.voice_metadata = {};
+        payload.voice_metadata.FreeSWITCH_IPv4 = params.freeSWITCH_IPv4;
+        payload.voice_metadata.Conference_Name = params.conference_Name;
+        payload.voice_metadata.Conference_Unique_ID = params.conference_Unique_ID;
+        payload.voice_metadata.conference_member_id = params.conference_member_id;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+module.exports.voiceUserMutedEventToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "userId", "userName",
+        "mute", "freeSWITCH_IPv4", "conference_Name", "conference_Unique_ID", "conference_member_id"
+    ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = VOICE_USER_MUTED_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.user_metadata = {}; 
+        payload.user_metadata.id = params.userId;
+        payload.user_metadata.name =params.userName;
+      
+        payload.mute = params.mute;
+
+        payload.voice_metadata = {};
+        payload.voice_metadata.FreeSWITCH_IPv4 = params.freeSWITCH_IPv4;
+        payload.voice_metadata.Conference_Name = params.conference_Name;
+        payload.voice_metadata.Conference_Unique_ID = params.conference_Unique_ID;
+        payload.voice_metadata.conference_member_id = params.conference_member_id;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+module.exports.userMutedEventToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "userId", "userName", "mute"];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = USER_MUTED_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.user = {}; 
+        payload.user.id = params.userId;
+        payload.user.name =params.userName;
+      
+        payload.mute = params.mute;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+module.exports.userPublishStreamRequestToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "userId", "userName", "mediaType", "metadataFoo"
+        ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.reply = {};
+        header.reply.to = params.channelsReply;
+        header.reply.correlation_id = params.correlationId;
+
+        header.name = USER_PUBLISH_STREAM_REQUEST;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.media = {};
+        payload.media.media_type = "video";
+        payload.media.metadata = {};
+        payload.media.metadata.foo = "bar";
+
+        payload.user = {}; 
+        payload.user.id = params.userId;
+        payload.user.name =params.userName;
+      
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+
+
+
+
+
+module.exports.userPublishStreamRequestToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "userId", "userName", "mediaType", "metadataFoo"
+        ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.reply = {};
+        header.reply.to = params.channelsReply;
+        header.reply.correlation_id = params.correlationId;
+
+        header.name = USER_PUBLISH_STREAM_REQUEST;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.media = {};
+        payload.media.media_type = "video";
+        payload.media.metadata = {};
+        payload.media.metadata.foo = "bar";
+
+        payload.user = {}; 
+        payload.user.id = params.userId;
+        payload.user.name =params.userName;
+      
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1612,146 +1906,6 @@ module.exports.muteUserRequestEventToJson = function (params, onSuccess, onFailu
 module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sessionID) {
     switch (event_type) {
     
-    case "mute_voice_user_request":
-        var event_name = "mute_voice_user_request";
-        var source_of_event = "web-api";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.mute = true; //TODO when is it mute and when muteD??!??!?!?!?
-
-        payload.user_metadata = {};
-        payload.user_metadata.id = "user1";
-        payload.user_metadata.name = "Guga";
-
-        payload.voice_metadata = {};
-        payload.voice_metadata.FreeSWITCH_IPv4 = "192.168.0.166"; //// had to change - to _
-        payload.voice_metadata.Conference_Name = "72382"; //// had to change - to _
-        payload.voice_metadata.Conference_Unique_ID = "480d3f7c-224f-11e0-ae04-fbe97e271da0"; //// had to change - to _
-        payload.voice_metadata.conference_member_id = "1";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "voice_user_muted_event":
-        var event_name = "voice_user_muted_event";
-        var source_of_event = "fs-esl";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.muted = true;
-
-        payload.user_metadata = {};
-        payload.user_metadata.id = "user1";
-        payload.user_metadata.name = "Guga";
-
-        payload.voice_metadata = {};
-        payload.voice_metadata.FreeSWITCH_IPv4 = "192.168.0.166"; //// had to change - to _
-        payload.voice_metadata.Conference_Name = "72382"; //// had to change - to _
-        payload.voice_metadata.Conference_Unique_ID = "480d3f7c-224f-11e0-ae04-fbe97e271da0"; //// had to change - to _
-        payload.voice_metadata.conference_member_id = "1";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-
-    case "user_muted_event":
-        var event_name = "user_muted_event";
-        var source_of_event = "fs-esl";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.muted = true;
-
-        payload.user = {};
-        payload.user.id = "user1";
-        payload.user.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "user_publish_stream_request":
-        var event_name = "user_publish_stream_request";
-        var source_of_event = "fs-esl";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.reply = {};
-        header.reply.to = "apps_channel";
-        header.reply.correlation_id = "abc";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.media = {};
-        payload.media.media_type = "video";
-        payload.media.metadata = {};
-        payload.media.metadata.foo = "bar";
-
-        payload.user = {};
-        payload.user.id = "user1";
-        payload.user.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
     case "publish_stream_request":
         var event_name = "publish_stream_request";
         var source_of_event = "fs-esl";
