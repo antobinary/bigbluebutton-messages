@@ -2527,13 +2527,6 @@ exports.testUnpublishedStreamEvent = function (test) {
     test.done();
 }
 
-
-
-
-
-
-
-
 function sampleUserUnpublishedStreamEvent() {
     var params = {};
 
@@ -2546,7 +2539,7 @@ function sampleUserUnpublishedStreamEvent() {
     params.userId="user1";
     params.userName="Guga";
 
-    params.channelsReply="apps_channel";
+    params.channelsReply="apps_channel"; //TODO -do i need this?
 
     params.mediaType="video";
     params.metadataFoo="bar";
@@ -2597,6 +2590,362 @@ exports.testUserUnpublishedStreamEvent = function (test) {
     test.done();
 }
 
+function samplePublicChatMessageEvent() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.messageCorrelationId = "user1-msg1";
+    params.messageTimestamp = "2013-12-23T08:50Z";//TODO
+    params.messageFromId="user1";
+    params.messageFromName= "Richard";
+    params.messageText="Hello world!";
+    params.messageLang="en_US";
+    params.messageColor=16711680;
+    params.messageSize=14;
+    params.messageFontType="Arial";
+
+    return params;
+}
+
+exports.testPublicChatMessageEvent = function (test) {
+
+    var event_type = library.PUBLIC_CHAT_MESSAGE_EVENT;
+    var params = samplePublicChatMessageEvent();
+
+    var testingJson;
+    library.publicChatMessageEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);    
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.chat_message.correlation_id);
+    extras.isString(testValue.payload.chat_message.timestamp );
+    extras.isString(testValue.payload.chat_message.from.id );
+    extras.isString(testValue.payload.chat_message.from.name );
+    extras.isString(testValue.payload.chat_message.message.text );
+    extras.isString(testValue.payload.chat_message.message.lang ); //TODO from list of lang options
+    extras.isNumber(testValue.payload.chat_message.font.color );
+    extras.isNumber(testValue.payload.chat_message.font.size );
+    extras.isString(testValue.payload.chat_message.font.font_type );
+
+    test.done();
+}
+
+function sampleBroadcastPublicChatMessageEvent() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.messageCorrelationId = "user1-msg1";
+    params.messageUserTimestamp = "2013-12-23T08:50Z";//TODO
+    params.messageFromId="user1";
+    params.messageFromName= "Richard";
+    params.messageText="Hello world!";
+    params.messageLang="en_US";
+    params.messageColor=16711680;
+    params.messageSize=14;
+    params.messageFontType="Arial";
+
+    params.messageId = "msg1234"
+    params.messageServerTimestamp="2013-12-23T08:50Z";//TODO
+
+    params.translations = [];
+
+    var a = {};
+    a.lang = "es_LA";
+    a.text = "Hola Mundo!";
+    
+    params.translations[0] = a;
+
+
+    return params;
+}
+
+exports.testBroadcastPublicChatMessageEvent = function (test) {
+
+    var event_type = library.BROADCAST_PUBLIC_CHAT_MESSAGE_EVENT;
+    var params = sampleBroadcastPublicChatMessageEvent();
+
+    var testingJson;
+    library.broadcastPublicChatMessageEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);    
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.chat_message.correlation_id);
+    extras.isString(testValue.payload.chat_message.id );
+    extras.isString(testValue.payload.chat_message.server_timestamp);
+    extras.isString(testValue.payload.chat_message.user_timestamp);
+    extras.isString(testValue.payload.chat_message.from.id );
+    extras.isString(testValue.payload.chat_message.from.name );
+    extras.isString(testValue.payload.chat_message.message.text );
+    extras.isString(testValue.payload.chat_message.message.lang ); //TODO from list of lang options
+    extras.isNumber(testValue.payload.chat_message.font.color );
+    extras.isNumber(testValue.payload.chat_message.font.size );
+    extras.isString(testValue.payload.chat_message.font.font_type );
+
+
+    //Translations testing
+    var isArray = testValue.payload.chat_message.translations.constructor.toString().indexOf("Array");
+
+    test.notEqual(-1, isArray, "\"translations\" does not look like an array");
+
+    if (isArray) {
+        var translations = testValue.payload.chat_message.translations;
+        for (index in translations) {
+            var aTranslation = translations[index];
+
+            extras.isNotUndefined(aTranslation.lang);
+            extras.isNotNull(aTranslation.lang);
+            test.notEqual("", aTranslation.lang);
+            extras.isString(aTranslation.lang);//TODO is one of the lang options
+
+            extras.isNotUndefined(aTranslation.text);
+            extras.isNotNull(aTranslation.text);
+            test.notEqual("", aTranslation.text);
+            extras.isString(aTranslation.text);
+        }
+    }
+
+    test.done();
+}
+
+function samplePrivateChatMessageEvent() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.messageCorrelationId = "user1-msg1";
+    params.messageTimestamp = "2013-12-23T08:50Z";//TODO
+    params.messageFromId="user1";
+    params.messageFromName= "Richard";
+    params.messageToId="user2";
+    params.messageToName= "Guga";
+    params.messageText="Hello world!";
+    params.messageLang="en_US";
+    params.messageColor=16711680;
+    params.messageSize=14;
+    params.messageFontType="Arial";
+
+    return params;
+}
+
+exports.testPrivateChatMessageEvent = function (test) {
+
+    var event_type = library.PRIVATE_CHAT_MESSAGE_EVENT;
+    var params = samplePrivateChatMessageEvent();
+
+    var testingJson;
+    library.privateChatMessageEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);    
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.chat_message.correlation_id);
+    extras.isString(testValue.payload.chat_message.timestamp );
+    extras.isString(testValue.payload.chat_message.from.id );
+    extras.isString(testValue.payload.chat_message.from.name );
+    extras.isString(testValue.payload.chat_message.to.id );
+    extras.isString(testValue.payload.chat_message.to.name );
+    extras.isString(testValue.payload.chat_message.message.text );
+    extras.isString(testValue.payload.chat_message.message.lang ); //TODO from list of lang options
+    extras.isNumber(testValue.payload.chat_message.font.color );
+    extras.isNumber(testValue.payload.chat_message.font.size );
+    extras.isString(testValue.payload.chat_message.font.font_type );
+
+    test.done();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+function sampleBroadcastPrivateChatMessageEvent() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.messageCorrelationId = "user1-msg1";
+    params.messageUserTimestamp = "2013-12-23T08:50Z";//TODO
+    params.messageFromId="user1";
+    params.messageFromName= "Richard";
+    params.messageText="Hello world!";
+    params.messageLang="en_US";
+    params.messageColor=16711680;
+    params.messageSize=14;
+    params.messageFontType="Arial";
+
+    params.messageId = "msg1234"
+    params.messageServerTimestamp="2013-12-23T08:50Z";//TODO
+
+    params.translations = [];
+
+    var a = {};
+    a.lang = "es_LA";
+    a.text = "Hola Mundo!";
+    
+    params.translations[0] = a;
+
+
+    return params;
+}
+
+exports.testBroadcastPrivateChatMessageEvent = function (test) {
+
+    var event_type = library.BROADCAST_PRIVATE_CHAT_MESSAGE_EVENT;
+    var params = sampleBroadcastPrivateChatMessageEvent();
+
+    var testingJson;
+    library.broadcastPrivateChatMessageEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);    
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.chat_message.correlation_id);
+    extras.isString(testValue.payload.chat_message.id );
+    extras.isString(testValue.payload.chat_message.server_timestamp);
+    extras.isString(testValue.payload.chat_message.user_timestamp);
+    extras.isString(testValue.payload.chat_message.from.id );
+    extras.isString(testValue.payload.chat_message.from.name );
+    extras.isString(testValue.payload.chat_message.message.text );
+    extras.isString(testValue.payload.chat_message.message.lang ); //TODO from list of lang options
+    extras.isNumber(testValue.payload.chat_message.font.color );
+    extras.isNumber(testValue.payload.chat_message.font.size );
+    extras.isString(testValue.payload.chat_message.font.font_type );
+
+
+    //Translations testing
+    var isArray = testValue.payload.chat_message.translations.constructor.toString().indexOf("Array");
+
+    test.notEqual(-1, isArray, "\"translations\" does not look like an array");
+
+    if (isArray) {
+        var translations = testValue.payload.chat_message.translations;
+        for (index in translations) {
+            var aTranslation = translations[index];
+
+            extras.isNotUndefined(aTranslation.lang);
+            extras.isNotNull(aTranslation.lang);
+            test.notEqual("", aTranslation.lang);
+            extras.isString(aTranslation.lang);//TODO is one of the lang options
+
+            extras.isNotUndefined(aTranslation.text);
+            extras.isNotNull(aTranslation.text);
+            test.notEqual("", aTranslation.text);
+            extras.isString(aTranslation.text);
+        }
+    }
+
+    test.done();
+}
 
 
 

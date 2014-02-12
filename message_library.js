@@ -17,7 +17,7 @@ SETUP tests that must fail!! tests where all params are empty or something and
 each of the tests must be failing by default. If they are not failing then
 something is going wrong
 
-
+--function that takes any json event and discovers what type of event it is
 
 
 */
@@ -156,7 +156,7 @@ module.exports.getEvents = {
 };
 
 function paramExist(param) {
-  if (typeof param === "undefined" || param === null || param === "") {
+  if (typeof param === "undefined" || param === null || param === "") {//TODO check for empty array
     return false;
   }   
   return true;
@@ -1586,7 +1586,6 @@ module.exports.VOICE_USER_MUTED_EVENT = VOICE_USER_MUTED_EVENT;
 module.exports.USER_MUTED_EVENT = USER_MUTED_EVENT;
 module.exports.USER_PUBLISH_STREAM_REQUEST = USER_PUBLISH_STREAM_REQUEST;
 module.exports.PUBLISH_STREAM_REQUEST = PUBLISH_STREAM_REQUEST;
-
 module.exports.PUBLISH_STREAM_RESPONSE = PUBLISH_STREAM_RESPONSE;
 module.exports.USER_PUBLISH_STREAM_RESPONSE = USER_PUBLISH_STREAM_RESPONSE;
 module.exports.PUBLISHED_STREAM_EVENT = PUBLISHED_STREAM_EVENT;
@@ -2051,12 +2050,6 @@ module.exports.unpublishedStreamEventToJson = function (params, onSuccess, onFai
     }
 }
 
-
-
-
-
-
-
 module.exports.userUnpublishedStreamEventToJson = function (params, onSuccess, onFailure) {
 
     // TODO: Check for required params
@@ -2113,6 +2106,206 @@ module.exports.userUnpublishedStreamEventToJson = function (params, onSuccess, o
     }
 }
 
+module.exports.publicChatMessageEventToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "messageCorrelationId", "messageTimestamp",
+        "messageFromId", "messageFromName", "messageText", "messageLang",
+        "messageColor", "messageSize", "messageFontType"
+        ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+        return;
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = PUBLIC_CHAT_MESSAGE_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {}; //TODO was not present in scala
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.chat_message = {};
+        payload.chat_message.correlation_id =params.messageCorrelationId;
+        payload.chat_message.timestamp = params.messageTimestamp;
+        payload.chat_message.from = {};
+        payload.chat_message.from.id = params.messageFromId;
+        payload.chat_message.from.name = params.messageFromName;
+
+        payload.chat_message.message = {};
+        payload.chat_message.message.text = params.messageText;
+        payload.chat_message.message.lang = params.messageLang;
+
+        payload.chat_message.font = {};
+        payload.chat_message.font.color = params.messageColor;
+        payload.chat_message.font.size = params.messageSize;
+        payload.chat_message.font.font_type = params.messageFontType;
+      
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+module.exports.broadcastPublicChatMessageEventToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "messageCorrelationId",
+        "messageFromId", "messageFromName", "messageText", "messageLang",
+        "messageColor", "messageSize", "messageFontType",
+        "messageId", "messageUserTimestamp", "messageServerTimestamp",
+        "translations"
+        ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+        return;
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = BROADCAST_PUBLIC_CHAT_MESSAGE_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {}; //TODO was not present in scala
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.chat_message = {};
+        payload.chat_message.id = params.messageId;
+        payload.chat_message.server_timestamp = params.messageServerTimestamp;
+        payload.chat_message.correlation_id =params.messageCorrelationId;
+        payload.chat_message.user_timestamp = params.messageUserTimestamp;
+        payload.chat_message.from = {};
+        payload.chat_message.from.id = params.messageFromId;
+        payload.chat_message.from.name = params.messageFromName;
+
+        payload.chat_message.message = {};
+        payload.chat_message.message.text = params.messageText;
+        payload.chat_message.message.lang = params.messageLang;
+
+        payload.chat_message.font = {};
+        payload.chat_message.font.color = params.messageColor;
+        payload.chat_message.font.size = params.messageSize;
+        payload.chat_message.font.font_type = params.messageFontType;
+
+        payload.chat_message.translations = params.translations;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+module.exports.privateChatMessageEventToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "messageCorrelationId", "messageTimestamp",
+        "messageFromId", "messageFromName", "messageText", "messageLang",
+        "messageColor", "messageSize", "messageFontType",
+        "messageToId", "messageToName"
+        ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+        return;
+
+    } else {
+        
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = PRIVATE_CHAT_MESSAGE_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {}; //TODO was not present in scala
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.chat_message = {};
+        payload.chat_message.correlation_id =params.messageCorrelationId;
+        payload.chat_message.timestamp = params.messageTimestamp;
+        payload.chat_message.from = {};
+        payload.chat_message.from.id = params.messageFromId;
+        payload.chat_message.from.name = params.messageFromName;
+
+        payload.chat_message.to = {};
+        payload.chat_message.to.id = params.messageToId;
+        payload.chat_message.to.name = params.messageToName;
+
+        payload.chat_message.message = {};
+        payload.chat_message.message.text = params.messageText;
+        payload.chat_message.message.lang = params.messageLang;
+
+        payload.chat_message.font = {};
+        payload.chat_message.font.color = params.messageColor;
+        payload.chat_message.font.size = params.messageSize;
+        payload.chat_message.font.font_type = params.messageFontType;
+      
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
 
 
 
@@ -2124,12 +2317,76 @@ module.exports.userUnpublishedStreamEventToJson = function (params, onSuccess, o
 
 
 
+module.exports.broadcastPrivateChatMessageEventToJson = function (params, onSuccess, onFailure) {
 
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "messageCorrelationId",
+        "messageFromId", "messageFromName", "messageText", "messageLang",
+        "messageColor", "messageSize", "messageFontType",
+        "messageId", "messageUserTimestamp", "messageServerTimestamp",
+        "translations"
+        ];
 
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
 
+    if (errors.length > 0) {
+        onFailure(errors);
+        return;
 
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
 
+        header.name = BROADCAST_PRIVATE_CHAT_MESSAGE_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
 
+        payload = {};
+        payload.meeting = {}; //TODO was not present in scala
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.chat_message = {};
+        payload.chat_message.id = params.messageId;
+        payload.chat_message.server_timestamp = params.messageServerTimestamp;
+        payload.chat_message.correlation_id =params.messageCorrelationId;
+        payload.chat_message.user_timestamp = params.messageUserTimestamp;
+        payload.chat_message.from = {};
+        payload.chat_message.from.id = params.messageFromId;
+        payload.chat_message.from.name = params.messageFromName;
+
+        //TODO shouldn't there be "to" section?!
+
+        payload.chat_message.message = {};
+        payload.chat_message.message.text = params.messageText;
+        payload.chat_message.message.lang = params.messageLang;
+
+        payload.chat_message.font = {};
+        payload.chat_message.font.color = params.messageColor;
+        payload.chat_message.font.size = params.messageSize;
+        payload.chat_message.font.font_type = params.messageFontType;
+
+        payload.chat_message.translations = params.translations;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
 
 
 
@@ -2141,193 +2398,6 @@ module.exports.userUnpublishedStreamEventToJson = function (params, onSuccess, o
 module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sessionID) {
     switch (event_type) {
     
-    case "public_chat_message_event":
-        var event_name = "public_chat_message_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {}; //TODO shouldn't there be a meeting=session section here?!?!?!
-
-        //payload.meeting = {};
-        //payload.meeting.name = meetingName;
-        //payload.meeting.id = meetingID;
-        //payload.session = sessionID;
-
-
-        payload.chat_message = {};
-        payload.chat_message.correlation_id = "user1-msg1";
-        payload.chat_message.timestamp = "2013-12-23T08:50Z";
-        payload.chat_message.from = {};
-        payload.chat_message.from.id = "user1";
-        payload.chat_message.from.name = "Richard";
-
-        payload.chat_message.message = {};
-        payload.chat_message.message.text = "Hello world!";
-        payload.chat_message.message.lang = "en_US";
-
-        payload.chat_message.font = {};
-        payload.chat_message.font.color = 16711680;
-        payload.chat_message.font.size = 14;
-        payload.chat_message.font.font_type = "Arial";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "broadcast_public_chat_message_event":
-        var event_name = "broadcast_public_chat_message_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {}; //TODO shouldn't there be a meeting=session section here?!?!?!
-
-        //payload.meeting = {};
-        //payload.meeting.name = meetingName;
-        //payload.meeting.id = meetingID;
-        //payload.session = sessionID;
-
-        payload.chat_message = {};
-        payload.chat_message.id = "msg1234";
-        payload.chat_message.server_timestamp = "2013-12-23T08:50Z";
-        payload.chat_message.correlation_id = "user1-msg1";
-        payload.chat_message.user_timestamp = "2013-12-23T08:50Z";
-        payload.chat_message.from = {};
-        payload.chat_message.from.id = "user1";
-        payload.chat_message.from.name = "Richard";
-
-        payload.chat_message.message = {};
-        payload.chat_message.message.text = "Hello world!";
-        payload.chat_message.message.lang = "en_US";
-
-        payload.chat_message.font = {};
-        payload.chat_message.font.color = 16711680;
-        payload.chat_message.font.size = 14;
-        payload.chat_message.font.font_type = "Arial";
-
-        payload.chat_message.translations = [];
-
-        var a = {};
-        a.lang = "es_LA";
-        a.text = "Hola Mundo!";
-        payload.chat_message.translations[0] = a;
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "private_chat_message_event":
-        var event_name = "private_chat_message_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {}; //TODO shouldn't there be a meeting=session section here?!?!?!
-
-        //payload.meeting = {};
-        //payload.meeting.name = meetingName;
-        //payload.meeting.id = meetingID;
-        //payload.session = sessionID;
-
-        payload.chat_message = {};
-        payload.chat_message.correlation_id = "user1-msg1";
-        payload.chat_message.timestamp = "2013-12-23T08:50Z";
-        payload.chat_message.from = {};
-        payload.chat_message.from.id = "user1";
-        payload.chat_message.from.name = "Richard";
-
-        payload.chat_message.to = {};
-        payload.chat_message.to.id = "user2";
-        payload.chat_message.to.name = "Guga";
-
-        payload.chat_message.message = {};
-        payload.chat_message.message.text = "Hello world!";
-        payload.chat_message.message.lang = "en_US";
-
-        payload.chat_message.font = {};
-        payload.chat_message.font.color = 16711680;
-        payload.chat_message.font.size = 14;
-        payload.chat_message.font.font_type = "Arial";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "broadcast_private_chat_message_event":
-        var event_name = "broadcast_private_chat_message_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {}; //TODO shouldn't there be a meeting=session section here?!?!?!
-
-        //payload.meeting = {};
-        //payload.meeting.name = meetingName;
-        //payload.meeting.id = meetingID;
-        //payload.session = sessionID;
-
-        payload.chat_message = {};
-        payload.chat_message.id = "msg1234";
-        payload.chat_message.server_timestamp = "2013-12-23T08:50Z";
-        payload.chat_message.correlation_id = "user1-msg1";
-        payload.chat_message.user_timestamp = "2013-12-23T08:50Z";
-        payload.chat_message.from = {};
-        payload.chat_message.from.id = "user1";
-        payload.chat_message.from.name = "Richard";
-
-        payload.chat_message.message = {};
-        payload.chat_message.message.text = "Hello world!";
-        payload.chat_message.message.lang = "en_US";
-
-        payload.chat_message.font = {};
-        payload.chat_message.font.color = 16711680;
-        payload.chat_message.font.size = 14;
-        payload.chat_message.font.font_type = "Arial";
-
-        payload.chat_message.translations = [];
-
-        var a = {};
-        a.lang = "es_LA";
-        a.text = "Hola Mundo!";
-        payload.chat_message.translations[0] = a;
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
     case "broadcast_whiteboard_draw_event":
 
         var event_name = "broadcast_whiteboard_draw_event";
