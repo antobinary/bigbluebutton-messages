@@ -8,6 +8,17 @@
 
 --improve naming convention
 
+--walk through the code and make sure that there are no 
+variables reused between functions 
+(e.x. correlationId from f1 in f2 (not redefined in f2))
+OR maybe the issue is that I just have not updated the list of requiredParams
+and they do not get checked
+SETUP tests that must fail!! tests where all params are empty or something and
+each of the tests must be failing by default. If they are not failing then
+something is going wrong
+
+
+
 
 */
 
@@ -1574,13 +1585,14 @@ module.exports.MUTE_VOICE_USER_REQUEST = MUTE_VOICE_USER_REQUEST;
 module.exports.VOICE_USER_MUTED_EVENT = VOICE_USER_MUTED_EVENT;
 module.exports.USER_MUTED_EVENT = USER_MUTED_EVENT;
 module.exports.USER_PUBLISH_STREAM_REQUEST = USER_PUBLISH_STREAM_REQUEST;
-
 module.exports.PUBLISH_STREAM_REQUEST = PUBLISH_STREAM_REQUEST;
+
 module.exports.PUBLISH_STREAM_RESPONSE = PUBLISH_STREAM_RESPONSE;
 module.exports.USER_PUBLISH_STREAM_RESPONSE = USER_PUBLISH_STREAM_RESPONSE;
 module.exports.PUBLISHED_STREAM_EVENT = PUBLISHED_STREAM_EVENT;
 module.exports.USER_PUBLISHED_STREAM_EVENT = USER_PUBLISHED_STREAM_EVENT;
 module.exports.UNPUBLISHED_STREAM_EVENT = UNPUBLISHED_STREAM_EVENT;
+
 module.exports.USER_UNPUBLISHED_STREAM_EVENT = USER_UNPUBLISHED_STREAM_EVENT;
 module.exports.PUBLIC_CHAT_MESSAGE_EVENT = PUBLIC_CHAT_MESSAGE_EVENT;
 module.exports.BROADCAST_PUBLIC_CHAT_MESSAGE_EVENT = BROADCAST_PUBLIC_CHAT_MESSAGE_EVENT;
@@ -1765,7 +1777,8 @@ module.exports.userPublishStreamRequestToJson = function (params, onSuccess, onF
     var errors = new Array();
     var requiredParams = [
         "channelsDestination", "source", "meetingName", "meetingId",
-        "sessionId", "userId", "userName", "mediaType", "metadataFoo"
+        "sessionId", "userId", "userName", "mediaType", "metadataFoo",
+        "channelsReply", "correlationId"
         ];
 
     //TODO -try to take this for loop out of the function
@@ -1816,18 +1829,14 @@ module.exports.userPublishStreamRequestToJson = function (params, onSuccess, onF
     }
 }
 
-
-
-
-
-
-module.exports.userPublishStreamRequestToJson = function (params, onSuccess, onFailure) {
+module.exports.userPublishStreamResponseToJson = function (params, onSuccess, onFailure) {
 
     // TODO: Check for required params
     var errors = new Array();
     var requiredParams = [
         "channelsDestination", "source", "meetingName", "meetingId",
-        "sessionId", "userId", "userName", "mediaType", "metadataFoo"
+        "sessionId", "userId", "userName", "mediaType", "metadataFoo",
+        "correlationId", "uri"
         ];
 
     //TODO -try to take this for loop out of the function
@@ -1846,12 +1855,9 @@ module.exports.userPublishStreamRequestToJson = function (params, onSuccess, onF
         header = {};
         header.destination = {};
         header.destination.to = params.channelsDestination;
+        header.destination.correlation_id = params.correlationId;
 
-        header.reply = {};
-        header.reply.to = params.channelsReply;
-        header.reply.correlation_id = params.correlationId;
-
-        header.name = USER_PUBLISH_STREAM_REQUEST;
+        header.name = USER_PUBLISH_STREAM_RESPONSE;
         header.timestamp = "2013-12-23T08:50Z"; //TODO
         header.source = params.source;
 
@@ -1863,6 +1869,235 @@ module.exports.userPublishStreamRequestToJson = function (params, onSuccess, onF
 
         payload.media = {};
         payload.media.media_type = "video";
+        payload.media.uri = params.uri;
+        payload.media.metadata = {};
+        payload.media.metadata.foo = "bar";
+
+        payload.user = {}; 
+        payload.user.id = params.userId;
+        payload.user.name =params.userName;
+      
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+module.exports.publishedStreamEventToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "userId", "userName", "mediaType", "metadataFoo",
+        "uri"
+        ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = PUBLISHED_STREAM_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.media = {};
+        payload.media.media_type = "video";
+        payload.media.uri = params.uri;
+        payload.media.metadata = {};
+        payload.media.metadata.foo = "bar";
+
+        payload.user = {}; 
+        payload.user.id = params.userId;
+        payload.user.name =params.userName;
+      
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+module.exports.userPublishedStreamEventToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "userId", "userName", "mediaType", "metadataFoo",
+        "uri"
+        ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+        return;
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = USER_PUBLISHED_STREAM_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.media = {};
+        payload.media.media_type = "video";
+        payload.media.uri = params.uri;
+        payload.media.metadata = {};
+        payload.media.metadata.foo = "bar";
+
+        payload.user = {}; 
+        payload.user.id = params.userId;
+        payload.user.name =params.userName;
+      
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+module.exports.unpublishedStreamEventToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "userId", "userName", "mediaType", "metadataFoo",
+        "uri"
+        ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+        return;
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = UNPUBLISHED_STREAM_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.media = {};
+        payload.media.media_type = "video";
+        payload.media.uri = params.uri;
+        payload.media.metadata = {};
+        payload.media.metadata.foo = "bar";
+
+        payload.user = {}; 
+        payload.user.id = params.userId;
+        payload.user.name =params.userName;
+      
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));
+    }
+}
+
+
+
+
+
+
+
+module.exports.userUnpublishedStreamEventToJson = function (params, onSuccess, onFailure) {
+
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = [
+        "channelsDestination", "source", "meetingName", "meetingId",
+        "sessionId", "userId", "userName", "mediaType", "metadataFoo",
+        "uri"
+        ];
+
+    //TODO -try to take this for loop out of the function
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors);
+        return;
+
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channelsDestination;
+
+        header.name = USER_UNPUBLISHED_STREAM_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; //TODO
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {};
+        payload.meeting.name = params.meetingName;
+        payload.meeting.id = params.meetingId;
+        payload.session = params.sessionId;
+
+        payload.media = {};
+        payload.media.media_type = "video";
+        payload.media.uri = params.uri;
         payload.media.metadata = {};
         payload.media.metadata.foo = "bar";
 
@@ -1906,250 +2141,6 @@ module.exports.userPublishStreamRequestToJson = function (params, onSuccess, onF
 module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sessionID) {
     switch (event_type) {
     
-    case "publish_stream_request":
-        var event_name = "publish_stream_request";
-        var source_of_event = "fs-esl";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.reply = {};
-        header.reply.to = "apps_channel";
-        header.reply.correlation_id = "abc";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.media = {};
-        payload.media.media_type = "video";
-        payload.media.metadata = {};
-        payload.media.metadata.foo = "bar";
-
-        payload.user = {};
-        payload.user.id = "user1";
-        payload.user.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "publish_stream_response":
-        var event_name = "publish_stream_response";
-        var source_of_event = "bbb-api";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-        header.destination.correlation_id = "abc";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.media = {};
-        payload.media.media_type = "video";
-        payload.media.uri = "http://cdn.bigbluebutton.org/stream/v1234";
-        payload.media.metadata = {};
-        payload.media.metadata.foo = "bar";
-
-        payload.user = {};
-        payload.user.id = "user1";
-        payload.user.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "user_publish_stream_response":
-        var event_name = "user_publish_stream_response";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-        header.destination.correlation_id = "abc";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.media = {};
-        payload.media.media_type = "video";
-        payload.media.uri = "http://cdn.bigbluebutton.org/stream/v1234";
-        payload.media.metadata = {};
-        payload.media.metadata.foo = "bar";
-
-        payload.user = {};
-        payload.user.id = "user1";
-        payload.user.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "published_stream_event":
-        var event_name = "published_stream_event";
-        var source_of_event = "media-server";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.media = {};
-        payload.media.media_type = "video";
-        payload.media.uri = "http://cdn.bigbluebutton.org/stream/v1234";
-        payload.media.metadata = {};
-        payload.media.metadata.foo = "bar";
-
-        payload.user = {};
-        payload.user.id = "user1";
-        payload.user.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "user_published_stream_event":
-        var event_name = "user_published_stream_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.media = {};
-        payload.media.media_type = "video";
-        payload.media.uri = "http://cdn.bigbluebutton.org/stream/v1234";
-        payload.media.metadata = {};
-        payload.media.metadata.foo = "bar";
-
-        payload.user = {};
-        payload.user.id = "user1";
-        payload.user.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-
-    case "unpublished_stream_event":
-        var event_name = "unpublished_stream_event";
-        var source_of_event = "media-server";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.media = {};
-        payload.media.media_type = "video";
-        payload.media.uri = "http://cdn.bigbluebutton.org/stream/v1234";
-        payload.media.metadata = {};
-        payload.media.metadata.foo = "bar";
-
-        payload.user = {};
-        payload.user.id = "user1";
-        payload.user.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
-    case "user_unpublished_stream_event":
-        var event_name = "user_unpublished_stream_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {};
-        payload.meeting.name = meetingName;
-        payload.meeting.id = meetingID;
-        payload.session = sessionID;
-
-        payload.media = {};
-        payload.media.media_type = "video";
-        payload.media.uri = "http://cdn.bigbluebutton.org/stream/v1234";
-        payload.media.metadata = {};
-        payload.media.metadata.foo = "bar";
-
-        payload.user = {};
-        payload.user.id = "user1";
-        payload.user.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-        break;
     case "public_chat_message_event":
         var event_name = "public_chat_message_event";
         var source_of_event = "bbb-apps";

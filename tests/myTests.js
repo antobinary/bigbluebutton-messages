@@ -2137,11 +2137,6 @@ exports.testUserMutedEvent = function (test) {
     test.done();
 }
 
-
-
-
-
-//new
 function sampleUserPublishStreamRequest() {
     var params = {};
 
@@ -2206,3 +2201,404 @@ exports.testUserPublishStreamRequest = function (test) {
 
     test.done();
 }
+
+function sampleUserPublishStreamResponse() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.userId="user1";
+    params.userName="Guga";
+
+    params.channelsReply="apps_channel";
+    params.correlationId="abc";
+
+    params.mediaType="video";
+    params.metadataFoo="bar";
+    params.uri="http://cdn.bigbluebutton.org/stream/v1234";
+
+    return params;
+}
+
+exports.testUserPublishStreamResponse = function (test) {
+
+    var event_type = library.USER_PUBLISH_STREAM_RESPONSE;
+    var params = sampleUserPublishStreamResponse();
+
+    var testingJson;
+    library.userPublishStreamResponseToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);    
+    extras.isString(testValue.header.destination.correlation_id);
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.user.id);
+    extras.isString(testValue.payload.user.name);
+
+    extras.isString(testValue.payload.media.media_type);//TODO make it one of video/ / ..
+    extras.isString(testValue.payload.media.metadata.foo);
+    extras.isString(testValue.payload.media.uri);
+
+    test.done();
+}
+
+//intro to new tests for ""
+function sampleUserPublishStreamResponse__forNada() {
+    var params = {};
+
+    params.channelsDestination = "";
+    params.meetingName = "";
+    params.meetingId = "";
+    params.sessionId = "";
+    params.source = "";
+
+    params.userId="";
+    params.userName="";
+
+    params.correlationId="";
+
+    params.mediaType="";
+    params.metadataFoo="";
+    params.uri="";
+
+    return params;
+}
+//intro to new tests for ""
+exports.testUserPublishStreamResponse__forNada = function (test) {
+    var params = sampleUserPublishStreamResponse__forNada();
+
+    library.userPublishStreamResponseToJson(params,
+        function (text) {
+        },
+        function (errors) {
+            //Check if all parameters that were assigned values in sample***()
+            //have been checked for not being null/""/undefined
+            test.equals(Object.keys(params).length, errors.length);
+        });
+
+    test.done();
+}
+
+function samplePublishedStreamEvent() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.userId="user1";
+    params.userName="Guga";
+
+    params.channelsReply="apps_channel";
+
+    params.mediaType="video";
+    params.metadataFoo="bar";
+    params.uri="http://cdn.bigbluebutton.org/stream/v1234";
+
+    return params;
+}
+
+exports.testPublishedStreamEvent = function (test) {
+
+    var event_type = library.PUBLISHED_STREAM_EVENT;
+    var params = samplePublishedStreamEvent();
+
+    var testingJson;
+    library.publishedStreamEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);    
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.user.id);
+    extras.isString(testValue.payload.user.name);
+
+    extras.isString(testValue.payload.media.media_type);//TODO make it one of video/ / ..
+    extras.isString(testValue.payload.media.metadata.foo);
+    extras.isString(testValue.payload.media.uri);
+
+    test.done();
+}
+
+function samplePublishedStreamEvent__forNada() {
+    var params = {};
+
+    params.channelsDestination = "";
+    params.meetingName = "";
+    params.meetingId = "";
+    params.sessionId = "";
+    params.source = "";
+
+    params.userId="";
+    params.userName="";
+
+    params.mediaType="";
+    params.metadataFoo="";
+    params.uri="";
+
+    return params;
+}
+
+exports.testPublishedStreamEvent__forNada = function (test) {
+    var params = samplePublishedStreamEvent__forNada();
+
+    library.publishedStreamEventToJson(params,
+        function (text) {
+        },
+        function (errors) {
+            //Check if all parameters that were assigned values in sample***()
+            //have been checked for not being null/""/undefined
+            test.equals(Object.keys(params).length, errors.length);
+        });
+
+    test.done();
+}
+
+function sampleUserPublishedStreamEvent() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.userId="user1";
+    params.userName="Guga";
+
+    params.channelsReply="apps_channel";
+
+    params.mediaType="video";
+    params.metadataFoo="bar";
+    params.uri="http://cdn.bigbluebutton.org/stream/v1234";
+
+    return params;
+}
+
+exports.testUserPublishedStreamEvent = function (test) {
+
+    var event_type = library.USER_PUBLISHED_STREAM_EVENT;
+    var params = sampleUserPublishedStreamEvent();
+
+    var testingJson;
+    library.userPublishedStreamEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);    
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.user.id);
+    extras.isString(testValue.payload.user.name);
+
+    extras.isString(testValue.payload.media.media_type);//TODO make it one of video/ / ..
+    extras.isString(testValue.payload.media.metadata.foo);
+    extras.isString(testValue.payload.media.uri);
+
+    test.done();
+}
+
+function sampleUnpublishedStreamEvent() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.userId="user1";
+    params.userName="Guga";
+
+    params.channelsReply="apps_channel";
+
+    params.mediaType="video";
+    params.metadataFoo="bar";
+    params.uri="http://cdn.bigbluebutton.org/stream/v1234";
+
+    return params;
+}
+
+exports.testUnpublishedStreamEvent = function (test) {
+
+    var event_type = library.UNPUBLISHED_STREAM_EVENT;
+    var params = sampleUnpublishedStreamEvent();
+
+    var testingJson;
+    library.unpublishedStreamEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);    
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.user.id);
+    extras.isString(testValue.payload.user.name);
+
+    extras.isString(testValue.payload.media.media_type);//TODO make it one of video/ / ..
+    extras.isString(testValue.payload.media.metadata.foo);
+    extras.isString(testValue.payload.media.uri);
+
+    test.done();
+}
+
+
+
+
+
+
+
+
+function sampleUserUnpublishedStreamEvent() {
+    var params = {};
+
+    params.channelsDestination = "apps_channel";
+    params.meetingName = "someMeetingName";
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.source = "bbb-web";
+
+    params.userId="user1";
+    params.userName="Guga";
+
+    params.channelsReply="apps_channel";
+
+    params.mediaType="video";
+    params.metadataFoo="bar";
+    params.uri="http://cdn.bigbluebutton.org/stream/v1234";
+
+    return params;
+}
+
+exports.testUserUnpublishedStreamEvent = function (test) {
+
+    var event_type = library.USER_UNPUBLISHED_STREAM_EVENT;
+    var params = sampleUserUnpublishedStreamEvent();
+
+    var testingJson;
+    library.userUnpublishedStreamEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false, "ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);    
+
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO
+    extras.isString(testValue.header.source);
+
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.user.id);
+    extras.isString(testValue.payload.user.name);
+
+    extras.isString(testValue.payload.media.media_type);//TODO make it one of video/ / ..
+    extras.isString(testValue.payload.media.metadata.foo);
+    extras.isString(testValue.payload.media.uri);
+
+    test.done();
+}
+
+
+
+
+
+
