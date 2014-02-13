@@ -2268,7 +2268,7 @@ exports.testUserPublishStreamResponse = function (test) {
 }
 
 //intro to new tests for ""
-function sampleUserPublishStreamResponse__forNada() {
+/*function sampleUserPublishStreamResponse__forNada() {
     var params = {};
 
     params.channelsDestination = "";
@@ -2302,7 +2302,7 @@ exports.testUserPublishStreamResponse__forNada = function (test) {
         });
 
     test.done();
-}
+}*/
 
 function samplePublishedStreamEvent() {
     var params = {};
@@ -2367,7 +2367,7 @@ exports.testPublishedStreamEvent = function (test) {
     test.done();
 }
 
-function samplePublishedStreamEvent__forNada() {
+/*function samplePublishedStreamEvent__forNada() {
     var params = {};
 
     params.channelsDestination = "";
@@ -2399,7 +2399,7 @@ exports.testPublishedStreamEvent__forNada = function (test) {
         });
 
     test.done();
-}
+}*/
 
 function sampleUserPublishedStreamEvent() {
     var params = {};
@@ -2832,17 +2832,6 @@ exports.testPrivateChatMessageEvent = function (test) {
     test.done();
 }
 
-
-
-
-
-
-
-
-
-
-
-
 function sampleBroadcastPrivateChatMessageEvent() {
     var params = {};
 
@@ -2947,6 +2936,855 @@ exports.testBroadcastPrivateChatMessageEvent = function (test) {
     test.done();
 }
 
+
+
+function sampleBroadcastWhiteBoardDrawEvent() {
+    var params = {};
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.channels = "someChannels";
+    params.source = "someSource";
+    params.meetingName = "someMeetingName";
+    params.whiteboardId = "someWhiteBoardId";
+    params.shapeId = "someShapeId";
+    params.shapeType = "someShapeType";
+   // params.timestamp="someTimestamp";
+    params.firstX = 0.5;
+    params.firstY = 0.5;
+    params.lastX = 0.5;
+    params.lastY = 0.5;
+
+    params.byId = "someById";
+    params.byName = "someByName";
+    params.background_visible = true;
+    params.background_color = 0;
+    params.background_alpha = 1;
+
+    params.pTimestamp="someTimestamp";
+    params.zorder = 100;
+    params.text="He";
+    params.style="Arial";
+    params.color=0;
+    params.size=18;
+
+    return params;
+}
+exports.testBroadcastWhiteboardDrawEvent = function (test) {
+    var event_type = library.BROADCAST_WHITEBOARD_DRAW_EVENT;
+    var params = sampleBroadcastWhiteBoardDrawEvent();
+
+    var testingJson;
+    library.broadcastWhiteboardDrawEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.done();
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO must check if it's a real date
+    extras.isString(testValue.header.source);
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+    extras.isString(testValue.payload.whiteboard_id);
+    extras.isString(testValue.payload.shape_id);
+    extras.isString(testValue.payload.shape_type);
+    extras.isNumber(testValue.payload.data.coordinate.first_x); //TODO or isNotNaN ?!?!?!
+    extras.isNumber(testValue.payload.data.coordinate.first_y); //TODO or isNotNaN ?!?!?!
+    extras.isNumber(testValue.payload.data.coordinate.last_x); //TODO or isNotNaN ?!?!?!
+    extras.isNumber(testValue.payload.data.coordinate.last_y); //TODO or isNotNaN ?!?!?!
+
+    extras.isString(testValue.payload.by.id);
+    extras.isString(testValue.payload.by.name);
+    extras.isBoolean(testValue.payload.data.background.visible);
+    extras.isNumber(testValue.payload.data.background.color);
+    extras.isNumber(testValue.payload.data.background.alpha);
+
+    extras.isString(testValue.payload.data.font.style);
+    extras.isNumber(testValue.payload.data.font.color);
+    extras.isNumber(testValue.payload.data.font.size);
+    extras.isString(testValue.payload.data.text);
+
+    extras.isString(testValue.payload.timestamp); //TODO must check if it's a real date
+    extras.isNumber(testValue.payload.zorder);
+
+    test.done();
+}
+/*function sampleBroadcastWhiteBoardDrawEvent__Nada() {
+    var params = [];
+    params.meetingId= null;
+    params.sessionId =null;
+    params.channels =null;
+    params.source =null;
+    params.meetingName=null;
+    params.whiteboardId=null;
+    params.shapeId =null;
+    params.shapeType=null;
+    params.firstX=null;
+    params.firstY=null;
+    params.lastX =null;
+    params.lastY=null;
+
+    params.byId =null;
+    params.byName=null;
+    params.background_visible=null;
+    params.background_color=null;
+    params.background_alpha=null;
+
+    params.pTimestamp=null;
+    params.zorder=null;
+    params.text=null;
+    params.style=null;
+    params.color=null;
+    params.size=null;
+
+    return params;
+}
+exports.testBroadcastWhiteBoardDrawEvent__forNada = function (test) {
+    var params = sampleBroadcastWhiteBoardDrawEvent__Nada();
+
+    library.broadcastWhiteboardDrawEventToJson(params,
+        function (text) {
+        },
+        function (errors) {
+            //Check if all parameters that were assigned values in sample***()
+            //have been checked for not being null/""/undefined
+            console.log("comparing: " +Object.keys(params).length + " and " +  errors.length );
+            test.equals(Object.keys(params).length, errors.length);
+        });
+
+    test.done();
+}*/
+
+
+
+
+function sampleBroadcastWhiteBoardUpdateEvent() {
+    var params = {};
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.channels = "someChannels";
+    params.source = "someSource";
+    params.meetingName = "someMeetingName";
+    params.whiteboardId = "someWhiteBoardId";
+    params.shapeId = "someShapeId";
+    params.shapeType = "someShapeType";
+   // params.timestamp="someTimestamp";
+    params.firstX = 0.5;
+    params.firstY = 0.5;
+    params.lastX = 0.5;
+    params.lastY = 0.5;
+
+    params.byId = "someById";
+    params.byName = "someByName";
+    params.background_visible = true;
+    params.background_color = 0;
+    params.background_alpha = 1;
+
+    params.pTimestamp="someTimestamp";
+    params.zorder = 100;
+    params.text="He";
+    params.style="Arial";
+    params.color=0;
+    params.size=18;
+
+    return params;
+}
+exports.testBroadcastWhiteboardUpdateEvent = function (test) {
+    var event_type = library.BROADCAST_WHITEBOARD_UPDATE_EVENT;
+    var params = sampleBroadcastWhiteBoardUpdateEvent();
+
+    var testingJson;
+    library.broadcastWhiteboardUpdateEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.done();
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO must check if it's a real date
+    extras.isString(testValue.header.source);
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+    extras.isString(testValue.payload.whiteboard_id);
+    extras.isString(testValue.payload.shape_id);
+    extras.isString(testValue.payload.shape_type);
+    extras.isNumber(testValue.payload.data.coordinate.first_x); //TODO or isNotNaN ?!?!?!
+    extras.isNumber(testValue.payload.data.coordinate.first_y); //TODO or isNotNaN ?!?!?!
+    extras.isNumber(testValue.payload.data.coordinate.last_x); //TODO or isNotNaN ?!?!?!
+    extras.isNumber(testValue.payload.data.coordinate.last_y); //TODO or isNotNaN ?!?!?!
+
+    extras.isString(testValue.payload.by.id);
+    extras.isString(testValue.payload.by.name);
+    extras.isBoolean(testValue.payload.data.background.visible);
+    extras.isNumber(testValue.payload.data.background.color);
+    extras.isNumber(testValue.payload.data.background.alpha);
+
+    extras.isString(testValue.payload.data.font.style);
+    extras.isNumber(testValue.payload.data.font.color);
+    extras.isNumber(testValue.payload.data.font.size);
+    extras.isString(testValue.payload.data.text);
+
+    extras.isString(testValue.payload.timestamp); //TODO must check if it's a real date
+    extras.isNumber(testValue.payload.zorder);
+
+    test.done();
+}
+
+
+
+
+
+
+
+function sampleWhiteboardCursorEvent() {
+    var params = {};
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.channels = "someChannels";
+    params.source = "someSource";
+    params.meetingName = "someMeetingName";
+    params.whiteboardId = "someWhiteBoardId";
+
+
+
+        params.cursorX = 0.54;
+        params.cursorY = 0.98;
+
+
+    
+
+    params.byId = "someById";
+    params.byName = "someByName";
+
+    return params;
+}
+exports.testWhiteboardCursorEvent = function (test) {
+    var event_type = library.WHITEBOARD_CURSOR_EVENT;
+    var params = sampleWhiteboardCursorEvent();
+
+    var testingJson;
+    library.whiteboardCursorEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.done();
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO must check if it's a real date
+    extras.isString(testValue.header.source);
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+    extras.isString(testValue.payload.whiteboard_id);
+
+
+    extras.isString(testValue.payload.by.id);
+    extras.isString(testValue.payload.by.name);
+
+    extras.isNumber(testValue.payload.cursor.x);
+    extras.isNumber(testValue.payload.cursor.y);
+
+
+   
+    test.done();
+}
+/*function sampleWhiteboardCursorEvent__Nada() {
+    var params = [];
+    params.meetingId= null;
+    params.sessionId =null;
+    params.channels =null;
+    params.source =null;
+    params.meetingName=null;
+    params.whiteboardId=null;
+
+    params.cursorX = null;
+    params.cursorY = null;
+
+    params.byId =null;
+    params.byName=null;
+
+    return params;
+}
+exports.testWhiteboardCursorEvent__forNada = function (test) {
+    var params = sampleWhiteboardCursorEvent__Nada();
+
+    library.whiteboardCursorEventToJson(params,
+        function (text) {
+        },
+        function (errors) {
+            //Check if all parameters that were assigned values in sample***()
+            //have been checked for not being null/""/undefined
+            console.log("comparing: " +Object.keys(params).length + " and " +  errors.length );
+            test.equals(Object.keys(params).length, errors.length);
+        });
+
+    test.done();
+}*/
+
+
+function sampleBroadcastWhiteboardCursorEvent() {
+    var params = {};
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.channels = "someChannels";
+    params.source = "someSource";
+    params.meetingName = "someMeetingName";
+    params.whiteboardId = "someWhiteBoardId";
+
+
+
+        params.cursorX = 0.54;
+        params.cursorY = 0.98;
+
+
+    
+
+    params.byId = "someById";
+    params.byName = "someByName";
+
+    return params;
+}
+exports.testBroadcastWhiteboardCursorEvent = function (test) {
+    var event_type = library.BROADCAST_WHITEBOARD_CURSOR_EVENT;
+    var params = sampleBroadcastWhiteboardCursorEvent();
+
+    var testingJson;
+    library.broadcastWhiteboardCursorEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.done();
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO must check if it's a real date
+    extras.isString(testValue.header.source);
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+    extras.isString(testValue.payload.whiteboard_id);
+
+
+    extras.isString(testValue.payload.by.id);
+    extras.isString(testValue.payload.by.name);
+
+    extras.isNumber(testValue.payload.cursor.x);
+    extras.isNumber(testValue.payload.cursor.y);
+
+
+   
+    test.done();
+}
+/*function sampleBroadcastWhiteboardCursorEvent__Nada() {
+    var params = [];
+    params.meetingId= null;
+    params.sessionId =null;
+    params.channels =null;
+    params.source =null;
+    params.meetingName=null;
+    params.whiteboardId=null;
+
+    params.cursorX = null;
+    params.cursorY = null;
+
+    params.byId =null;
+    params.byName=null;
+
+    return params;
+}
+exports.testBroadcastWhiteboardCursorEvent__forNada = function (test) {
+    var params = sampleBroadcastWhiteboardCursorEvent__Nada();
+
+    library.broadcastWhiteboardCursorEventToJson(params,
+        function (text) {
+        },
+        function (errors) {
+            //Check if all parameters that were assigned values in sample***()
+            //have been checked for not being null/""/undefined
+            console.log("comparing: " +Object.keys(params).length + " and " +  errors.length );
+            test.equals(Object.keys(params).length, errors.length);
+        });
+
+    test.done();
+}*/
+
+
+
+
+
+
+
+function sampleSharePresentationEvent() {
+    var params = {};
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.channels = "someChannels";
+    params.source = "someSource";
+    params.meetingName = "someMeetingName";
+  
+    params.presentationId = "pres-123";
+    params.presentationName = "Flight School";
+        
+    
+
+    params.byId = "someById";
+    params.byName = "someByName";
+
+    return params;
+}
+exports.testSharePresentationEvent = function (test) {
+    var event_type = library.SHARE_PRESENTATION_EVENT;
+    var params = sampleSharePresentationEvent();
+
+    var testingJson;
+    library.sharePresentationEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.done();
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO must check if it's a real date
+    extras.isString(testValue.header.source);
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.by.id);
+    extras.isString(testValue.payload.by.name);
+
+    extras.isString(testValue.payload.presentation.id);
+    extras.isString(testValue.payload.presentation.name);
+
+    test.done();
+}
+function sampleSharePresentationEvent__Nada() {
+    var params = [];
+    params.meetingId= null;
+    params.sessionId =null;
+    params.channels =null;
+    params.source =null;
+    params.meetingName=null;
+
+    params.presentationId = null;
+    params.presentationName = null;
+
+    params.byId =null;
+    params.byName=null;
+
+    return params;
+}
+exports.testSharePresentationEvent__forNada = function (test) {
+    var params = sampleSharePresentationEvent__Nada();
+
+    library.sharePresentationEventToJson(params,
+        function (text) {
+        },
+        function (errors) {
+            //Check if all parameters that were assigned values in sample***()
+            //have been checked for not being null/""/undefined
+            console.log("comparing: " +Object.keys(params).length + " and " +  errors.length );
+            test.equals(Object.keys(params).length, errors.length);
+        });
+
+    test.done();
+}
+
+
+
+
+function sampleBroadcastSharePresentationEvent() {
+    var params = {};
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.channels = "someChannels";
+    params.source = "someSource";
+    params.meetingName = "someMeetingName";
+  
+    params.presentationId = "pres-123";
+    params.presentationName = "Flight School";
+        
+    params.pageId = "pres-123/1";
+    params.uri = "http://www.example.com/presentations/pres-123/1.swf";        
+    params.xOffset = 0;
+    params.yOffset = 0;
+    params.widthRatio = 100;
+    params.heightRatio = 100;   
+
+    params.byId = "someById";
+    params.byName = "someByName";
+
+    return params;
+}
+exports.testBroadcastSharePresentationEvent = function (test) {
+    var event_type = library.BROADCAST_SHARE_PRESENTATION_EVENT;
+    var params = sampleBroadcastSharePresentationEvent();
+
+    var testingJson;
+    library.broadcastSharePresentationEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.done();
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO must check if it's a real date
+    extras.isString(testValue.header.source);
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.by.id);
+    extras.isString(testValue.payload.by.name);
+
+
+    extras.isString(testValue.payload.page.id);
+    extras.isNumber(testValue.payload.page.position.x_offset);
+    extras.isNumber(testValue.payload.page.position.y_offset);
+    extras.isNumber(testValue.payload.page.position.width_ratio);
+    extras.isNumber(testValue.payload.page.position.height_ratio);
+
+    extras.isString(testValue.payload.presentation.id);
+    extras.isString(testValue.payload.presentation.name);
+
+    test.done();
+}
+function sampleBroadcastSharePresentationEvent__Nada() {
+    var params = [];
+    params.meetingId= null;
+    params.sessionId =null;
+    params.channels =null;
+    params.source =null;
+    params.meetingName=null;
+
+    params.presentationId = null;
+    params.presentationName = null;
+
+    params.pageId =null;
+    params.uri = null;
+    params.xOffset = null;
+    params.yOffset = null;
+    params.widthRatio = null;
+    params.heightRatio = null;   
+
+
+    params.byId =null;
+    params.byName=null;
+
+    return params;
+}
+exports.testBroadcastSharePresentationEvent__forNada = function (test) {
+    var params = sampleBroadcastSharePresentationEvent__Nada();
+
+    library.broadcastSharePresentationEventToJson(params,
+        function (text) {
+        },
+        function (errors) {
+            //Check if all parameters that were assigned values in sample***()
+            //have been checked for not being null/""/undefined
+            console.log("comparing: " +Object.keys(params).length + " and " +  errors.length );
+            test.equals(Object.keys(params).length, errors.length);
+        });
+
+    test.done();
+}
+
+
+
+
+
+function sampleResizeAndMovePagePresentationEvent() {
+    var params = {};
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.channels = "someChannels";
+    params.source = "someSource";
+    params.meetingName = "someMeetingName";
+  
+    params.presentationId = "pres-123";
+    params.presentationName = "Flight School";
+        
+    params.pageId = "pres-123/1";
+    params.uri = "http://www.example.com/presentations/pres-123/1.swf";        
+    params.xOffset = 0;
+    params.yOffset = 0;
+    params.widthRatio = 100;
+    params.heightRatio = 100;   
+
+    params.byId = "someById";
+    params.byName = "someByName";
+
+    return params;
+}
+exports.testResizeAndMovePagePresentationEvent = function (test) {
+    var event_type = library.RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT;
+    var params = sampleResizeAndMovePagePresentationEvent();
+
+    var testingJson;
+    library.resizeAndMovePagePresentationEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.done();
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO must check if it's a real date
+    extras.isString(testValue.header.source);
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.by.id);
+    extras.isString(testValue.payload.by.name);
+
+
+    extras.isString(testValue.payload.page.id);
+    extras.isNumber(testValue.payload.page.position.x_offset);
+    extras.isNumber(testValue.payload.page.position.y_offset);
+    extras.isNumber(testValue.payload.page.position.width_ratio);
+    extras.isNumber(testValue.payload.page.position.height_ratio);
+
+    extras.isString(testValue.payload.presentation.id);
+    extras.isString(testValue.payload.presentation.name);
+
+    test.done();
+}
+function sampleResizeAndMovePagePresentationEvent__Nada() {
+    var params = [];
+    params.meetingId= null;
+    params.sessionId =null;
+    params.channels =null;
+    params.source =null;
+    params.meetingName=null;
+
+    params.presentationId = null;
+    params.presentationName = null;
+
+    params.pageId =null;
+    params.uri = null;
+    params.xOffset = null;
+    params.yOffset = null;
+    params.widthRatio = null;
+    params.heightRatio = null;   
+
+
+    params.byId =null;
+    params.byName=null;
+
+    return params;
+}
+exports.testResizeAndMovePagePresentationEvent__forNada = function (test) {
+    var params = sampleResizeAndMovePagePresentationEvent__Nada();
+
+    library.resizeAndMovePagePresentationEventToJson(params,
+        function (text) {
+        },
+        function (errors) {
+            //Check if all parameters that were assigned values in sample***()
+            //have been checked for not being null/""/undefined
+            console.log("comparing: " +Object.keys(params).length + " and " +  errors.length );
+            test.equals(Object.keys(params).length, errors.length);
+        });
+
+    test.done();
+}
+
+
+
+
+
+function sampleBroadcastResizeAndMovePagePresentationEvent() {
+    var params = {};
+    params.meetingId = "someMeetingId";
+    params.sessionId = "someSessionId";
+    params.channels = "someChannels";
+    params.source = "someSource";
+    params.meetingName = "someMeetingName";
+  
+    params.presentationId = "pres-123";
+    params.presentationName = "Flight School";
+        
+    params.pageId = "pres-123/1";
+    params.uri = "http://www.example.com/presentations/pres-123/1.swf";        
+    params.xOffset = 0;
+    params.yOffset = 0;
+    params.widthRatio = 100;
+    params.heightRatio = 100;   
+
+    params.byId = "someById";
+    params.byName = "someByName";
+
+    return params;
+}
+exports.testBroadcastResizeAndMovePagePresentationEvent = function (test) {
+    var event_type = library.BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT;
+    var params = sampleBroadcastResizeAndMovePagePresentationEvent();
+
+    var testingJson;
+    library.broadcastResizeAndMovePagePresentationEventToJson(params,
+        function (text) {
+            testingJson = text;
+        },
+        function (errors) {
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.done();
+        });
+    var testValue;
+    try {
+        testValue = JSON.parse(testingJson);
+    } catch (e) {
+        test.ok(false,"ERROR while parsing " + e);
+    }
+
+    test.equals(testValue.header.name, event_type);
+
+    extras.isString(testValue.header.destination.to);
+    extras.isString(testValue.header.name);
+    extras.isString(testValue.header.timestamp); //TODO must check if it's a real date
+    extras.isString(testValue.header.source);
+    extras.isString(testValue.payload.meeting.name);
+    extras.isString(testValue.payload.meeting.id);
+    extras.isString(testValue.payload.session);
+
+    extras.isString(testValue.payload.by.id);
+    extras.isString(testValue.payload.by.name);
+
+
+    extras.isString(testValue.payload.page.id);
+    extras.isNumber(testValue.payload.page.position.x_offset);
+    extras.isNumber(testValue.payload.page.position.y_offset);
+    extras.isNumber(testValue.payload.page.position.width_ratio);
+    extras.isNumber(testValue.payload.page.position.height_ratio);
+
+    extras.isString(testValue.payload.presentation.id);
+    extras.isString(testValue.payload.presentation.name);
+
+    test.done();
+}
+function sampleBroadcastResizeAndMovePagePresentationEvent__Nada() {
+    var params = [];
+    params.meetingId= null;
+    params.sessionId =null;
+    params.channels =null;
+    params.source =null;
+    params.meetingName=null;
+
+    params.presentationId = null;
+    params.presentationName = null;
+
+    params.pageId =null;
+    params.uri = null;
+    params.xOffset = null;
+    params.yOffset = null;
+    params.widthRatio = null;
+    params.heightRatio = null;   
+
+
+    params.byId =null;
+    params.byName=null;
+
+    return params;
+}
+exports.testBroadcastResizeAndMovePagePresentationEvent__forNada = function (test) {
+    var params = sampleBroadcastResizeAndMovePagePresentationEvent__Nada();
+
+    library.broadcastResizeAndMovePagePresentationEventToJson(params,
+        function (text) {
+        },
+        function (errors) {
+            //Check if all parameters that were assigned values in sample***()
+            //have been checked for not being null/""/undefined
+            console.log("comparing: " +Object.keys(params).length + " and " +  errors.length );
+            test.equals(Object.keys(params).length, errors.length);
+        });
+
+    test.done();
+}
 
 
 

@@ -19,6 +19,10 @@ something is going wrong
 
 --function that takes any json event and discovers what type of event it is
 
+--params.  to become this.params.
+
+
+--translate to CoffeeScript
 
 */
 
@@ -1591,14 +1595,15 @@ module.exports.USER_PUBLISH_STREAM_RESPONSE = USER_PUBLISH_STREAM_RESPONSE;
 module.exports.PUBLISHED_STREAM_EVENT = PUBLISHED_STREAM_EVENT;
 module.exports.USER_PUBLISHED_STREAM_EVENT = USER_PUBLISHED_STREAM_EVENT;
 module.exports.UNPUBLISHED_STREAM_EVENT = UNPUBLISHED_STREAM_EVENT;
-
 module.exports.USER_UNPUBLISHED_STREAM_EVENT = USER_UNPUBLISHED_STREAM_EVENT;
 module.exports.PUBLIC_CHAT_MESSAGE_EVENT = PUBLIC_CHAT_MESSAGE_EVENT;
 module.exports.BROADCAST_PUBLIC_CHAT_MESSAGE_EVENT = BROADCAST_PUBLIC_CHAT_MESSAGE_EVENT;
 module.exports.PRIVATE_CHAT_MESSAGE_EVENT = PRIVATE_CHAT_MESSAGE_EVENT;
 module.exports.BROADCAST_PRIVATE_CHAT_MESSAGE_EVENT = BROADCAST_PRIVATE_CHAT_MESSAGE_EVENT;
+
 module.exports.BROADCAST_WHITEBOARD_DRAW_EVENT = BROADCAST_WHITEBOARD_DRAW_EVENT;
 module.exports.BROADCAST_WHITEBOARD_UPDATE_EVENT = BROADCAST_WHITEBOARD_UPDATE_EVENT;
+
 module.exports.WHITEBOARD_CURSOR_EVENT = WHITEBOARD_CURSOR_EVENT;
 module.exports.BROADCAST_WHITEBOARD_CURSOR_EVENT = BROADCAST_WHITEBOARD_CURSOR_EVENT;
 module.exports.SHARE_PRESENTATION_EVENT = SHARE_PRESENTATION_EVENT;
@@ -2307,16 +2312,6 @@ module.exports.privateChatMessageEventToJson = function (params, onSuccess, onFa
     }
 }
 
-
-
-
-
-
-
-
-
-
-
 module.exports.broadcastPrivateChatMessageEventToJson = function (params, onSuccess, onFailure) {
 
     // TODO: Check for required params
@@ -2388,367 +2383,518 @@ module.exports.broadcastPrivateChatMessageEventToJson = function (params, onSucc
     }
 }
 
+module.exports.broadcastWhiteboardDrawEventToJson = function(params, onSuccess, onFailure) {
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = ["meetingId", "sessionId", "channels", 
+    "source", "meetingName", "whiteboardId", "shapeId", "shapeType",
+        "firstX", "firstY", "lastX", "lastY", "pTimestamp",
+        "background_visible", "background_color", "background_alpha",
+         "byId", "byName", "style", "color", "size", "text", "zorder"
 
+    ];
 
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg="Missing parameter [" + requiredParams[key] + "]=\""+params[requiredParams[key]]+"\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
 
-
-
-
-
-module.exports.returnJsonOf = function (event_type, meetingName, meetingID, sessionID) {
-    switch (event_type) {
-    
-    case "broadcast_whiteboard_draw_event":
-
-        var event_name = "broadcast_whiteboard_draw_event";
-        var source_of_event = "bbb-apps";
-
+    if (errors.length > 0) {
+        onFailure(errors); //TODO improve this
+        
+    } else {
         header = {};
         header.destination = {};
-        header.destination.to = "apps_channel";
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
+        header.destination.to = params.channels;
+        header.name = BROADCAST_WHITEBOARD_DRAW_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; // TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+        header.source = params.source;
 
         payload = {};
         payload.meeting = {}; //TODO these were not in the original json from the scala page
-        payload.meeting.name = meetingName; //TODO these were not in the original json from the scala page
-        payload.meeting.id = meetingID; //TODO these were not in the original json from the scala page
-        payload.session = sessionID; //TODO these were not in the original json from the scala page
+        payload.meeting.name = params.meetingName; //TODO these were not in the original json from the scala page
+        payload.meeting.id = params.meetingId; //TODO these were not in the original json from the scala page
+        payload.session = params.sessionId; //TODO these were not in the original json from the scala page
 
-        payload.whiteboard_id = "presentation_id/page_num";
-        payload.shape_id = "q779ogycfmxk-13-1383262166102";
-        payload.shape_type = "text";
+        payload.whiteboard_id = params.whiteboardId;
+        payload.shape_id = params.shapeId;
+        payload.shape_type = params.shapeType;
 
-        payload.timestamp = "2013-12-23T08:50Z"; //TODO why do we need a second timestamp?! we have one in header.timestamp
-        payload.zorder = 100;
+        payload.timestamp=params.pTimestamp;
+        payload.zorder = params.zorder;
+  //      console.log("++++++"+this.params.zorder);//TODO MUST LIMIT PARAM TO BE VISIBLE
+        //ONLY WITHING THE SCOPE OF THE FUNCTION
 
-        payload.data = {};
-        payload.data.coordinate = {};
-        payload.data.coordinate.first_x = 0.016025641025641028;
-        payload.data.coordinate.first_y = 0.982905982905983;
-        payload.data.coordinate.last_x = 2.33;
-        payload.data.coordinate.last_y = 3.45;
+        data = {};
+        data.coordinate = {};
+        data.coordinate.first_x = params.firstX;
+        data.coordinate.first_y = params.firstY;
+        data.coordinate.last_x = params.lastX;
+        data.coordinate.last_y = params.lastY;
+        
+        data.font = {};
+        data.font.style = params.style;
+        data.font.color = params.color;
+        data.font.size = params.size;
+        data.text=params.text;
+        
+        data.background={};
+        data.background.visible=params.background_visible;
+        data.background.color=params.background_color;
+        data.background.alpha=params.background_alpha;
 
-        payload.data.font = {};
-        payload.data.font.style = "Arial";
-        payload.data.font.color = 0;
-        payload.data.font.size = 18;
-
-        payload.data.background = {};
-        payload.data.background.visible = true;
-        payload.data.background.color = 16777215;
-        payload.data.background.alpha = 0;
-
-        payload.data.text = "He";
-
-        payload.by = {};
-        payload.by.id = "user1";
-        payload.by.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-
-        break;
-    case "broadcast_whiteboard_update_event":
-
-        var event_name = "broadcast_whiteboard_update_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {}; //TODO these were not in the original json from the scala page
-        payload.meeting.name = meetingName; //TODO these were not in the original json from the scala page
-        payload.meeting.id = meetingID; //TODO these were not in the original json from the scala page
-        payload.session = sessionID; //TODO these were not in the original json from the scala page
-
-        payload.whiteboard_id = "presentation_id/page_num";
-        payload.shape_id = "q779ogycfmxk-13-1383262166102";
-        payload.shape_type = "text";
-
-        payload.timestamp = "2013-12-23T08:50Z"; //TODO why do we need a second timestamp?! we have one in header.timestamp
-        payload.zorder = 100;
-
-        payload.data = {};
-        payload.data.coordinate = {};
-        payload.data.coordinate.first_x = 0.016025641025641028;
-        payload.data.coordinate.first_y = 0.982905982905983;
-        payload.data.coordinate.last_x = 2.33;
-        payload.data.coordinate.last_y = 3.45;
-
-        payload.data.font = {};
-        payload.data.font.style = "Arial";
-        payload.data.font.color = 0;
-        payload.data.font.size = 18;
-
-        payload.data.background = {};
-        payload.data.background.visible = true;
-        payload.data.background.color = 16777215;
-        payload.data.background.alpha = 0;
-
-        payload.data.text = "He";
+        payload.data = data;
 
         payload.by = {};
-        payload.by.id = "user1";
-        payload.by.name = "Guga";
+        payload.by.id = params.byId;
+        payload.by.name = params.byName;
+        message = {};
+        message.header = header;
+        message.payload = payload;
 
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-
-        break;
-    case "whiteboard_cursor_event":
-
-        var event_name = "whiteboard_cursor_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {}; //TODO these were not in the original json from the scala page
-        payload.meeting.name = meetingName; //TODO these were not in the original json from the scala page
-        payload.meeting.id = meetingID; //TODO these were not in the original json from the scala page
-        payload.session = sessionID; //TODO these were not in the original json from the scala page
-
-        payload.whiteboard_id = "user1-shape-1";
-
-        payload.cursor = {};
-        payload.cursor.x = 0.54;
-        payload.cursor.y = 0.98;
-
-        payload.by = {};
-        payload.by.id = "user1";
-        payload.by.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-
-        break;
-    case "broadcast_whiteboard_cursor_event":
-
-        var event_name = "broadcast_whiteboard_cursor_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {}; //TODO these were not in the original json from the scala page
-        payload.meeting.name = meetingName; //TODO these were not in the original json from the scala page
-        payload.meeting.id = meetingID; //TODO these were not in the original json from the scala page
-        payload.session = sessionID; //TODO these were not in the original json from the scala page
-
-        payload.whiteboard_id = "user1-shape-1";
-
-        payload.cursor = {};
-        payload.cursor.x = 0.54;
-        payload.cursor.y = 0.98;
-
-        payload.by = {};
-        payload.by.id = "user1";
-        payload.by.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-
-        break;
-    case "share_presentation_event":
-
-        var event_name = "share_presentation_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {}; //TODO these were not in the original json from the scala page
-        payload.meeting.name = meetingName; //TODO these were not in the original json from the scala page
-        payload.meeting.id = meetingID; //TODO these were not in the original json from the scala page
-        payload.session = sessionID; //TODO these were not in the original json from the scala page
-
-        payload.presentation = {};
-        payload.presentation.id = "pres-123";
-        payload.presentation.name = "Flight School";
-
-        payload.by = {};
-        payload.by.id = "user1";
-        payload.by.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-
-        break;
-    case "broadcast_share_presentation_event":
-
-        var event_name = "broadcast_share_presentation_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {}; //TODO these were not in the original json from the scala page
-        payload.meeting.name = meetingName; //TODO these were not in the original json from the scala page
-        payload.meeting.id = meetingID; //TODO these were not in the original json from the scala page
-        payload.session = sessionID; //TODO these were not in the original json from the scala page
-
-        payload.presentation = {};
-        payload.presentation.id = "pres-123";
-        payload.presentation.name = "Flight School";
-
-        payload.page = {};
-        payload.page.id = "pres-123/1";
-        payload.page.uri = "http://www.example.com/presentations/pres-123/1.swf";
-        payload.page.position = {};
-        payload.page.position.x_offset = 0;
-        payload.page.position.y_offset = 0;
-        payload.page.position.width_ratio = 100;
-        payload.page.position.height_ratio = 100;
-
-        payload.by = {};
-        payload.by.id = "user1";
-        payload.by.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-
-        break;
-    case "resize_and_move_page_presentation_event":
-
-        var event_name = "resize_and_move_page_presentation_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {}; //TODO these were not in the original json from the scala page
-        payload.meeting.name = meetingName; //TODO these were not in the original json from the scala page
-        payload.meeting.id = meetingID; //TODO these were not in the original json from the scala page
-        payload.session = sessionID; //TODO these were not in the original json from the scala page
-
-        payload.presentation = {};
-        payload.presentation.id = "pres-123";
-        payload.presentation.name = "Flight School";
-
-        payload.page = {};
-        payload.page.id = "pres-123/1";
-        payload.page.uri = "http://www.example.com/presentations/pres-123/1.swf";
-        payload.page.position = {};
-        payload.page.position.x_offset = 0;
-        payload.page.position.y_offset = 0;
-        payload.page.position.width_ratio = 100;
-        payload.page.position.height_ratio = 100;
-
-        payload.by = {};
-        payload.by.id = "user1";
-        payload.by.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-
-        break;
-    case "broadcast_resize_and_move_page_presentation_event":
-
-        var event_name = "broadcast_resize_and_move_page_presentation_event";
-        var source_of_event = "bbb-apps";
-
-        header = {};
-        header.destination = {};
-        header.destination.to = "apps_channel";
-
-        header.name = event_name;
-        header.timestamp = "2013-12-23T08:50Z";
-        header.source = source_of_event;
-
-        payload = {};
-        payload.meeting = {}; //TODO these were not in the original json from the scala page
-        payload.meeting.name = meetingName; //TODO these were not in the original json from the scala page
-        payload.meeting.id = meetingID; //TODO these were not in the original json from the scala page
-        payload.session = sessionID; //TODO these were not in the original json from the scala page
-
-        payload.presentation = {};
-        payload.presentation.id = "pres-123";
-        payload.presentation.name = "Flight School";
-
-        payload.page = {};
-        payload.page.id = "pres-123/1";
-        payload.page.uri = "http://www.example.com/presentations/pres-123/1.swf";
-        payload.page.position = {};
-        payload.page.position.x_offset = 0;
-        payload.page.position.y_offset = 0;
-        payload.page.position.width_ratio = 100;
-        payload.page.position.height_ratio = 100;
-
-        payload.by = {};
-        payload.by.id = "user1";
-        payload.by.name = "Guga";
-
-        temp = {};
-        temp.header = header;
-        temp.payload = payload;
-
-        return JSON.stringify(temp);
-
-        break;
-
-    default:
-        //alert("could not match a value from event_selector");
-        return -1;
+        onSuccess(JSON.stringify(message));//TODO improve this
     }
 }
+
+//this is a "text" event
+module.exports.broadcastWhiteboardUpdateEventToJson = function(params, onSuccess, onFailure) {
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = ["meetingId", "sessionId", "channels", 
+    "source", "meetingName", "whiteboardId", "shapeId", "shapeType",
+        "firstX", "firstY", "lastX", "lastY", "pTimestamp",
+        "background_visible", "background_color", "background_alpha",
+         "byId", "byName", "style", "color", "size", "text", "zorder"
+
+    ];
+
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg="Missing parameter [" + requiredParams[key] + "]=\""+params[requiredParams[key]]+"\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors); //TODO improve this
+        
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channels;
+        header.name = BROADCAST_WHITEBOARD_UPDATE_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; // TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {}; //TODO these were not in the original json from the scala page
+        payload.meeting.name = params.meetingName; //TODO these were not in the original json from the scala page
+        payload.meeting.id = params.meetingId; //TODO these were not in the original json from the scala page
+        payload.session = params.sessionId; //TODO these were not in the original json from the scala page
+
+        payload.whiteboard_id = params.whiteboardId;
+        payload.shape_id = params.shapeId;
+        payload.shape_type = params.shapeType;
+
+        payload.timestamp=params.pTimestamp;
+        payload.zorder = params.zorder;
+     //   console.log("++++++"+this.params.zorder);//TODO MUST LIMIT PARAM TO BE VISIBLE
+        //ONLY WITHING THE SCOPE OF THE FUNCTION
+
+        data = {};
+        data.coordinate = {};
+        data.coordinate.first_x = params.firstX;
+        data.coordinate.first_y = params.firstY;
+        data.coordinate.last_x = params.lastX;
+        data.coordinate.last_y = params.lastY;
+        
+        data.font = {};
+        data.font.style = params.style;
+        data.font.color = params.color;
+        data.font.size = params.size;
+        data.text=params.text;
+        
+        data.background={};
+        data.background.visible=params.background_visible;
+        data.background.color=params.background_color;
+        data.background.alpha=params.background_alpha;
+
+        payload.data = data;
+
+        payload.by = {};
+        payload.by.id = params.byId;
+        payload.by.name = params.byName;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));//TODO improve this
+    }
+}
+
+module.exports.whiteboardCursorEventToJson = function(params, onSuccess, onFailure) {
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = ["meetingId", "sessionId", "channels", 
+    "source", "meetingName", "whiteboardId",
+         "byId", "byName", "cursorX", "cursorY"
+
+    ];
+
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg="Missing parameter [" + requiredParams[key] + "]=\""+params[requiredParams[key]]+"\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors); //TODO improve this
+        
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channels;
+
+        header.name = WHITEBOARD_CURSOR_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; // TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {}; //TODO these were not in the original json from the scala page
+        payload.meeting.name = params.meetingName; //TODO these were not in the original json from the scala page
+        payload.meeting.id = params.meetingId; //TODO these were not in the original json from the scala page
+        payload.session = params.sessionId; //TODO these were not in the original json from the scala page
+
+        payload.whiteboard_id = params.whiteboardId;
+
+        payload.cursor = {};
+        payload.cursor.x = params.cursorX;
+        payload.cursor.y = params.cursorY;
+        
+        payload.by = {};
+        payload.by.id = params.byId;
+        payload.by.name = params.byName;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));//TODO improve this
+    }
+}
+
+module.exports.broadcastWhiteboardCursorEventToJson = function(params, onSuccess, onFailure) {
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = ["meetingId", "sessionId", "channels", 
+    "source", "meetingName", "whiteboardId",
+         "byId", "byName", "cursorX", "cursorY"
+
+    ];
+
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg="Missing parameter [" + requiredParams[key] + "]=\""+params[requiredParams[key]]+"\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors); //TODO improve this
+        
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channels;
+
+        header.name = BROADCAST_WHITEBOARD_CURSOR_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; // TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {}; //TODO these were not in the original json from the scala page
+        payload.meeting.name = params.meetingName; //TODO these were not in the original json from the scala page
+        payload.meeting.id = params.meetingId; //TODO these were not in the original json from the scala page
+        payload.session = params.sessionId; //TODO these were not in the original json from the scala page
+
+        payload.whiteboard_id = params.whiteboardId;
+
+        payload.cursor = {};
+        payload.cursor.x = params.cursorX;
+        payload.cursor.y = params.cursorY;
+
+        payload.by = {};
+        payload.by.id = params.byId;
+        payload.by.name = params.byName;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+        //TODO verify carefully this event message
+
+        onSuccess(JSON.stringify(message));//TODO improve this
+    }
+}
+
+module.exports.sharePresentationEventToJson = function(params, onSuccess, onFailure) {
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = ["meetingId", "sessionId", "channels", 
+    "source", "meetingName", "byId", "byName", "presentationId",
+    "presentationName"
+
+    ];
+
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg="Missing parameter [" + requiredParams[key] + "]=\""+params[requiredParams[key]]+"\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors); //TODO improve this
+        
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channels;
+
+        header.name = SHARE_PRESENTATION_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; // TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {}; //TODO these were not in the original json from the scala page
+        payload.meeting.name = params.meetingName; //TODO these were not in the original json from the scala page
+        payload.meeting.id = params.meetingId; //TODO these were not in the original json from the scala page
+        payload.session = params.sessionId; //TODO these were not in the original json from the scala page
+
+        payload.presentation = {};
+        payload.presentation.id = params.presentationId;
+        payload.presentation.name = params.presentationName;
+
+
+        payload.by = {};
+        payload.by.id = params.byId;
+        payload.by.name = params.byName;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));//TODO improve this
+    }
+}
+
+module.exports.broadcastSharePresentationEventToJson = function(params, onSuccess, onFailure) {
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = ["meetingId", "sessionId", "channels", 
+    "source", "meetingName", "byId", "byName", "presentationId",
+    "presentationName", "xOffset", "yOffset", "heightRatio", "widthRatio",
+    "pageId", "uri"
+    ];
+
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg="Missing parameter [" + requiredParams[key] + "]=\""+params[requiredParams[key]]+"\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors); //TODO improve this
+        
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channels;
+
+        header.name = BROADCAST_SHARE_PRESENTATION_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; // TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {}; //TODO these were not in the original json from the scala page
+        payload.meeting.name = params.meetingName; //TODO these were not in the original json from the scala page
+        payload.meeting.id = params.meetingId; //TODO these were not in the original json from the scala page
+        payload.session = params.sessionId; //TODO these were not in the original json from the scala page
+
+        payload.presentation = {};
+        payload.presentation.id = params.presentationId;
+        payload.presentation.name = params.presentationName;
+
+        payload.page = {};
+        payload.page.id = params.pageId;
+        payload.page.uri = params.uri;
+        payload.page.position = {};
+        payload.page.position.x_offset = params.xOffset;
+        payload.page.position.y_offset = params.yOffset;
+        payload.page.position.width_ratio = params.widthRatio;
+        payload.page.position.height_ratio = params.heightRatio;
+
+        payload.by = {};
+        payload.by.id = params.byId;
+        payload.by.name = params.byName;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+
+        onSuccess(JSON.stringify(message));//TODO improve this
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module.exports.resizeAndMovePagePresentationEventToJson = function(params, onSuccess, onFailure) {
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = ["meetingId", "sessionId", "channels", 
+    "source", "meetingName", "byId", "byName", "presentationId",
+    "presentationName", "xOffset", "yOffset", "heightRatio", "widthRatio",
+    "pageId", "uri"
+    ];
+
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg="Missing parameter [" + requiredParams[key] + "]=\""+params[requiredParams[key]]+"\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors); //TODO improve this
+        
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channels;
+
+        header.name = RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; // TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {}; //TODO these were not in the original json from the scala page
+        payload.meeting.name = params.meetingName; //TODO these were not in the original json from the scala page
+        payload.meeting.id = params.meetingId; //TODO these were not in the original json from the scala page
+        payload.session = params.sessionId; //TODO these were not in the original json from the scala page
+
+        payload.presentation = {};
+        payload.presentation.id = params.presentationId;
+        payload.presentation.name = params.presentationName;
+
+        payload.page = {};
+        payload.page.id = params.pageId;
+        payload.page.uri = params.uri;
+        payload.page.position = {};
+        payload.page.position.x_offset = params.xOffset;
+        payload.page.position.y_offset = params.yOffset;
+        payload.page.position.width_ratio = params.widthRatio;
+        payload.page.position.height_ratio = params.heightRatio;
+
+        payload.by = {};
+        payload.by.id = params.byId;
+        payload.by.name = params.byName;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+        //TODO verify carefully this event
+
+        onSuccess(JSON.stringify(message));//TODO improve this
+    }
+}
+
+
+
+
+module.exports.broadcastResizeAndMovePagePresentationEventToJson = function(params, onSuccess, onFailure) {
+    // TODO: Check for required params
+    var errors = new Array();
+    var requiredParams = ["meetingId", "sessionId", "channels", 
+    "source", "meetingName", "byId", "byName", "presentationId",
+    "presentationName", "xOffset", "yOffset", "heightRatio", "widthRatio",
+    "pageId", "uri"
+    ];
+
+    for (var key in requiredParams) {
+        if (!paramExist(params[requiredParams[key]])) {
+            var error_msg="Missing parameter [" + requiredParams[key] + "]=\""+params[requiredParams[key]]+"\"";
+            console.log(error_msg);
+            errors.push(error_msg);
+        }
+    }
+
+    if (errors.length > 0) {
+        onFailure(errors); //TODO improve this
+        
+    } else {
+        header = {};
+        header.destination = {};
+        header.destination.to = params.channels;
+
+        header.name = BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT;
+        header.timestamp = "2013-12-23T08:50Z"; // TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+        header.source = params.source;
+
+        payload = {};
+        payload.meeting = {}; //TODO these were not in the original json from the scala page
+        payload.meeting.name = params.meetingName; //TODO these were not in the original json from the scala page
+        payload.meeting.id = params.meetingId; //TODO these were not in the original json from the scala page
+        payload.session = params.sessionId; //TODO these were not in the original json from the scala page
+
+        payload.presentation = {};
+        payload.presentation.id = params.presentationId;
+        payload.presentation.name = params.presentationName;
+
+        payload.page = {};
+        payload.page.id = params.pageId;
+        payload.page.uri = params.uri;
+        payload.page.position = {};
+        payload.page.position.x_offset = params.xOffset;
+        payload.page.position.y_offset = params.yOffset;
+        payload.page.position.width_ratio = params.widthRatio;
+        payload.page.position.height_ratio = params.heightRatio;
+
+        payload.by = {};
+        payload.by.id = params.byId;
+        payload.by.name = params.byName;
+
+        message = {};
+        message.header = header;
+        message.payload = payload;
+        
+        onSuccess(JSON.stringify(message));//TODO improve this
+    }
+}
+
 
 
 
