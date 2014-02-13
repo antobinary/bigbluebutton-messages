@@ -7,11 +7,7 @@
 #
 #--improve naming convention
 #
-#--walk through the code and make sure that there are no 
-#variables reused between functions 
-#(e.x. correlationId from f1 in f2 (not redefined in f2))
-#OR maybe the issue is that I just have not updated the list of requiredParams
-#and they do not get checked
+#
 #SETUP tests that must fail!! tests where all params are empty or something and
 #each of the tests must be failing by default. If they are not failing then
 #something is going wrong
@@ -24,10 +20,25 @@
 #
 
 #list of events to be selected from
+
+
+
 paramExist = (param) ->
   #TODO check for empty array
   return false  if typeof param is "undefined" or param is null or param is ""
   true
+
+
+checkForValidity = (params, requiredParams) ->
+  errors = []
+  for key of requiredParams
+    unless paramExist(params[requiredParams[key]])
+      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
+      console.log error_msg
+      errors.push error_msg
+  errors
+
+
 WHITEBOARD_DRAW_EVENT = "whiteboard_draw_event"
 WHITEBOARD_UPDATE_EVENT = "whiteboard_update_event"
 CREATE_MEETING_REQUEST = "create_meeting_request"
@@ -76,6 +87,9 @@ SHARE_PRESENTATION_EVENT = "share_presentation_event"
 BROADCAST_SHARE_PRESENTATION_EVENT = "broadcast_share_presentation_event"
 RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = "resize_and_move_page_presentation_event"
 BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = "broadcast_resize_and_move_page_presentation_event"
+
+
+
 module.exports.WHITEBOARD_DRAW_EVENT = WHITEBOARD_DRAW_EVENT
 module.exports.WHITEBOARD_UPDATE_EVENT = WHITEBOARD_UPDATE_EVENT
 module.exports.CREATE_MEETING_REQUEST = CREATE_MEETING_REQUEST
@@ -124,6 +138,9 @@ module.exports.SHARE_PRESENTATION_EVENT = SHARE_PRESENTATION_EVENT
 module.exports.BROADCAST_SHARE_PRESENTATION_EVENT = BROADCAST_SHARE_PRESENTATION_EVENT
 module.exports.RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT
 module.exports.BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT
+
+
+
 module.exports.getEvents =
   0: "Please select an event type"
   1: WHITEBOARD_DRAW_EVENT
@@ -180,8 +197,6 @@ module.exports.getEvents =
 # Document requried and optional parameters
 module.exports.whiteboardDrawEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "meetingId"
     "sessionId"
@@ -205,11 +220,7 @@ module.exports.whiteboardDrawEventToJson = (params, onSuccess, onFailure) ->
     "byId"
     "byName"
   ]
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors     
   else
@@ -252,16 +263,12 @@ module.exports.whiteboardDrawEventToJson = (params, onSuccess, onFailure) ->
     onSuccess JSON.stringify(message)     
   return
 
-
 # TODO: Do the same thing to convert from JSON to JS Object
 #module.exports.whiteboardDrawEventFromJson(message, onSuccess, onFailure) {
 
 # TODO: Add some documentation using http://usejsdoc.org/
 # Document requried and optional parameters
 module.exports.whiteboardUpdateEventToJson = (params, onSuccess, onFailure) ->
-  
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "meetingId"
     "sessionId"
@@ -285,11 +292,8 @@ module.exports.whiteboardUpdateEventToJson = (params, onSuccess, onFailure) ->
     "byId"
     "byName"
   ]
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
+  
   if errors.length > 0
     onFailure errors     
   else
@@ -334,8 +338,6 @@ module.exports.whiteboardUpdateEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.createMeetingRequestToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "channelsReply"
@@ -357,11 +359,7 @@ module.exports.createMeetingRequestToJson = (params, onSuccess, onFailure) ->
     "metadataCustomerId" #, "name", "timestamp"
     "metadataCustomerName"
   ]
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -400,10 +398,8 @@ module.exports.createMeetingRequestToJson = (params, onSuccess, onFailure) ->
     onSuccess JSON.stringify(message)
   return
 
-module.exports.createMeetingResponseToJson = (params, onSuccess, onFailure) ->
+module.exports.createMeetingResponseToJson = (params, onSuccess, onFailure) ->  
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "meetingName"
@@ -429,11 +425,7 @@ module.exports.createMeetingResponseToJson = (params, onSuccess, onFailure) ->
     "metadataCustomerId" #, "name", "timestamp"
     "metadataCustomerName"
   ]
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -477,10 +469,8 @@ module.exports.createMeetingResponseToJson = (params, onSuccess, onFailure) ->
     onSuccess JSON.stringify(message)
   return
 
-module.exports.meetingCreatedEventToJson = (params, onSuccess, onFailure) ->
+module.exports.meetingCreatedEventToJson = (params, onSuccess, onFailure) ->  
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -503,13 +493,7 @@ module.exports.meetingCreatedEventToJson = (params, onSuccess, onFailure) ->
     "metadataCustomerId" #, "name", "timestamp"
     "metadataCustomerName"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -549,10 +533,8 @@ module.exports.meetingCreatedEventToJson = (params, onSuccess, onFailure) ->
     onSuccess JSON.stringify(message)
   return
 
-module.exports.endMeetingRequestToJson = (params, onSuccess, onFailure) ->
+module.exports.endMeetingRequestToJson = (params, onSuccess, onFailure) ->  
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -564,13 +546,7 @@ module.exports.endMeetingRequestToJson = (params, onSuccess, onFailure) ->
     "force"
     "warnUsers"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -596,10 +572,8 @@ module.exports.endMeetingRequestToJson = (params, onSuccess, onFailure) ->
     onSuccess JSON.stringify(message)
   return
 
-module.exports.endMeetingResponseToJson = (params, onSuccess, onFailure) ->
+module.exports.endMeetingResponseToJson = (params, onSuccess, onFailure) ->  
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -610,13 +584,7 @@ module.exports.endMeetingResponseToJson = (params, onSuccess, onFailure) ->
     "success"
     "message"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -641,10 +609,8 @@ module.exports.endMeetingResponseToJson = (params, onSuccess, onFailure) ->
     onSuccess JSON.stringify(message)
   return
 
-module.exports.endMeetingWarningToJson = (params, onSuccess, onFailure) ->
+module.exports.endMeetingWarningToJson = (params, onSuccess, onFailure) ->  
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -655,13 +621,7 @@ module.exports.endMeetingWarningToJson = (params, onSuccess, onFailure) ->
     "timeUnit"
     "allowExtend"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -687,8 +647,6 @@ module.exports.endMeetingWarningToJson = (params, onSuccess, onFailure) ->
 
 module.exports.meetingEndedEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -696,13 +654,7 @@ module.exports.meetingEndedEventToJson = (params, onSuccess, onFailure) ->
     "meetingId"
     "sessionId"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -725,8 +677,6 @@ module.exports.meetingEndedEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.registerUserRequestToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -745,13 +695,7 @@ module.exports.registerUserRequestToJson = (params, onSuccess, onFailure) ->
     "studentId"
     "program"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -788,8 +732,6 @@ module.exports.registerUserRequestToJson = (params, onSuccess, onFailure) ->
 
 module.exports.registerUserResponseToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -810,13 +752,7 @@ module.exports.registerUserResponseToJson = (params, onSuccess, onFailure) ->
     "success"
     "message"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -855,8 +791,6 @@ module.exports.registerUserResponseToJson = (params, onSuccess, onFailure) ->
 
 module.exports.userRegisteredEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -873,13 +807,7 @@ module.exports.userRegisteredEventToJson = (params, onSuccess, onFailure) ->
     "studentId"
     "program"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -913,8 +841,6 @@ module.exports.userRegisteredEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.userJoinRequestToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -926,12 +852,7 @@ module.exports.userJoinRequestToJson = (params, onSuccess, onFailure) ->
     "channelsReply"
   ]
   
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -958,8 +879,6 @@ module.exports.userJoinRequestToJson = (params, onSuccess, onFailure) ->
 
 module.exports.userJoinResponseToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -979,13 +898,7 @@ module.exports.userJoinResponseToJson = (params, onSuccess, onFailure) ->
     "studentId"
     "program"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1023,8 +936,6 @@ module.exports.userJoinResponseToJson = (params, onSuccess, onFailure) ->
 
 module.exports.userJoinedEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1050,13 +961,7 @@ module.exports.userJoinedEventToJson = (params, onSuccess, onFailure) ->
     "callerNumber"
     "mediaStreams"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1101,8 +1006,6 @@ module.exports.userJoinedEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.userLeaveEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1112,13 +1015,7 @@ module.exports.userLeaveEventToJson = (params, onSuccess, onFailure) ->
     "userId"
     "userName"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1144,8 +1041,6 @@ module.exports.userLeaveEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.userLeftEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1155,13 +1050,7 @@ module.exports.userLeftEventToJson = (params, onSuccess, onFailure) ->
     "userId"
     "userName"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1187,8 +1076,6 @@ module.exports.userLeftEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.getUsersRequestToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1202,13 +1089,7 @@ module.exports.getUsersRequestToJson = (params, onSuccess, onFailure) ->
     "requesterId"
     "requesterName"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1240,8 +1121,6 @@ module.exports.getUsersRequestToJson = (params, onSuccess, onFailure) ->
 
 module.exports.getUsersResponseToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1250,13 +1129,7 @@ module.exports.getUsersResponseToJson = (params, onSuccess, onFailure) ->
     "sessionId"
     "listUsers"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1280,8 +1153,6 @@ module.exports.getUsersResponseToJson = (params, onSuccess, onFailure) ->
 
 module.exports.raiseUserHandRequestToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1292,13 +1163,7 @@ module.exports.raiseUserHandRequestToJson = (params, onSuccess, onFailure) ->
     "requesterName"
     "raise"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1325,8 +1190,6 @@ module.exports.raiseUserHandRequestToJson = (params, onSuccess, onFailure) ->
 
 module.exports.userRaisedHandEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1337,13 +1200,7 @@ module.exports.userRaisedHandEventToJson = (params, onSuccess, onFailure) ->
     "requesterName"
     "raise"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1370,8 +1227,6 @@ module.exports.userRaisedHandEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.assignedPresenterRequestToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1383,13 +1238,7 @@ module.exports.assignedPresenterRequestToJson = (params, onSuccess, onFailure) -
     "assignedById"
     "assignedByName"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1418,8 +1267,6 @@ module.exports.assignedPresenterRequestToJson = (params, onSuccess, onFailure) -
 
 module.exports.presenterAssignedEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1431,13 +1278,7 @@ module.exports.presenterAssignedEventToJson = (params, onSuccess, onFailure) ->
     "assignedById"
     "assignedByName"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1466,8 +1307,6 @@ module.exports.presenterAssignedEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.muteUserRequestToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1480,13 +1319,7 @@ module.exports.muteUserRequestToJson = (params, onSuccess, onFailure) ->
     "requesterName"
     "mute"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1516,8 +1349,6 @@ module.exports.muteUserRequestToJson = (params, onSuccess, onFailure) ->
 
 module.exports.muteUserRequestEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1530,13 +1361,7 @@ module.exports.muteUserRequestEventToJson = (params, onSuccess, onFailure) ->
     "requesterName"
     "mute"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1566,8 +1391,6 @@ module.exports.muteUserRequestEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.muteVoiceUserRequestToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1582,13 +1405,7 @@ module.exports.muteVoiceUserRequestToJson = (params, onSuccess, onFailure) ->
     "conference_Unique_ID"
     "conference_member_id"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1620,8 +1437,6 @@ module.exports.muteVoiceUserRequestToJson = (params, onSuccess, onFailure) ->
 
 module.exports.voiceUserMutedEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1636,13 +1451,7 @@ module.exports.voiceUserMutedEventToJson = (params, onSuccess, onFailure) ->
     "conference_Unique_ID"
     "conference_member_id"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1674,8 +1483,6 @@ module.exports.voiceUserMutedEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.userMutedEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1686,13 +1493,7 @@ module.exports.userMutedEventToJson = (params, onSuccess, onFailure) ->
     "userName"
     "mute"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1719,8 +1520,6 @@ module.exports.userMutedEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.userPublishStreamRequestToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1734,13 +1533,7 @@ module.exports.userPublishStreamRequestToJson = (params, onSuccess, onFailure) -
     "channelsReply"
     "correlationId"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1773,8 +1566,6 @@ module.exports.userPublishStreamRequestToJson = (params, onSuccess, onFailure) -
 
 module.exports.userPublishStreamResponseToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1788,13 +1579,7 @@ module.exports.userPublishStreamResponseToJson = (params, onSuccess, onFailure) 
     "correlationId"
     "uri"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1826,8 +1611,6 @@ module.exports.userPublishStreamResponseToJson = (params, onSuccess, onFailure) 
 
 module.exports.publishedStreamEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1840,13 +1623,7 @@ module.exports.publishedStreamEventToJson = (params, onSuccess, onFailure) ->
     "metadataFoo"
     "uri"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
   else
@@ -1877,8 +1654,6 @@ module.exports.publishedStreamEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.userPublishedStreamEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1891,13 +1666,7 @@ module.exports.userPublishedStreamEventToJson = (params, onSuccess, onFailure) -
     "metadataFoo"
     "uri"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
     return
@@ -1929,8 +1698,6 @@ module.exports.userPublishedStreamEventToJson = (params, onSuccess, onFailure) -
 
 module.exports.unpublishedStreamEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1943,13 +1710,7 @@ module.exports.unpublishedStreamEventToJson = (params, onSuccess, onFailure) ->
     "metadataFoo"
     "uri"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
     return
@@ -1981,8 +1742,6 @@ module.exports.unpublishedStreamEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.userUnpublishedStreamEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -1995,13 +1754,7 @@ module.exports.userUnpublishedStreamEventToJson = (params, onSuccess, onFailure)
     "metadataFoo"
     "uri"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
     return
@@ -2033,8 +1786,6 @@ module.exports.userUnpublishedStreamEventToJson = (params, onSuccess, onFailure)
 
 module.exports.publicChatMessageEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -2051,13 +1802,7 @@ module.exports.publicChatMessageEventToJson = (params, onSuccess, onFailure) ->
     "messageSize"
     "messageFontType"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
     return
@@ -2094,8 +1839,6 @@ module.exports.publicChatMessageEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.broadcastPublicChatMessageEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -2115,13 +1858,7 @@ module.exports.broadcastPublicChatMessageEventToJson = (params, onSuccess, onFai
     "messageServerTimestamp"
     "translations"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
     return
@@ -2161,8 +1898,6 @@ module.exports.broadcastPublicChatMessageEventToJson = (params, onSuccess, onFai
 
 module.exports.privateChatMessageEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -2181,13 +1916,7 @@ module.exports.privateChatMessageEventToJson = (params, onSuccess, onFailure) ->
     "messageToId"
     "messageToName"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
     return
@@ -2227,8 +1956,6 @@ module.exports.privateChatMessageEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.broadcastPrivateChatMessageEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "channelsDestination"
     "source"
@@ -2248,13 +1975,7 @@ module.exports.broadcastPrivateChatMessageEventToJson = (params, onSuccess, onFa
     "messageServerTimestamp"
     "translations"
   ]
-  
-  #TODO -try to take this for loop out of the function
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors
     return
@@ -2296,8 +2017,6 @@ module.exports.broadcastPrivateChatMessageEventToJson = (params, onSuccess, onFa
 
 module.exports.broadcastWhiteboardDrawEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "meetingId"
     "sessionId"
@@ -2323,11 +2042,7 @@ module.exports.broadcastWhiteboardDrawEventToJson = (params, onSuccess, onFailur
     "text"
     "zorder"
   ]
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors     
   else
@@ -2386,8 +2101,6 @@ module.exports.broadcastWhiteboardDrawEventToJson = (params, onSuccess, onFailur
 #this is a "text" event
 module.exports.broadcastWhiteboardUpdateEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "meetingId"
     "sessionId"
@@ -2413,11 +2126,7 @@ module.exports.broadcastWhiteboardUpdateEventToJson = (params, onSuccess, onFail
     "text"
     "zorder"
   ]
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors     
   else
@@ -2438,8 +2147,6 @@ module.exports.broadcastWhiteboardUpdateEventToJson = (params, onSuccess, onFail
     payload.timestamp = params.pTimestamp
     payload.zorder = params.zorder
     
-    #   console.log("++++++"+this.params.zorder);//TODO MUST LIMIT PARAM TO BE VISIBLE
-    #ONLY WITHING THE SCOPE OF THE FUNCTION
     data = {}
     data.coordinate = {}
     data.coordinate.first_x = params.firstX
@@ -2467,8 +2174,6 @@ module.exports.broadcastWhiteboardUpdateEventToJson = (params, onSuccess, onFail
 
 module.exports.whiteboardCursorEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "meetingId"
     "sessionId"
@@ -2481,11 +2186,7 @@ module.exports.whiteboardCursorEventToJson = (params, onSuccess, onFailure) ->
     "cursorX"
     "cursorY"
   ]
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors     
   else
@@ -2515,8 +2216,6 @@ module.exports.whiteboardCursorEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.broadcastWhiteboardCursorEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "meetingId"
     "sessionId"
@@ -2529,11 +2228,7 @@ module.exports.broadcastWhiteboardCursorEventToJson = (params, onSuccess, onFail
     "cursorX"
     "cursorY"
   ]
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors     
   else
@@ -2565,8 +2260,6 @@ module.exports.broadcastWhiteboardCursorEventToJson = (params, onSuccess, onFail
 
 module.exports.sharePresentationEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "meetingId"
     "sessionId"
@@ -2578,11 +2271,7 @@ module.exports.sharePresentationEventToJson = (params, onSuccess, onFailure) ->
     "presentationId"
     "presentationName"
   ]
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors     
   else
@@ -2611,8 +2300,6 @@ module.exports.sharePresentationEventToJson = (params, onSuccess, onFailure) ->
 
 module.exports.broadcastSharePresentationEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "meetingId"
     "sessionId"
@@ -2630,11 +2317,7 @@ module.exports.broadcastSharePresentationEventToJson = (params, onSuccess, onFai
     "pageId"
     "uri"
   ]
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors     
   else
@@ -2671,8 +2354,6 @@ module.exports.broadcastSharePresentationEventToJson = (params, onSuccess, onFai
 
 module.exports.resizeAndMovePagePresentationEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "meetingId"
     "sessionId"
@@ -2690,11 +2371,7 @@ module.exports.resizeAndMovePagePresentationEventToJson = (params, onSuccess, on
     "pageId"
     "uri"
   ]
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors     
   else
@@ -2733,8 +2410,6 @@ module.exports.resizeAndMovePagePresentationEventToJson = (params, onSuccess, on
 
 module.exports.broadcastResizeAndMovePagePresentationEventToJson = (params, onSuccess, onFailure) ->
   
-  # TODO: Check for required params
-  errors = new Array()
   requiredParams = [
     "meetingId"
     "sessionId"
@@ -2752,11 +2427,7 @@ module.exports.broadcastResizeAndMovePagePresentationEventToJson = (params, onSu
     "pageId"
     "uri"
   ]
-  for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
-      error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
-      console.log error_msg
-      errors.push error_msg
+  errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors     
   else
@@ -2765,6 +2436,7 @@ module.exports.broadcastResizeAndMovePagePresentationEventToJson = (params, onSu
     header.destination.to = params.channels
     header.name = BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT
     header.timestamp = "2013-12-23T08:50Z" # TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+
     header.source = params.source
     payload = {}
     payload.meeting = {} #TODO these were not in the original json from the scala page
@@ -2805,20 +2477,21 @@ module.exports.broadcastResizeAndMovePagePresentationEventToJson = (params, onSu
 #    return true;
 #}
 module.exports.whiteboardDrawEvent_fromJSON = (message, onSuccess, onFailure) ->
-  
-  #   // if (message is NOT valid) 
-  #    if(! isValidJSON(message))
-  #    {
-  #        onFailure(errors);
-  #    } 
-  #    else 
-  #    {
-  #        var msgObject = JSON.parse(message);
-  #        onSuccess(msgObject);
-  #    }
   try
     msgObject = JSON.parse(message)
     onSuccess msgObject
   catch err
     onFailure err
   return
+
+###module.export.fetchJSON = (message, onSuccess, onFailure) ->
+  try
+    msgObject = JSON.parse(message)
+
+    eventType = msgObject.header.event_type
+    console.log "eventType is" + eventType
+    onSuccess eventType
+    #onSuccess msgObject
+  catch err
+    onFailure err
+  return###

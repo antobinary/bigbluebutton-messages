@@ -15,30 +15,11 @@
 #
 #
 #
-sampleWhiteBoardDrawEvent = ->
-  params = {}
-  params.meetingId = "someMeetingId"
-  params.sessionId = "someSessionId"
-  params.channels = "someChannels"
-  params.source = "someSource"
-  params.meetingName = "someMeetingName"
-  params.whiteboardId = "someWhiteBoardId"
-  params.shapeId = "someShapeId"
-  params.shapeType = "someShapeType"
-  params.firstX = 0.5
-  params.firstY = 0.5
-  params.lastX = 0.5
-  params.lastY = 0.5
-  params.lineColor = 0
-  params.lineWeight = 18
-  params.lineType = "solid" #TODO choose between "solid", ...
-  params.byId = "someById"
-  params.byName = "someByName"
-  params.background_visible = true
-  params.background_color = 0
-  params.background_alpha = 1
-  params.square = false
-  params
+
+library = require("../message_library")
+extras = require("node-assert-extras")
+
+
 sampleWhiteBoardUpdateEvent = ->
   params = {}
   params.meetingId = "someMeetingId"
@@ -68,8 +49,6 @@ sampleCreateMeetingRequestEvent = ->
   params.channelsDestination = "someDesChannel"
   params.channelsReply = "someReplyChannel"
   params.correlationId = "someId"
-  
-  #params.name
   #    params.timestamp
   params.source = "someSource"
   params.descriptorName = "English 101"
@@ -85,7 +64,6 @@ sampleCreateMeetingRequestEvent = ->
   params.voiceConfPin = 123456
   params.voiceConfNumber = 85115
   
-  #TODO how to make the array things?!
   params.phoneNumbers = []
   a =
     number: "613-520-7600"
@@ -101,15 +79,7 @@ sampleCreateMeetingRequestEvent = ->
   params.metadataCustomerName = "ACME"
   params
 #TODO must check if it's a real date
-#TODO or isNotNaN ?!?!?!
-#TODO or isNotNaN ?!?!?!
-#TODO or isNotNaN ?!?!?!
-#TODO or isNotNaN ?!?!?!
 #TODO must check if it's a real date
-#TODO or isNotNaN ?!?!?!
-#TODO or isNotNaN ?!?!?!
-#TODO or isNotNaN ?!?!?!
-#TODO or isNotNaN ?!?!?!
 #TODO
 
 #Phone_numbers testing
@@ -120,47 +90,7 @@ sampleCreateMeetingRequestEvent = ->
 #TODO
 
 #Phone_numbers testing
-sampleCreateMeetingResponseEvent = ->
-  params = {}
-  params.channelsDestination = "someDesChannel"
-  params.meetingName = "someMeetingName"
-  params.meetingId = "someMeetingId"
-  params.sessionId = "someSessionId"
-  params.resultSuccess = true
-  params.resultMessage = "Success"
-  params.correlationId = "someId"
-  
-  #params.name
-  #    params.timestamp
-  params.source = "someSource"
-  params.descriptorName = "English 101"
-  params.descriptorExternalId = "english_101"
-  params.descriptorRecord = true
-  params.descriptorWelcome = "Welcome to English 101"
-  params.descriptorLogout = "http://www.bigbluebutton.org"
-  params.descriptorAvatar = "http://www.gravatar.com/bigbluebutton"
-  params.descriptorMaxUsers = 20
-  params.durationLength = 120
-  params.durationAllowExtend = false
-  params.durationMaxMinutes = 240
-  params.voiceConfPin = 123456
-  params.voiceConfNumber = 85115
-  
-  #TODO how to make the array things?!
-  params.phoneNumbers = []
-  a =
-    number: "613-520-7600"
-    description: "Ottawa"
 
-  b =
-    number: "1-888-555-7890"
-    description: "NA Toll-Free"
-
-  params.phoneNumbers[0] = a
-  params.phoneNumbers[1] = b
-  params.metadataCustomerId = "acme-customer"
-  params.metadataCustomerName = "ACME"
-  params
 sampleMeetingCreatedEvent = ->
   params = {}
   params.channelsDestination = "someDesChannel"
@@ -170,8 +100,6 @@ sampleMeetingCreatedEvent = ->
   params.resultSuccess = true
   params.resultMessage = "Success"
   params.correlationId = "someId"
-  
-  #params.name
   #    params.timestamp
   params.source = "bbb-apps"
   params.meetingName = "someName"
@@ -190,7 +118,6 @@ sampleMeetingCreatedEvent = ->
   params.voiceConfPin = 123456
   params.voiceConfNumber = 85115
   
-  #TODO how to make the array things?!
   params.phoneNumbers = []
   a =
     number: "613-520-7600"
@@ -608,20 +535,7 @@ sampleUserMutedEvent = ->
   params.mute = true
   params
 #TODO
-sampleUserPublishStreamRequest = ->
-  params = {}
-  params.channelsDestination = "apps_channel"
-  params.meetingName = "someMeetingName"
-  params.meetingId = "someMeetingId"
-  params.sessionId = "someSessionId"
-  params.source = "bbb-web"
-  params.userId = "user1"
-  params.userName = "Guga"
-  params.channelsReply = "apps_channel"
-  params.correlationId = "abc"
-  params.mediaType = "video"
-  params.metadataFoo = "bar"
-  params
+
 #TODO
 #TODO make it one of video/ / ..
 sampleUserPublishStreamResponse = ->
@@ -869,10 +783,6 @@ sampleBroadcastWhiteBoardDrawEvent = ->
   params.size = 18
   params
 #TODO must check if it's a real date
-#TODO or isNotNaN ?!?!?!
-#TODO or isNotNaN ?!?!?!
-#TODO or isNotNaN ?!?!?!
-#TODO or isNotNaN ?!?!?!
 #TODO must check if it's a real date
 sampleBroadcastWhiteBoardDrawEvent__Nada = ->
   params = []
@@ -932,10 +842,6 @@ sampleBroadcastWhiteBoardUpdateEvent = ->
   params.size = 18
   params
 #TODO must check if it's a real date
-#TODO or isNotNaN ?!?!?!
-#TODO or isNotNaN ?!?!?!
-#TODO or isNotNaN ?!?!?!
-#TODO or isNotNaN ?!?!?!
 #TODO must check if it's a real date
 sampleWhiteboardCursorEvent = ->
   params = {}
@@ -1142,10 +1048,33 @@ sampleBroadcastResizeAndMovePagePresentationEvent__Nada = ->
   params.byId = null
   params.byName = null
   params
-library = require("../message_library")
-extras = require("node-assert-extras")
 exports.testWhiteboardDraw = (test) ->
   event_type = library.WHITEBOARD_DRAW_EVENT
+  sampleWhiteBoardDrawEvent = ->
+    params = {}
+    params.meetingId = "someMeetingId"
+    params.sessionId = "someSessionId"
+    params.channels = "someChannels"
+    params.source = "someSource"
+    params.meetingName = "someMeetingName"
+    params.whiteboardId = "someWhiteBoardId"
+    params.shapeId = "someShapeId"
+    params.shapeType = "someShapeType"
+    params.firstX = 0.5
+    params.firstY = 0.5
+    params.lastX = 0.5
+    params.lastY = 0.5
+    params.lineColor = 0
+    params.lineWeight = 18
+    params.lineType = "solid" #TODO choose between "solid", ...
+    params.byId = "someById"
+    params.byName = "someByName"
+    params.background_visible = true
+    params.background_color = 0
+    params.background_alpha = 1
+    params.square = false
+    params
+
   params = sampleWhiteBoardDrawEvent()
   testingJson = undefined
   library.whiteboardDrawEventToJson params, ((text) ->
@@ -1290,6 +1219,45 @@ exports.testCreateMeetingRequest = (test) ->
 
 exports.testCreateMeetingResponse = (test) ->
   event_type = library.CREATE_MEETING_RESPONSE
+  sampleCreateMeetingResponseEvent = ->
+    params = {}
+    params.channelsDestination = "someDesChannel"
+    params.meetingName = "someMeetingName"
+    params.meetingId = "someMeetingId"
+    params.sessionId = "someSessionId"
+    params.resultSuccess = true
+    params.resultMessage = "Success"
+    params.correlationId = "someId"
+    #    params.timestamp
+    params.source = "someSource"
+    params.descriptorName = "English 101"
+    params.descriptorExternalId = "english_101"
+    params.descriptorRecord = true
+    params.descriptorWelcome = "Welcome to English 101"
+    params.descriptorLogout = "http://www.bigbluebutton.org"
+    params.descriptorAvatar = "http://www.gravatar.com/bigbluebutton"
+    params.descriptorMaxUsers = 20
+    params.durationLength = 120
+    params.durationAllowExtend = false
+    params.durationMaxMinutes = 240
+    params.voiceConfPin = 123456
+    params.voiceConfNumber = 85115
+    
+    params.phoneNumbers = []
+    a =
+      number: "613-520-7600"
+      description: "Ottawa"
+
+    b =
+      number: "1-888-555-7890"
+      description: "NA Toll-Free"
+
+    params.phoneNumbers[0] = a
+    params.phoneNumbers[1] = b
+    params.metadataCustomerId = "acme-customer"
+    params.metadataCustomerName = "ACME"
+    params
+
   params = sampleCreateMeetingResponseEvent()
   testingJson = undefined
   library.createMeetingResponseToJson params, ((text) ->
@@ -2160,7 +2128,6 @@ exports.testMuteVoiceUserRequest = (test) ->
   extras.isString testValue.payload.voice_metadata.Conference_Name
   extras.isString testValue.payload.voice_metadata.Conference_Unique_ID
   extras.isString testValue.payload.voice_metadata.conference_member_id
-  console.log "wednesday"
   test.done()
   return
 
@@ -2230,6 +2197,21 @@ exports.testUserMutedEvent = (test) ->
 
 exports.testUserPublishStreamRequest = (test) ->
   event_type = library.USER_PUBLISH_STREAM_REQUEST
+  sampleUserPublishStreamRequest = ->
+    params = {}
+    params.channelsDestination = "apps_channel"
+    params.meetingName = "someMeetingName"
+    params.meetingId = "someMeetingId"
+    params.sessionId = "someSessionId"
+    params.source = "bbb-web"
+    params.userId = "user1"
+    params.userName = "Guga"
+    params.channelsReply = "apps_channel"
+    params.correlationId = "abc"
+    params.mediaType = "video"
+    params.metadataFoo = "bar"
+    params
+
   params = sampleUserPublishStreamRequest()
   testingJson = undefined
   library.userPublishStreamRequestToJson params, ((text) ->
