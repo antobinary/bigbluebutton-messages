@@ -1,5 +1,3 @@
-#TODO 
-#--create some sort of heirarchy for the tests and for the library
 
 #
 #
@@ -14,7 +12,6 @@
 #
 #for each event_type
 # --valid date in timestamp
-# -- isNumber vs isNotNAN
 #
 #
 #

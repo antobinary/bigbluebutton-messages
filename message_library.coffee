@@ -21,8 +21,6 @@
 #--params.  to become this.params.
 #
 #
-#--translate to CoffeeScript
-#
 #
 
 #list of events to be selected from
@@ -213,7 +211,7 @@ module.exports.whiteboardDrawEventToJson = (params, onSuccess, onFailure) ->
       console.log error_msg
       errors.push error_msg
   if errors.length > 0
-    onFailure errors #TODO improve this
+    onFailure errors     
   else
     header = {}
     header.destination = {}
@@ -251,7 +249,7 @@ module.exports.whiteboardDrawEventToJson = (params, onSuccess, onFailure) ->
     message = {}
     message.header = header
     message.payload = payload
-    onSuccess JSON.stringify(message) #TODO improve this
+    onSuccess JSON.stringify(message)     
   return
 
 
@@ -293,7 +291,7 @@ module.exports.whiteboardUpdateEventToJson = (params, onSuccess, onFailure) ->
       console.log error_msg
       errors.push error_msg
   if errors.length > 0
-    onFailure errors #TODO improve this
+    onFailure errors     
   else
     header = {}
     header.destination = {}
@@ -331,7 +329,7 @@ module.exports.whiteboardUpdateEventToJson = (params, onSuccess, onFailure) ->
     message = {}
     message.header = header
     message.payload = payload
-    onSuccess JSON.stringify(message) #TODO improve this
+    onSuccess JSON.stringify(message)     
   return
 
 module.exports.createMeetingRequestToJson = (params, onSuccess, onFailure) ->
@@ -2331,7 +2329,7 @@ module.exports.broadcastWhiteboardDrawEventToJson = (params, onSuccess, onFailur
       console.log error_msg
       errors.push error_msg
   if errors.length > 0
-    onFailure errors #TODO improve this
+    onFailure errors     
   else
     header = {}
     header.destination = {}
@@ -2350,8 +2348,15 @@ module.exports.broadcastWhiteboardDrawEventToJson = (params, onSuccess, onFailur
     payload.timestamp = params.pTimestamp
     payload.zorder = params.zorder
     
-    #      console.log("++++++"+this.params.zorder);//TODO MUST LIMIT PARAM TO BE VISIBLE
+
+
+
+
+    console.log "++++++"+params.zorder
     #ONLY WITHING THE SCOPE OF THE FUNCTION
+
+
+
     data = {}
     data.coordinate = {}
     data.coordinate.first_x = params.firstX
@@ -2374,7 +2379,7 @@ module.exports.broadcastWhiteboardDrawEventToJson = (params, onSuccess, onFailur
     message = {}
     message.header = header
     message.payload = payload
-    onSuccess JSON.stringify(message) #TODO improve this
+    onSuccess JSON.stringify(message)     
   return
 
 
@@ -2414,7 +2419,7 @@ module.exports.broadcastWhiteboardUpdateEventToJson = (params, onSuccess, onFail
       console.log error_msg
       errors.push error_msg
   if errors.length > 0
-    onFailure errors #TODO improve this
+    onFailure errors     
   else
     header = {}
     header.destination = {}
@@ -2457,7 +2462,7 @@ module.exports.broadcastWhiteboardUpdateEventToJson = (params, onSuccess, onFail
     message = {}
     message.header = header
     message.payload = payload
-    onSuccess JSON.stringify(message) #TODO improve this
+    onSuccess JSON.stringify(message)     
   return
 
 module.exports.whiteboardCursorEventToJson = (params, onSuccess, onFailure) ->
@@ -2482,7 +2487,7 @@ module.exports.whiteboardCursorEventToJson = (params, onSuccess, onFailure) ->
       console.log error_msg
       errors.push error_msg
   if errors.length > 0
-    onFailure errors #TODO improve this
+    onFailure errors     
   else
     header = {}
     header.destination = {}
@@ -2505,7 +2510,7 @@ module.exports.whiteboardCursorEventToJson = (params, onSuccess, onFailure) ->
     message = {}
     message.header = header
     message.payload = payload
-    onSuccess JSON.stringify(message) #TODO improve this
+    onSuccess JSON.stringify(message)     
   return
 
 module.exports.broadcastWhiteboardCursorEventToJson = (params, onSuccess, onFailure) ->
@@ -2530,7 +2535,7 @@ module.exports.broadcastWhiteboardCursorEventToJson = (params, onSuccess, onFail
       console.log error_msg
       errors.push error_msg
   if errors.length > 0
-    onFailure errors #TODO improve this
+    onFailure errors     
   else
     header = {}
     header.destination = {}
@@ -2555,7 +2560,7 @@ module.exports.broadcastWhiteboardCursorEventToJson = (params, onSuccess, onFail
     message.payload = payload
     
     #TODO verify carefully this event message
-    onSuccess JSON.stringify(message) #TODO improve this
+    onSuccess JSON.stringify(message)     
   return
 
 module.exports.sharePresentationEventToJson = (params, onSuccess, onFailure) ->
@@ -2579,7 +2584,7 @@ module.exports.sharePresentationEventToJson = (params, onSuccess, onFailure) ->
       console.log error_msg
       errors.push error_msg
   if errors.length > 0
-    onFailure errors #TODO improve this
+    onFailure errors     
   else
     header = {}
     header.destination = {}
@@ -2601,7 +2606,7 @@ module.exports.sharePresentationEventToJson = (params, onSuccess, onFailure) ->
     message = {}
     message.header = header
     message.payload = payload
-    onSuccess JSON.stringify(message) #TODO improve this
+    onSuccess JSON.stringify(message)     
   return
 
 module.exports.broadcastSharePresentationEventToJson = (params, onSuccess, onFailure) ->
@@ -2631,7 +2636,7 @@ module.exports.broadcastSharePresentationEventToJson = (params, onSuccess, onFai
       console.log error_msg
       errors.push error_msg
   if errors.length > 0
-    onFailure errors #TODO improve this
+    onFailure errors     
   else
     header = {}
     header.destination = {}
@@ -2661,7 +2666,7 @@ module.exports.broadcastSharePresentationEventToJson = (params, onSuccess, onFai
     message = {}
     message.header = header
     message.payload = payload
-    onSuccess JSON.stringify(message) #TODO improve this
+    onSuccess JSON.stringify(message)     
   return
 
 module.exports.resizeAndMovePagePresentationEventToJson = (params, onSuccess, onFailure) ->
@@ -2691,7 +2696,7 @@ module.exports.resizeAndMovePagePresentationEventToJson = (params, onSuccess, on
       console.log error_msg
       errors.push error_msg
   if errors.length > 0
-    onFailure errors #TODO improve this
+    onFailure errors     
   else
     header = {}
     header.destination = {}
@@ -2723,7 +2728,7 @@ module.exports.resizeAndMovePagePresentationEventToJson = (params, onSuccess, on
     message.payload = payload
     
     #TODO verify carefully this event
-    onSuccess JSON.stringify(message) #TODO improve this
+    onSuccess JSON.stringify(message)     
   return
 
 module.exports.broadcastResizeAndMovePagePresentationEventToJson = (params, onSuccess, onFailure) ->
@@ -2753,7 +2758,7 @@ module.exports.broadcastResizeAndMovePagePresentationEventToJson = (params, onSu
       console.log error_msg
       errors.push error_msg
   if errors.length > 0
-    onFailure errors #TODO improve this
+    onFailure errors     
   else
     header = {}
     header.destination = {}
@@ -2783,7 +2788,7 @@ module.exports.broadcastResizeAndMovePagePresentationEventToJson = (params, onSu
     message = {}
     message.header = header
     message.payload = payload
-    onSuccess JSON.stringify(message) #TODO improve this
+    onSuccess JSON.stringify(message)     
   return
 
 
