@@ -127,14 +127,14 @@ exports.testWhiteboardDraw = function (test) {
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
             test.done();
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -176,7 +176,7 @@ exports.testWhiteboardUpdate = function (test) {
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
             test.done();
         });
 
@@ -184,7 +184,7 @@ exports.testWhiteboardUpdate = function (test) {
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -226,14 +226,14 @@ exports.testCreateMeetingRequest = function (test) {
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
             test.done();
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
         test.done();
     }
 
@@ -258,7 +258,7 @@ exports.testCreateMeetingRequest = function (test) {
 
     extras.isNumber(testValue.payload.meeting_descriptor.voice_conference.pin);
     extras.isNumber(testValue.payload.meeting_descriptor.voice_conference.number);
-    
+
     //Phone_numbers testing
     var isArray = testValue.payload.meeting_descriptor.phone_numbers.constructor.toString().indexOf("Array");
 
@@ -297,15 +297,15 @@ exports.testCreateMeetingResponse = function (test) {
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
             //test.done();
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
-       // test.done()
+        test.ok(false, "ERROR while parsing " + e);
+        // test.done()
     }
 
     test.equals(testValue.header.name, event_type);
@@ -412,7 +412,7 @@ function sampleCreateMeetingResponseEvent() {
     return params;
 }
 
-function sampleMeetingCreatedEvent () {
+function sampleMeetingCreatedEvent() {
     var params = {};
 
     params.channelsDestination = "someDesChannel";
@@ -427,8 +427,8 @@ function sampleMeetingCreatedEvent () {
     params.timestamp*/
     params.source = "bbb-apps";
 
-    params.meetingName="someName";
-    params.meetingID ="someId";
+    params.meetingName = "someName";
+    params.meetingID = "someId";
     params.sessionID = "someSessionId";
 
     params.descriptorName = "English 101";
@@ -464,7 +464,7 @@ function sampleMeetingCreatedEvent () {
     return params;
 }
 
-exports.testMeetingCreatedEvent = function(test){
+exports.testMeetingCreatedEvent = function (test) {
 
     var event_type = library.MEETING_CREATED_EVENT;
     var params = sampleMeetingCreatedEvent();
@@ -475,13 +475,13 @@ exports.testMeetingCreatedEvent = function(test){
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -537,23 +537,23 @@ exports.testMeetingCreatedEvent = function(test){
     test.done();
 }
 
-function sampleEndMeetingRequest () {
+function sampleEndMeetingRequest() {
     var params = {};
 
     params.channelsDestination = "someDesChannel";
-    params.channelsReply="someChannelsRep";
-    params.correlationId="someCorrId";
+    params.channelsReply = "someChannelsRep";
+    params.correlationId = "someCorrId";
     params.meetingName = "someMeetingName";
     params.meetingId = "someMeetingId";
     params.sessionId = "someSessionId";
-    params.source="someSource";
+    params.source = "someSource";
     params.force = true;
-    params.warnUsers=true;
+    params.warnUsers = true;
 
     return params;
 }
 
-exports.testEndMeetingRequest = function(test){
+exports.testEndMeetingRequest = function (test) {
 
     var event_type = library.END_MEETING_REQUEST;
     var params = sampleEndMeetingRequest();
@@ -564,13 +564,13 @@ exports.testEndMeetingRequest = function(test){
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -587,26 +587,26 @@ exports.testEndMeetingRequest = function(test){
 
     extras.isBoolean(testValue.payload.force);
     extras.isBoolean(testValue.payload.warn_users);
-  
+
     test.done();
 }
 
-function sampleEndMeetingResponse () {
+function sampleEndMeetingResponse() {
     var params = {};
 
     params.channelsDestination = "someDesChannel";
-    params.correlationId="someCorrId";
+    params.correlationId = "someCorrId";
     params.meetingName = "someMeetingName";
     params.meetingId = "someMeetingId";
     params.sessionId = "someSessionId";
-    params.source="someSource";
+    params.source = "someSource";
     params.success = true;
-    params.message="Success";
+    params.message = "Success";
 
     return params;
 }
 
-exports.testEndMeetingResponse = function(test){
+exports.testEndMeetingResponse = function (test) {
 
     var event_type = library.END_MEETING_RESPONSE;
     var params = sampleEndMeetingResponse();
@@ -617,13 +617,13 @@ exports.testEndMeetingResponse = function(test){
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -639,18 +639,18 @@ exports.testEndMeetingResponse = function(test){
 
     extras.isBoolean(testValue.payload.result.success);
     extras.isString(testValue.payload.result.message);
-  
+
     test.done();
 }
 
-function sampleEndMeetingWarning () {
+function sampleEndMeetingWarning() {
     var params = {};
 
     params.channelsDestination = "someDesChannel";
     params.meetingName = "someMeetingName";
     params.meetingId = "someMeetingId";
     params.sessionId = "someSessionId";
-    params.source="someSource";
+    params.source = "someSource";
     params.timeLeft = 30;
     params.timeUnit = "seconds";
     params.allowExtend = false;
@@ -658,7 +658,7 @@ function sampleEndMeetingWarning () {
     return params;
 }
 
-exports.testEndMeetingWarning = function(test){
+exports.testEndMeetingWarning = function (test) {
 
     var event_type = library.END_MEETING_WARNING_EVENT;
     var params = sampleEndMeetingWarning();
@@ -669,13 +669,13 @@ exports.testEndMeetingWarning = function(test){
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -695,19 +695,19 @@ exports.testEndMeetingWarning = function(test){
     test.done();
 }
 
-function sampleMeetingEndedEvent () {
+function sampleMeetingEndedEvent() {
     var params = {};
 
     params.channelsDestination = "apps_channel";
     params.meetingName = "someMeetingName";
     params.meetingId = "someMeetingId";
     params.sessionId = "someSessionId";
-    params.source="bbb-apps";
+    params.source = "bbb-apps";
 
     return params;
 }
 
-exports.testMeetingEndedEvent = function(test){
+exports.testMeetingEndedEvent = function (test) {
 
     var event_type = library.MEETING_ENDED_EVENT;
     var params = sampleMeetingEndedEvent();
@@ -718,13 +718,13 @@ exports.testMeetingEndedEvent = function(test){
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -740,14 +740,14 @@ exports.testMeetingEndedEvent = function(test){
     test.done();
 }
 
-function sampleRegisterUserRequest () {
+function sampleRegisterUserRequest() {
     var params = {};
 
     params.channelsDestination = "apps_channel";
     params.meetingName = "someMeetingName";
     params.meetingId = "someMeetingId";
     params.sessionId = "someSessionId";
-    params.source="bbb-web";
+    params.source = "bbb-web";
 
     params.channelsReply = "apps_channel";
     params.correlationId = "abc";
@@ -764,13 +764,13 @@ function sampleRegisterUserRequest () {
     params.descriptorAvatar = "http://www.gravatar.com/bigbluebutton";
 
     params.studentId = "54321";
-    params.program ="engineering";
+    params.program = "engineering";
 
 
     return params;
 }
 
-exports.testRegisterUserRequest = function(test){
+exports.testRegisterUserRequest = function (test) {
 
     var event_type = library.REGISTER_USER_REQUEST;
     var params = sampleRegisterUserRequest();
@@ -781,13 +781,13 @@ exports.testRegisterUserRequest = function(test){
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -802,20 +802,20 @@ exports.testRegisterUserRequest = function(test){
     extras.isString(testValue.payload.meeting.id);
     extras.isString(testValue.payload.session);
 
-    extras.isString(testValue.payload.user_descriptor.external_id  );
-    extras.isString(testValue.payload.user_descriptor.name  );
-    extras.isString(testValue.payload.user_descriptor.role  );
-    extras.isNumber(testValue.payload.user_descriptor.pin  );
-    extras.isString(testValue.payload.user_descriptor.welcome_message  );
-    extras.isString(testValue.payload.user_descriptor.logout_url  );
-    extras.isString(testValue.payload.user_descriptor.avatar_url  );
-    extras.isString(testValue.payload.user_descriptor.metadata.student_id  ); //TODO should this remain a string or become Number?
+    extras.isString(testValue.payload.user_descriptor.external_id);
+    extras.isString(testValue.payload.user_descriptor.name);
+    extras.isString(testValue.payload.user_descriptor.role);
+    extras.isNumber(testValue.payload.user_descriptor.pin);
+    extras.isString(testValue.payload.user_descriptor.welcome_message);
+    extras.isString(testValue.payload.user_descriptor.logout_url);
+    extras.isString(testValue.payload.user_descriptor.avatar_url);
+    extras.isString(testValue.payload.user_descriptor.metadata.student_id); //TODO should this remain a string or become Number?
     extras.isString(testValue.payload.user_descriptor.metadata.program);
 
     test.done();
 }
 
-function sampleRegisterUserResponse () {
+function sampleRegisterUserResponse() {
     var params = {};
 
     params.channelsDestination = "apps_channel";
@@ -824,13 +824,13 @@ function sampleRegisterUserResponse () {
     params.meetingName = "someMeetingName";
     params.meetingId = "someMeetingId";
     params.sessionId = "someSessionId";
-    params.source="bbb-web";
+    params.source = "bbb-web";
 
 
     params.token = "guga-token";
     params.success = true;
-    params.message ="Success";
-  
+    params.message = "Success";
+
     params.descriptorName = "Guga";
     params.descriptorExternalId = "user1";
     params.descriptorRole = "MODERATOR";
@@ -840,13 +840,13 @@ function sampleRegisterUserResponse () {
     params.descriptorAvatar = "http://www.gravatar.com/bigbluebutton";
 
     params.studentId = "54321";
-    params.program ="engineering";
+    params.program = "engineering";
 
 
     return params;
 }
 
-exports.testRegisterUserResponse = function(test){
+exports.testRegisterUserResponse = function (test) {
 
     var event_type = library.REGISTER_USER_RESPONSE;
     var params = sampleRegisterUserResponse();
@@ -857,13 +857,13 @@ exports.testRegisterUserResponse = function(test){
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -877,14 +877,14 @@ exports.testRegisterUserResponse = function(test){
     extras.isString(testValue.payload.meeting.id);
     extras.isString(testValue.payload.session);
 
-    extras.isString(testValue.payload.user_descriptor.external_id  );
-    extras.isString(testValue.payload.user_descriptor.name  );
-    extras.isString(testValue.payload.user_descriptor.role  );
-    extras.isNumber(testValue.payload.user_descriptor.pin  );
-    extras.isString(testValue.payload.user_descriptor.welcome_message  );
-    extras.isString(testValue.payload.user_descriptor.logout_url  );
-    extras.isString(testValue.payload.user_descriptor.avatar_url  );
-    extras.isString(testValue.payload.user_descriptor.metadata.student_id  ); //TODO should this remain a string or become Number?
+    extras.isString(testValue.payload.user_descriptor.external_id);
+    extras.isString(testValue.payload.user_descriptor.name);
+    extras.isString(testValue.payload.user_descriptor.role);
+    extras.isNumber(testValue.payload.user_descriptor.pin);
+    extras.isString(testValue.payload.user_descriptor.welcome_message);
+    extras.isString(testValue.payload.user_descriptor.logout_url);
+    extras.isString(testValue.payload.user_descriptor.avatar_url);
+    extras.isString(testValue.payload.user_descriptor.metadata.student_id); //TODO should this remain a string or become Number?
     extras.isString(testValue.payload.user_descriptor.metadata.program);
 
     extras.isString(testValue.payload.user_token);
@@ -894,14 +894,14 @@ exports.testRegisterUserResponse = function(test){
     test.done();
 }
 
-function sampleUserRegisteredEvent () {
+function sampleUserRegisteredEvent() {
     var params = {};
 
     params.channelsDestination = "apps_channel";
     params.meetingName = "someMeetingName";
     params.meetingId = "someMeetingId";
     params.sessionId = "someSessionId";
-    params.source="bbb-web";
+    params.source = "bbb-web";
 
     params.descriptorName = "Guga";
     params.descriptorExternalId = "user1";
@@ -912,13 +912,13 @@ function sampleUserRegisteredEvent () {
     params.descriptorAvatar = "http://www.gravatar.com/bigbluebutton";
 
     params.studentId = "54321";
-    params.program ="engineering";
+    params.program = "engineering";
 
 
     return params;
 }
 
-exports.testUserRegisteredEvent = function(test){
+exports.testUserRegisteredEvent = function (test) {
 
     var event_type = library.USER_REGISTERED_EVENT;
     var params = sampleUserRegisteredEvent();
@@ -929,13 +929,13 @@ exports.testUserRegisteredEvent = function(test){
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -948,36 +948,36 @@ exports.testUserRegisteredEvent = function(test){
     extras.isString(testValue.payload.meeting.id);
     extras.isString(testValue.payload.session);
 
-    extras.isString(testValue.payload.user_descriptor.external_id  );
-    extras.isString(testValue.payload.user_descriptor.name  );
-    extras.isString(testValue.payload.user_descriptor.role  );
-    extras.isNumber(testValue.payload.user_descriptor.pin  );
-    extras.isString(testValue.payload.user_descriptor.welcome_message  );
-    extras.isString(testValue.payload.user_descriptor.logout_url  );
-    extras.isString(testValue.payload.user_descriptor.avatar_url  );
-    extras.isString(testValue.payload.user_descriptor.metadata.student_id  ); //TODO should this remain a string or become Number?
+    extras.isString(testValue.payload.user_descriptor.external_id);
+    extras.isString(testValue.payload.user_descriptor.name);
+    extras.isString(testValue.payload.user_descriptor.role);
+    extras.isNumber(testValue.payload.user_descriptor.pin);
+    extras.isString(testValue.payload.user_descriptor.welcome_message);
+    extras.isString(testValue.payload.user_descriptor.logout_url);
+    extras.isString(testValue.payload.user_descriptor.avatar_url);
+    extras.isString(testValue.payload.user_descriptor.metadata.student_id); //TODO should this remain a string or become Number?
     extras.isString(testValue.payload.user_descriptor.metadata.program);
 
     test.done();
 }
 
-function sampleUserJoinRequest () {
+function sampleUserJoinRequest() {
     var params = {};
 
     params.channelsDestination = "apps_channel";
     params.meetingName = "someMeetingName";
     params.meetingId = "someMeetingId";
     params.sessionId = "someSessionId";
-    params.source="bbb-web";
+    params.source = "bbb-web";
 
-    params.channelsReply= "bbb-web";
-    params.correlationId= "someCorId";
+    params.channelsReply = "bbb-web";
+    params.correlationId = "someCorId";
     params.token = "user1-token-1";
 
     return params;
 }
 
-exports.testUserJoinRequest = function(test){
+exports.testUserJoinRequest = function (test) {
 
     var event_type = library.USER_JOIN_REQUEST;
     var params = sampleUserJoinRequest();
@@ -988,13 +988,13 @@ exports.testUserJoinRequest = function(test){
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -1016,19 +1016,19 @@ exports.testUserJoinRequest = function(test){
     test.done();
 }
 
-function sampleUserJoinResponse () {
+function sampleUserJoinResponse() {
     var params = {};
 
     params.channelsDestination = "apps_channel";
     params.meetingName = "someMeetingName";
     params.meetingId = "someMeetingId";
     params.sessionId = "someSessionId";
-    params.source="bbb-web";
+    params.source = "bbb-web";
 
-    params.correlationId= "someCorId";
+    params.correlationId = "someCorId";
 
-    params.success=true;
-    params.message="Success";
+    params.success = true;
+    params.message = "Success";
 
     params.descriptorName = "Guga";
     params.descriptorExternalId = "user1";
@@ -1039,14 +1039,14 @@ function sampleUserJoinResponse () {
     params.descriptorAvatar = "http://www.gravatar.com/bigbluebutton";
 
     params.studentId = "54321";
-    params.program ="engineering";
+    params.program = "engineering";
 
 
 
     return params;
 }
 
-exports.testUserJoinResponse = function(test){
+exports.testUserJoinResponse = function (test) {
 
     var event_type = library.USER_JOIN_RESPONSE;
     var params = sampleUserJoinResponse();
@@ -1057,13 +1057,13 @@ exports.testUserJoinResponse = function(test){
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -1082,14 +1082,14 @@ exports.testUserJoinResponse = function(test){
     extras.isBoolean(testValue.payload.result.success);
     extras.isString(testValue.payload.result.message);
 
-    extras.isString(testValue.payload.user_descriptor.external_id  );
-    extras.isString(testValue.payload.user_descriptor.name  );
-    extras.isString(testValue.payload.user_descriptor.role  );
-    extras.isNumber(testValue.payload.user_descriptor.pin  );
-    extras.isString(testValue.payload.user_descriptor.welcome_message  );
-    extras.isString(testValue.payload.user_descriptor.logout_url  );
-    extras.isString(testValue.payload.user_descriptor.avatar_url  );
-    extras.isString(testValue.payload.user_descriptor.metadata.student_id  ); //TODO should this remain a string or become Number?
+    extras.isString(testValue.payload.user_descriptor.external_id);
+    extras.isString(testValue.payload.user_descriptor.name);
+    extras.isString(testValue.payload.user_descriptor.role);
+    extras.isNumber(testValue.payload.user_descriptor.pin);
+    extras.isString(testValue.payload.user_descriptor.welcome_message);
+    extras.isString(testValue.payload.user_descriptor.logout_url);
+    extras.isString(testValue.payload.user_descriptor.avatar_url);
+    extras.isString(testValue.payload.user_descriptor.metadata.student_id); //TODO should this remain a string or become Number?
     extras.isString(testValue.payload.user_descriptor.metadata.program);
 
     test.done();
@@ -1307,11 +1307,11 @@ function sampleGetUsersRequest() {
     params.userId = "juanid";
     params.userName = "Juan Tamad";
 
-    params.channelsReply="apps_channel";
-    params.correlationId="abc";
+    params.channelsReply = "apps_channel";
+    params.correlationId = "abc";
 
-    params.requesterId="juanid";
-    params.requesterName="Juan Tamad";
+    params.requesterId = "juanid";
+    params.requesterName = "Juan Tamad";
 
     return params;
 }
@@ -1595,10 +1595,10 @@ function sampleRaiseUserHandRequest() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.raise=true;
+    params.raise = true;
 
-    params.requesterId="juanid";
-    params.requesterName="Juan Tamad";
+    params.requesterId = "juanid";
+    params.requesterName = "Juan Tamad";
 
     return params;
 }
@@ -1652,10 +1652,10 @@ function sampleUserRaisedHandEvent() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.raise=true;
+    params.raise = true;
 
-    params.requesterId="juanid";
-    params.requesterName="Juan Tamad";
+    params.requesterId = "juanid";
+    params.requesterName = "Juan Tamad";
 
     return params;
 }
@@ -1709,11 +1709,11 @@ function sampleAssignedPresenterRequest() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.presenterId="user1";
-    params.presenterName="Guga";
+    params.presenterId = "user1";
+    params.presenterName = "Guga";
 
-    params.assignedById="user2";
-    params.assignedByName="Juan";
+    params.assignedById = "user2";
+    params.assignedByName = "Juan";
 
     return params;
 }
@@ -1768,11 +1768,11 @@ function samplePresenterAssignedEvent() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.presenterId="user1";
-    params.presenterName="Guga";
+    params.presenterId = "user1";
+    params.presenterName = "Guga";
 
-    params.assignedById="user2";
-    params.assignedByName="Juan";
+    params.assignedById = "user2";
+    params.assignedByName = "Juan";
 
     return params;
 }
@@ -1827,13 +1827,13 @@ function sampleMuteUserRequest() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.userId="user1";
-    params.userName="Guga";
+    params.userId = "user1";
+    params.userName = "Guga";
 
-    params.requesterId="user2";
-    params.requesterName="Juan";
+    params.requesterId = "user2";
+    params.requesterName = "Juan";
 
-    params.mute=true;
+    params.mute = true;
 
     return params;
 }
@@ -1890,13 +1890,13 @@ function sampleMuteUserRequestEvent() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.userId="user1";
-    params.userName="Guga";
+    params.userId = "user1";
+    params.userName = "Guga";
 
-    params.requesterId="user2";
-    params.requesterName="Juan";
+    params.requesterId = "user2";
+    params.requesterName = "Juan";
 
-    params.mute=true;
+    params.mute = true;
 
     return params;
 }
@@ -1953,10 +1953,10 @@ function sampleMuteVoiceUserRequest() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.userId="user1";
-    params.userName="Guga";
+    params.userId = "user1";
+    params.userName = "Guga";
 
-    params.mute=true;
+    params.mute = true;
 
     params.freeSWITCH_IPv4 = "192.168.0.166"; //// had to change - to _
     params.conference_Name = "72382"; //// had to change - to _
@@ -2022,10 +2022,10 @@ function sampleVoiceUserMutedEvent() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.userId="user1";
-    params.userName="Guga";
+    params.userId = "user1";
+    params.userName = "Guga";
 
-    params.mute=true;
+    params.mute = true;
 
     params.freeSWITCH_IPv4 = "192.168.0.166"; //// had to change - to _
     params.conference_Name = "72382"; //// had to change - to _
@@ -2089,10 +2089,10 @@ function sampleUserMutedEvent() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.userId="user1";
-    params.userName="Guga";
+    params.userId = "user1";
+    params.userName = "Guga";
 
-    params.mute=true;
+    params.mute = true;
 
     return params;
 }
@@ -2146,14 +2146,14 @@ function sampleUserPublishStreamRequest() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.userId="user1";
-    params.userName="Guga";
+    params.userId = "user1";
+    params.userName = "Guga";
 
-    params.channelsReply="apps_channel";
-    params.correlationId="abc";
+    params.channelsReply = "apps_channel";
+    params.correlationId = "abc";
 
-    params.mediaType="video";
-    params.metadataFoo="bar";
+    params.mediaType = "video";
+    params.metadataFoo = "bar";
 
     return params;
 }
@@ -2196,7 +2196,7 @@ exports.testUserPublishStreamRequest = function (test) {
     extras.isString(testValue.header.reply.to);
     extras.isString(testValue.header.reply.correlation_id);
 
-    extras.isString(testValue.payload.media.media_type);//TODO make it one of video/ / ..
+    extras.isString(testValue.payload.media.media_type); //TODO make it one of video/ / ..
     extras.isString(testValue.payload.media.metadata.foo);
 
     test.done();
@@ -2211,15 +2211,15 @@ function sampleUserPublishStreamResponse() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.userId="user1";
-    params.userName="Guga";
+    params.userId = "user1";
+    params.userName = "Guga";
 
-    params.channelsReply="apps_channel";
-    params.correlationId="abc";
+    params.channelsReply = "apps_channel";
+    params.correlationId = "abc";
 
-    params.mediaType="video";
-    params.metadataFoo="bar";
-    params.uri="http://cdn.bigbluebutton.org/stream/v1234";
+    params.mediaType = "video";
+    params.metadataFoo = "bar";
+    params.uri = "http://cdn.bigbluebutton.org/stream/v1234";
 
     return params;
 }
@@ -2246,7 +2246,7 @@ exports.testUserPublishStreamResponse = function (test) {
 
     test.equals(testValue.header.name, event_type);
 
-    extras.isString(testValue.header.destination.to);    
+    extras.isString(testValue.header.destination.to);
     extras.isString(testValue.header.destination.correlation_id);
 
     extras.isString(testValue.header.name);
@@ -2260,7 +2260,7 @@ exports.testUserPublishStreamResponse = function (test) {
     extras.isString(testValue.payload.user.id);
     extras.isString(testValue.payload.user.name);
 
-    extras.isString(testValue.payload.media.media_type);//TODO make it one of video/ / ..
+    extras.isString(testValue.payload.media.media_type); //TODO make it one of video/ / ..
     extras.isString(testValue.payload.media.metadata.foo);
     extras.isString(testValue.payload.media.uri);
 
@@ -2268,7 +2268,7 @@ exports.testUserPublishStreamResponse = function (test) {
 }
 
 //intro to new tests for ""
-/*function sampleUserPublishStreamResponse__forNada() {
+function sampleUserPublishStreamResponse__forNada() {
     var params = {};
 
     params.channelsDestination = "";
@@ -2277,14 +2277,14 @@ exports.testUserPublishStreamResponse = function (test) {
     params.sessionId = "";
     params.source = "";
 
-    params.userId="";
-    params.userName="";
+    params.userId = "";
+    params.userName = "";
 
-    params.correlationId="";
+    params.correlationId = "";
 
-    params.mediaType="";
-    params.metadataFoo="";
-    params.uri="";
+    params.mediaType = "";
+    params.metadataFoo = "";
+    params.uri = "";
 
     return params;
 }
@@ -2293,8 +2293,7 @@ exports.testUserPublishStreamResponse__forNada = function (test) {
     var params = sampleUserPublishStreamResponse__forNada();
 
     library.userPublishStreamResponseToJson(params,
-        function (text) {
-        },
+        function (text) {},
         function (errors) {
             //Check if all parameters that were assigned values in sample***()
             //have been checked for not being null/""/undefined
@@ -2302,7 +2301,7 @@ exports.testUserPublishStreamResponse__forNada = function (test) {
         });
 
     test.done();
-}*/
+}
 
 function samplePublishedStreamEvent() {
     var params = {};
@@ -2313,14 +2312,14 @@ function samplePublishedStreamEvent() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.userId="user1";
-    params.userName="Guga";
+    params.userId = "user1";
+    params.userName = "Guga";
 
-    params.channelsReply="apps_channel";
+    params.channelsReply = "apps_channel";
 
-    params.mediaType="video";
-    params.metadataFoo="bar";
-    params.uri="http://cdn.bigbluebutton.org/stream/v1234";
+    params.mediaType = "video";
+    params.metadataFoo = "bar";
+    params.uri = "http://cdn.bigbluebutton.org/stream/v1234";
 
     return params;
 }
@@ -2347,7 +2346,7 @@ exports.testPublishedStreamEvent = function (test) {
 
     test.equals(testValue.header.name, event_type);
 
-    extras.isString(testValue.header.destination.to);    
+    extras.isString(testValue.header.destination.to);
 
     extras.isString(testValue.header.name);
     extras.isString(testValue.header.timestamp); //TODO
@@ -2360,14 +2359,14 @@ exports.testPublishedStreamEvent = function (test) {
     extras.isString(testValue.payload.user.id);
     extras.isString(testValue.payload.user.name);
 
-    extras.isString(testValue.payload.media.media_type);//TODO make it one of video/ / ..
+    extras.isString(testValue.payload.media.media_type); //TODO make it one of video/ / ..
     extras.isString(testValue.payload.media.metadata.foo);
     extras.isString(testValue.payload.media.uri);
 
     test.done();
 }
 
-/*function samplePublishedStreamEvent__forNada() {
+function samplePublishedStreamEvent__forNada() {
     var params = {};
 
     params.channelsDestination = "";
@@ -2376,12 +2375,12 @@ exports.testPublishedStreamEvent = function (test) {
     params.sessionId = "";
     params.source = "";
 
-    params.userId="";
-    params.userName="";
+    params.userId = "";
+    params.userName = "";
 
-    params.mediaType="";
-    params.metadataFoo="";
-    params.uri="";
+    params.mediaType = "";
+    params.metadataFoo = "";
+    params.uri = "";
 
     return params;
 }
@@ -2390,8 +2389,7 @@ exports.testPublishedStreamEvent__forNada = function (test) {
     var params = samplePublishedStreamEvent__forNada();
 
     library.publishedStreamEventToJson(params,
-        function (text) {
-        },
+        function (text) {},
         function (errors) {
             //Check if all parameters that were assigned values in sample***()
             //have been checked for not being null/""/undefined
@@ -2399,7 +2397,7 @@ exports.testPublishedStreamEvent__forNada = function (test) {
         });
 
     test.done();
-}*/
+}
 
 function sampleUserPublishedStreamEvent() {
     var params = {};
@@ -2410,14 +2408,14 @@ function sampleUserPublishedStreamEvent() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.userId="user1";
-    params.userName="Guga";
+    params.userId = "user1";
+    params.userName = "Guga";
 
-    params.channelsReply="apps_channel";
+    params.channelsReply = "apps_channel";
 
-    params.mediaType="video";
-    params.metadataFoo="bar";
-    params.uri="http://cdn.bigbluebutton.org/stream/v1234";
+    params.mediaType = "video";
+    params.metadataFoo = "bar";
+    params.uri = "http://cdn.bigbluebutton.org/stream/v1234";
 
     return params;
 }
@@ -2444,7 +2442,7 @@ exports.testUserPublishedStreamEvent = function (test) {
 
     test.equals(testValue.header.name, event_type);
 
-    extras.isString(testValue.header.destination.to);    
+    extras.isString(testValue.header.destination.to);
 
     extras.isString(testValue.header.name);
     extras.isString(testValue.header.timestamp); //TODO
@@ -2457,7 +2455,7 @@ exports.testUserPublishedStreamEvent = function (test) {
     extras.isString(testValue.payload.user.id);
     extras.isString(testValue.payload.user.name);
 
-    extras.isString(testValue.payload.media.media_type);//TODO make it one of video/ / ..
+    extras.isString(testValue.payload.media.media_type); //TODO make it one of video/ / ..
     extras.isString(testValue.payload.media.metadata.foo);
     extras.isString(testValue.payload.media.uri);
 
@@ -2473,14 +2471,14 @@ function sampleUnpublishedStreamEvent() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.userId="user1";
-    params.userName="Guga";
+    params.userId = "user1";
+    params.userName = "Guga";
 
-    params.channelsReply="apps_channel";
+    params.channelsReply = "apps_channel";
 
-    params.mediaType="video";
-    params.metadataFoo="bar";
-    params.uri="http://cdn.bigbluebutton.org/stream/v1234";
+    params.mediaType = "video";
+    params.metadataFoo = "bar";
+    params.uri = "http://cdn.bigbluebutton.org/stream/v1234";
 
     return params;
 }
@@ -2507,7 +2505,7 @@ exports.testUnpublishedStreamEvent = function (test) {
 
     test.equals(testValue.header.name, event_type);
 
-    extras.isString(testValue.header.destination.to);    
+    extras.isString(testValue.header.destination.to);
 
     extras.isString(testValue.header.name);
     extras.isString(testValue.header.timestamp); //TODO
@@ -2520,7 +2518,7 @@ exports.testUnpublishedStreamEvent = function (test) {
     extras.isString(testValue.payload.user.id);
     extras.isString(testValue.payload.user.name);
 
-    extras.isString(testValue.payload.media.media_type);//TODO make it one of video/ / ..
+    extras.isString(testValue.payload.media.media_type); //TODO make it one of video/ / ..
     extras.isString(testValue.payload.media.metadata.foo);
     extras.isString(testValue.payload.media.uri);
 
@@ -2536,14 +2534,14 @@ function sampleUserUnpublishedStreamEvent() {
     params.sessionId = "someSessionId";
     params.source = "bbb-web";
 
-    params.userId="user1";
-    params.userName="Guga";
+    params.userId = "user1";
+    params.userName = "Guga";
 
-    params.channelsReply="apps_channel"; //TODO -do i need this?
+    params.channelsReply = "apps_channel"; //TODO -do i need this?
 
-    params.mediaType="video";
-    params.metadataFoo="bar";
-    params.uri="http://cdn.bigbluebutton.org/stream/v1234";
+    params.mediaType = "video";
+    params.metadataFoo = "bar";
+    params.uri = "http://cdn.bigbluebutton.org/stream/v1234";
 
     return params;
 }
@@ -2570,7 +2568,7 @@ exports.testUserUnpublishedStreamEvent = function (test) {
 
     test.equals(testValue.header.name, event_type);
 
-    extras.isString(testValue.header.destination.to);    
+    extras.isString(testValue.header.destination.to);
 
     extras.isString(testValue.header.name);
     extras.isString(testValue.header.timestamp); //TODO
@@ -2583,7 +2581,7 @@ exports.testUserUnpublishedStreamEvent = function (test) {
     extras.isString(testValue.payload.user.id);
     extras.isString(testValue.payload.user.name);
 
-    extras.isString(testValue.payload.media.media_type);//TODO make it one of video/ / ..
+    extras.isString(testValue.payload.media.media_type); //TODO make it one of video/ / ..
     extras.isString(testValue.payload.media.metadata.foo);
     extras.isString(testValue.payload.media.uri);
 
@@ -2600,14 +2598,14 @@ function samplePublicChatMessageEvent() {
     params.source = "bbb-web";
 
     params.messageCorrelationId = "user1-msg1";
-    params.messageTimestamp = "2013-12-23T08:50Z";//TODO
-    params.messageFromId="user1";
-    params.messageFromName= "Richard";
-    params.messageText="Hello world!";
-    params.messageLang="en_US";
-    params.messageColor=16711680;
-    params.messageSize=14;
-    params.messageFontType="Arial";
+    params.messageTimestamp = "2013-12-23T08:50Z"; //TODO
+    params.messageFromId = "user1";
+    params.messageFromName = "Richard";
+    params.messageText = "Hello world!";
+    params.messageLang = "en_US";
+    params.messageColor = 16711680;
+    params.messageSize = 14;
+    params.messageFontType = "Arial";
 
     return params;
 }
@@ -2634,7 +2632,7 @@ exports.testPublicChatMessageEvent = function (test) {
 
     test.equals(testValue.header.name, event_type);
 
-    extras.isString(testValue.header.destination.to);    
+    extras.isString(testValue.header.destination.to);
 
     extras.isString(testValue.header.name);
     extras.isString(testValue.header.timestamp); //TODO
@@ -2645,14 +2643,14 @@ exports.testPublicChatMessageEvent = function (test) {
     extras.isString(testValue.payload.session);
 
     extras.isString(testValue.payload.chat_message.correlation_id);
-    extras.isString(testValue.payload.chat_message.timestamp );
-    extras.isString(testValue.payload.chat_message.from.id );
-    extras.isString(testValue.payload.chat_message.from.name );
-    extras.isString(testValue.payload.chat_message.message.text );
-    extras.isString(testValue.payload.chat_message.message.lang ); //TODO from list of lang options
-    extras.isNumber(testValue.payload.chat_message.font.color );
-    extras.isNumber(testValue.payload.chat_message.font.size );
-    extras.isString(testValue.payload.chat_message.font.font_type );
+    extras.isString(testValue.payload.chat_message.timestamp);
+    extras.isString(testValue.payload.chat_message.from.id);
+    extras.isString(testValue.payload.chat_message.from.name);
+    extras.isString(testValue.payload.chat_message.message.text);
+    extras.isString(testValue.payload.chat_message.message.lang); //TODO from list of lang options
+    extras.isNumber(testValue.payload.chat_message.font.color);
+    extras.isNumber(testValue.payload.chat_message.font.size);
+    extras.isString(testValue.payload.chat_message.font.font_type);
 
     test.done();
 }
@@ -2667,24 +2665,24 @@ function sampleBroadcastPublicChatMessageEvent() {
     params.source = "bbb-web";
 
     params.messageCorrelationId = "user1-msg1";
-    params.messageUserTimestamp = "2013-12-23T08:50Z";//TODO
-    params.messageFromId="user1";
-    params.messageFromName= "Richard";
-    params.messageText="Hello world!";
-    params.messageLang="en_US";
-    params.messageColor=16711680;
-    params.messageSize=14;
-    params.messageFontType="Arial";
+    params.messageUserTimestamp = "2013-12-23T08:50Z"; //TODO
+    params.messageFromId = "user1";
+    params.messageFromName = "Richard";
+    params.messageText = "Hello world!";
+    params.messageLang = "en_US";
+    params.messageColor = 16711680;
+    params.messageSize = 14;
+    params.messageFontType = "Arial";
 
     params.messageId = "msg1234"
-    params.messageServerTimestamp="2013-12-23T08:50Z";//TODO
+    params.messageServerTimestamp = "2013-12-23T08:50Z"; //TODO
 
     params.translations = [];
 
     var a = {};
     a.lang = "es_LA";
     a.text = "Hola Mundo!";
-    
+
     params.translations[0] = a;
 
 
@@ -2713,7 +2711,7 @@ exports.testBroadcastPublicChatMessageEvent = function (test) {
 
     test.equals(testValue.header.name, event_type);
 
-    extras.isString(testValue.header.destination.to);    
+    extras.isString(testValue.header.destination.to);
 
     extras.isString(testValue.header.name);
     extras.isString(testValue.header.timestamp); //TODO
@@ -2724,16 +2722,16 @@ exports.testBroadcastPublicChatMessageEvent = function (test) {
     extras.isString(testValue.payload.session);
 
     extras.isString(testValue.payload.chat_message.correlation_id);
-    extras.isString(testValue.payload.chat_message.id );
+    extras.isString(testValue.payload.chat_message.id);
     extras.isString(testValue.payload.chat_message.server_timestamp);
     extras.isString(testValue.payload.chat_message.user_timestamp);
-    extras.isString(testValue.payload.chat_message.from.id );
-    extras.isString(testValue.payload.chat_message.from.name );
-    extras.isString(testValue.payload.chat_message.message.text );
-    extras.isString(testValue.payload.chat_message.message.lang ); //TODO from list of lang options
-    extras.isNumber(testValue.payload.chat_message.font.color );
-    extras.isNumber(testValue.payload.chat_message.font.size );
-    extras.isString(testValue.payload.chat_message.font.font_type );
+    extras.isString(testValue.payload.chat_message.from.id);
+    extras.isString(testValue.payload.chat_message.from.name);
+    extras.isString(testValue.payload.chat_message.message.text);
+    extras.isString(testValue.payload.chat_message.message.lang); //TODO from list of lang options
+    extras.isNumber(testValue.payload.chat_message.font.color);
+    extras.isNumber(testValue.payload.chat_message.font.size);
+    extras.isString(testValue.payload.chat_message.font.font_type);
 
 
     //Translations testing
@@ -2749,7 +2747,7 @@ exports.testBroadcastPublicChatMessageEvent = function (test) {
             extras.isNotUndefined(aTranslation.lang);
             extras.isNotNull(aTranslation.lang);
             test.notEqual("", aTranslation.lang);
-            extras.isString(aTranslation.lang);//TODO is one of the lang options
+            extras.isString(aTranslation.lang); //TODO is one of the lang options
 
             extras.isNotUndefined(aTranslation.text);
             extras.isNotNull(aTranslation.text);
@@ -2771,16 +2769,16 @@ function samplePrivateChatMessageEvent() {
     params.source = "bbb-web";
 
     params.messageCorrelationId = "user1-msg1";
-    params.messageTimestamp = "2013-12-23T08:50Z";//TODO
-    params.messageFromId="user1";
-    params.messageFromName= "Richard";
-    params.messageToId="user2";
-    params.messageToName= "Guga";
-    params.messageText="Hello world!";
-    params.messageLang="en_US";
-    params.messageColor=16711680;
-    params.messageSize=14;
-    params.messageFontType="Arial";
+    params.messageTimestamp = "2013-12-23T08:50Z"; //TODO
+    params.messageFromId = "user1";
+    params.messageFromName = "Richard";
+    params.messageToId = "user2";
+    params.messageToName = "Guga";
+    params.messageText = "Hello world!";
+    params.messageLang = "en_US";
+    params.messageColor = 16711680;
+    params.messageSize = 14;
+    params.messageFontType = "Arial";
 
     return params;
 }
@@ -2807,7 +2805,7 @@ exports.testPrivateChatMessageEvent = function (test) {
 
     test.equals(testValue.header.name, event_type);
 
-    extras.isString(testValue.header.destination.to);    
+    extras.isString(testValue.header.destination.to);
 
     extras.isString(testValue.header.name);
     extras.isString(testValue.header.timestamp); //TODO
@@ -2818,16 +2816,16 @@ exports.testPrivateChatMessageEvent = function (test) {
     extras.isString(testValue.payload.session);
 
     extras.isString(testValue.payload.chat_message.correlation_id);
-    extras.isString(testValue.payload.chat_message.timestamp );
-    extras.isString(testValue.payload.chat_message.from.id );
-    extras.isString(testValue.payload.chat_message.from.name );
-    extras.isString(testValue.payload.chat_message.to.id );
-    extras.isString(testValue.payload.chat_message.to.name );
-    extras.isString(testValue.payload.chat_message.message.text );
-    extras.isString(testValue.payload.chat_message.message.lang ); //TODO from list of lang options
-    extras.isNumber(testValue.payload.chat_message.font.color );
-    extras.isNumber(testValue.payload.chat_message.font.size );
-    extras.isString(testValue.payload.chat_message.font.font_type );
+    extras.isString(testValue.payload.chat_message.timestamp);
+    extras.isString(testValue.payload.chat_message.from.id);
+    extras.isString(testValue.payload.chat_message.from.name);
+    extras.isString(testValue.payload.chat_message.to.id);
+    extras.isString(testValue.payload.chat_message.to.name);
+    extras.isString(testValue.payload.chat_message.message.text);
+    extras.isString(testValue.payload.chat_message.message.lang); //TODO from list of lang options
+    extras.isNumber(testValue.payload.chat_message.font.color);
+    extras.isNumber(testValue.payload.chat_message.font.size);
+    extras.isString(testValue.payload.chat_message.font.font_type);
 
     test.done();
 }
@@ -2842,24 +2840,24 @@ function sampleBroadcastPrivateChatMessageEvent() {
     params.source = "bbb-web";
 
     params.messageCorrelationId = "user1-msg1";
-    params.messageUserTimestamp = "2013-12-23T08:50Z";//TODO
-    params.messageFromId="user1";
-    params.messageFromName= "Richard";
-    params.messageText="Hello world!";
-    params.messageLang="en_US";
-    params.messageColor=16711680;
-    params.messageSize=14;
-    params.messageFontType="Arial";
+    params.messageUserTimestamp = "2013-12-23T08:50Z"; //TODO
+    params.messageFromId = "user1";
+    params.messageFromName = "Richard";
+    params.messageText = "Hello world!";
+    params.messageLang = "en_US";
+    params.messageColor = 16711680;
+    params.messageSize = 14;
+    params.messageFontType = "Arial";
 
     params.messageId = "msg1234"
-    params.messageServerTimestamp="2013-12-23T08:50Z";//TODO
+    params.messageServerTimestamp = "2013-12-23T08:50Z"; //TODO
 
     params.translations = [];
 
     var a = {};
     a.lang = "es_LA";
     a.text = "Hola Mundo!";
-    
+
     params.translations[0] = a;
 
 
@@ -2888,7 +2886,7 @@ exports.testBroadcastPrivateChatMessageEvent = function (test) {
 
     test.equals(testValue.header.name, event_type);
 
-    extras.isString(testValue.header.destination.to);    
+    extras.isString(testValue.header.destination.to);
 
     extras.isString(testValue.header.name);
     extras.isString(testValue.header.timestamp); //TODO
@@ -2899,16 +2897,16 @@ exports.testBroadcastPrivateChatMessageEvent = function (test) {
     extras.isString(testValue.payload.session);
 
     extras.isString(testValue.payload.chat_message.correlation_id);
-    extras.isString(testValue.payload.chat_message.id );
+    extras.isString(testValue.payload.chat_message.id);
     extras.isString(testValue.payload.chat_message.server_timestamp);
     extras.isString(testValue.payload.chat_message.user_timestamp);
-    extras.isString(testValue.payload.chat_message.from.id );
-    extras.isString(testValue.payload.chat_message.from.name );
-    extras.isString(testValue.payload.chat_message.message.text );
-    extras.isString(testValue.payload.chat_message.message.lang ); //TODO from list of lang options
-    extras.isNumber(testValue.payload.chat_message.font.color );
-    extras.isNumber(testValue.payload.chat_message.font.size );
-    extras.isString(testValue.payload.chat_message.font.font_type );
+    extras.isString(testValue.payload.chat_message.from.id);
+    extras.isString(testValue.payload.chat_message.from.name);
+    extras.isString(testValue.payload.chat_message.message.text);
+    extras.isString(testValue.payload.chat_message.message.lang); //TODO from list of lang options
+    extras.isNumber(testValue.payload.chat_message.font.color);
+    extras.isNumber(testValue.payload.chat_message.font.size);
+    extras.isString(testValue.payload.chat_message.font.font_type);
 
 
     //Translations testing
@@ -2924,7 +2922,7 @@ exports.testBroadcastPrivateChatMessageEvent = function (test) {
             extras.isNotUndefined(aTranslation.lang);
             extras.isNotNull(aTranslation.lang);
             test.notEqual("", aTranslation.lang);
-            extras.isString(aTranslation.lang);//TODO is one of the lang options
+            extras.isString(aTranslation.lang); //TODO is one of the lang options
 
             extras.isNotUndefined(aTranslation.text);
             extras.isNotNull(aTranslation.text);
@@ -2948,7 +2946,7 @@ function sampleBroadcastWhiteBoardDrawEvent() {
     params.whiteboardId = "someWhiteBoardId";
     params.shapeId = "someShapeId";
     params.shapeType = "someShapeType";
-   // params.timestamp="someTimestamp";
+    // params.timestamp="someTimestamp";
     params.firstX = 0.5;
     params.firstY = 0.5;
     params.lastX = 0.5;
@@ -2960,12 +2958,12 @@ function sampleBroadcastWhiteBoardDrawEvent() {
     params.background_color = 0;
     params.background_alpha = 1;
 
-    params.pTimestamp="someTimestamp";
+    params.pTimestamp = "someTimestamp";
     params.zorder = 100;
-    params.text="He";
-    params.style="Arial";
-    params.color=0;
-    params.size=18;
+    params.text = "He";
+    params.style = "Arial";
+    params.color = 0;
+    params.size = 18;
 
     return params;
 }
@@ -2979,14 +2977,14 @@ exports.testBroadcastWhiteboardDrawEvent = function (test) {
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
             test.done();
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -3022,33 +3020,34 @@ exports.testBroadcastWhiteboardDrawEvent = function (test) {
 
     test.done();
 }
-/*function sampleBroadcastWhiteBoardDrawEvent__Nada() {
+
+function sampleBroadcastWhiteBoardDrawEvent__Nada() {
     var params = [];
-    params.meetingId= null;
-    params.sessionId =null;
-    params.channels =null;
-    params.source =null;
-    params.meetingName=null;
-    params.whiteboardId=null;
-    params.shapeId =null;
-    params.shapeType=null;
-    params.firstX=null;
-    params.firstY=null;
-    params.lastX =null;
-    params.lastY=null;
+    params.meetingId = null;
+    params.sessionId = null;
+    params.channels = null;
+    params.source = null;
+    params.meetingName = null;
+    params.whiteboardId = null;
+    params.shapeId = null;
+    params.shapeType = null;
+    params.firstX = null;
+    params.firstY = null;
+    params.lastX = null;
+    params.lastY = null;
 
-    params.byId =null;
-    params.byName=null;
-    params.background_visible=null;
-    params.background_color=null;
-    params.background_alpha=null;
+    params.byId = null;
+    params.byName = null;
+    params.background_visible = null;
+    params.background_color = null;
+    params.background_alpha = null;
 
-    params.pTimestamp=null;
-    params.zorder=null;
-    params.text=null;
-    params.style=null;
-    params.color=null;
-    params.size=null;
+    params.pTimestamp = null;
+    params.zorder = null;
+    params.text = null;
+    params.style = null;
+    params.color = null;
+    params.size = null;
 
     return params;
 }
@@ -3056,17 +3055,16 @@ exports.testBroadcastWhiteBoardDrawEvent__forNada = function (test) {
     var params = sampleBroadcastWhiteBoardDrawEvent__Nada();
 
     library.broadcastWhiteboardDrawEventToJson(params,
-        function (text) {
-        },
+        function (text) {},
         function (errors) {
             //Check if all parameters that were assigned values in sample***()
             //have been checked for not being null/""/undefined
-            console.log("comparing: " +Object.keys(params).length + " and " +  errors.length );
+            console.log("comparing: " + Object.keys(params).length + " and " + errors.length);
             test.equals(Object.keys(params).length, errors.length);
         });
 
     test.done();
-}*/
+}
 
 
 
@@ -3081,7 +3079,7 @@ function sampleBroadcastWhiteBoardUpdateEvent() {
     params.whiteboardId = "someWhiteBoardId";
     params.shapeId = "someShapeId";
     params.shapeType = "someShapeType";
-   // params.timestamp="someTimestamp";
+    // params.timestamp="someTimestamp";
     params.firstX = 0.5;
     params.firstY = 0.5;
     params.lastX = 0.5;
@@ -3093,12 +3091,12 @@ function sampleBroadcastWhiteBoardUpdateEvent() {
     params.background_color = 0;
     params.background_alpha = 1;
 
-    params.pTimestamp="someTimestamp";
+    params.pTimestamp = "someTimestamp";
     params.zorder = 100;
-    params.text="He";
-    params.style="Arial";
-    params.color=0;
-    params.size=18;
+    params.text = "He";
+    params.style = "Arial";
+    params.color = 0;
+    params.size = 18;
 
     return params;
 }
@@ -3112,14 +3110,14 @@ exports.testBroadcastWhiteboardUpdateEvent = function (test) {
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
             test.done();
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -3155,9 +3153,6 @@ exports.testBroadcastWhiteboardUpdateEvent = function (test) {
 
     test.done();
 }
-
-
-
 
 
 
@@ -3173,11 +3168,11 @@ function sampleWhiteboardCursorEvent() {
 
 
 
-        params.cursorX = 0.54;
-        params.cursorY = 0.98;
+    params.cursorX = 0.54;
+    params.cursorY = 0.98;
 
 
-    
+
 
     params.byId = "someById";
     params.byName = "someByName";
@@ -3194,14 +3189,14 @@ exports.testWhiteboardCursorEvent = function (test) {
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
             test.done();
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -3223,23 +3218,24 @@ exports.testWhiteboardCursorEvent = function (test) {
     extras.isNumber(testValue.payload.cursor.y);
 
 
-   
+
     test.done();
 }
-/*function sampleWhiteboardCursorEvent__Nada() {
+
+function sampleWhiteboardCursorEvent__Nada() {
     var params = [];
-    params.meetingId= null;
-    params.sessionId =null;
-    params.channels =null;
-    params.source =null;
-    params.meetingName=null;
-    params.whiteboardId=null;
+    params.meetingId = null;
+    params.sessionId = null;
+    params.channels = null;
+    params.source = null;
+    params.meetingName = null;
+    params.whiteboardId = null;
 
     params.cursorX = null;
     params.cursorY = null;
 
-    params.byId =null;
-    params.byName=null;
+    params.byId = null;
+    params.byName = null;
 
     return params;
 }
@@ -3247,17 +3243,16 @@ exports.testWhiteboardCursorEvent__forNada = function (test) {
     var params = sampleWhiteboardCursorEvent__Nada();
 
     library.whiteboardCursorEventToJson(params,
-        function (text) {
-        },
+        function (text) {},
         function (errors) {
             //Check if all parameters that were assigned values in sample***()
             //have been checked for not being null/""/undefined
-            console.log("comparing: " +Object.keys(params).length + " and " +  errors.length );
+            console.log("comparing: " + Object.keys(params).length + " and " + errors.length);
             test.equals(Object.keys(params).length, errors.length);
         });
 
     test.done();
-}*/
+}
 
 
 function sampleBroadcastWhiteboardCursorEvent() {
@@ -3271,11 +3266,11 @@ function sampleBroadcastWhiteboardCursorEvent() {
 
 
 
-        params.cursorX = 0.54;
-        params.cursorY = 0.98;
+    params.cursorX = 0.54;
+    params.cursorY = 0.98;
 
 
-    
+
 
     params.byId = "someById";
     params.byName = "someByName";
@@ -3292,14 +3287,14 @@ exports.testBroadcastWhiteboardCursorEvent = function (test) {
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
             test.done();
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -3321,23 +3316,24 @@ exports.testBroadcastWhiteboardCursorEvent = function (test) {
     extras.isNumber(testValue.payload.cursor.y);
 
 
-   
+
     test.done();
 }
-/*function sampleBroadcastWhiteboardCursorEvent__Nada() {
+
+function sampleBroadcastWhiteboardCursorEvent__Nada() {
     var params = [];
-    params.meetingId= null;
-    params.sessionId =null;
-    params.channels =null;
-    params.source =null;
-    params.meetingName=null;
-    params.whiteboardId=null;
+    params.meetingId = null;
+    params.sessionId = null;
+    params.channels = null;
+    params.source = null;
+    params.meetingName = null;
+    params.whiteboardId = null;
 
     params.cursorX = null;
     params.cursorY = null;
 
-    params.byId =null;
-    params.byName=null;
+    params.byId = null;
+    params.byName = null;
 
     return params;
 }
@@ -3345,20 +3341,16 @@ exports.testBroadcastWhiteboardCursorEvent__forNada = function (test) {
     var params = sampleBroadcastWhiteboardCursorEvent__Nada();
 
     library.broadcastWhiteboardCursorEventToJson(params,
-        function (text) {
-        },
+        function (text) {},
         function (errors) {
             //Check if all parameters that were assigned values in sample***()
             //have been checked for not being null/""/undefined
-            console.log("comparing: " +Object.keys(params).length + " and " +  errors.length );
+            console.log("comparing: " + Object.keys(params).length + " and " + errors.length);
             test.equals(Object.keys(params).length, errors.length);
         });
 
     test.done();
-}*/
-
-
-
+}
 
 
 
@@ -3370,11 +3362,11 @@ function sampleSharePresentationEvent() {
     params.channels = "someChannels";
     params.source = "someSource";
     params.meetingName = "someMeetingName";
-  
+
     params.presentationId = "pres-123";
     params.presentationName = "Flight School";
-        
-    
+
+
 
     params.byId = "someById";
     params.byName = "someByName";
@@ -3391,14 +3383,14 @@ exports.testSharePresentationEvent = function (test) {
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
             test.done();
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -3419,19 +3411,20 @@ exports.testSharePresentationEvent = function (test) {
 
     test.done();
 }
+
 function sampleSharePresentationEvent__Nada() {
     var params = [];
-    params.meetingId= null;
-    params.sessionId =null;
-    params.channels =null;
-    params.source =null;
-    params.meetingName=null;
+    params.meetingId = null;
+    params.sessionId = null;
+    params.channels = null;
+    params.source = null;
+    params.meetingName = null;
 
     params.presentationId = null;
     params.presentationName = null;
 
-    params.byId =null;
-    params.byName=null;
+    params.byId = null;
+    params.byName = null;
 
     return params;
 }
@@ -3439,12 +3432,11 @@ exports.testSharePresentationEvent__forNada = function (test) {
     var params = sampleSharePresentationEvent__Nada();
 
     library.sharePresentationEventToJson(params,
-        function (text) {
-        },
+        function (text) {},
         function (errors) {
             //Check if all parameters that were assigned values in sample***()
             //have been checked for not being null/""/undefined
-            console.log("comparing: " +Object.keys(params).length + " and " +  errors.length );
+            console.log("comparing: " + Object.keys(params).length + " and " + errors.length);
             test.equals(Object.keys(params).length, errors.length);
         });
 
@@ -3461,16 +3453,16 @@ function sampleBroadcastSharePresentationEvent() {
     params.channels = "someChannels";
     params.source = "someSource";
     params.meetingName = "someMeetingName";
-  
+
     params.presentationId = "pres-123";
     params.presentationName = "Flight School";
-        
+
     params.pageId = "pres-123/1";
-    params.uri = "http://www.example.com/presentations/pres-123/1.swf";        
+    params.uri = "http://www.example.com/presentations/pres-123/1.swf";
     params.xOffset = 0;
     params.yOffset = 0;
     params.widthRatio = 100;
-    params.heightRatio = 100;   
+    params.heightRatio = 100;
 
     params.byId = "someById";
     params.byName = "someByName";
@@ -3487,14 +3479,14 @@ exports.testBroadcastSharePresentationEvent = function (test) {
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
             test.done();
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -3522,27 +3514,28 @@ exports.testBroadcastSharePresentationEvent = function (test) {
 
     test.done();
 }
+
 function sampleBroadcastSharePresentationEvent__Nada() {
     var params = [];
-    params.meetingId= null;
-    params.sessionId =null;
-    params.channels =null;
-    params.source =null;
-    params.meetingName=null;
+    params.meetingId = null;
+    params.sessionId = null;
+    params.channels = null;
+    params.source = null;
+    params.meetingName = null;
 
     params.presentationId = null;
     params.presentationName = null;
 
-    params.pageId =null;
+    params.pageId = null;
     params.uri = null;
     params.xOffset = null;
     params.yOffset = null;
     params.widthRatio = null;
-    params.heightRatio = null;   
+    params.heightRatio = null;
 
 
-    params.byId =null;
-    params.byName=null;
+    params.byId = null;
+    params.byName = null;
 
     return params;
 }
@@ -3550,18 +3543,16 @@ exports.testBroadcastSharePresentationEvent__forNada = function (test) {
     var params = sampleBroadcastSharePresentationEvent__Nada();
 
     library.broadcastSharePresentationEventToJson(params,
-        function (text) {
-        },
+        function (text) {},
         function (errors) {
             //Check if all parameters that were assigned values in sample***()
             //have been checked for not being null/""/undefined
-            console.log("comparing: " +Object.keys(params).length + " and " +  errors.length );
+            console.log("comparing: " + Object.keys(params).length + " and " + errors.length);
             test.equals(Object.keys(params).length, errors.length);
         });
 
     test.done();
 }
-
 
 
 
@@ -3573,16 +3564,16 @@ function sampleResizeAndMovePagePresentationEvent() {
     params.channels = "someChannels";
     params.source = "someSource";
     params.meetingName = "someMeetingName";
-  
+
     params.presentationId = "pres-123";
     params.presentationName = "Flight School";
-        
+
     params.pageId = "pres-123/1";
-    params.uri = "http://www.example.com/presentations/pres-123/1.swf";        
+    params.uri = "http://www.example.com/presentations/pres-123/1.swf";
     params.xOffset = 0;
     params.yOffset = 0;
     params.widthRatio = 100;
-    params.heightRatio = 100;   
+    params.heightRatio = 100;
 
     params.byId = "someById";
     params.byName = "someByName";
@@ -3599,14 +3590,14 @@ exports.testResizeAndMovePagePresentationEvent = function (test) {
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
             test.done();
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -3634,27 +3625,28 @@ exports.testResizeAndMovePagePresentationEvent = function (test) {
 
     test.done();
 }
+
 function sampleResizeAndMovePagePresentationEvent__Nada() {
     var params = [];
-    params.meetingId= null;
-    params.sessionId =null;
-    params.channels =null;
-    params.source =null;
-    params.meetingName=null;
+    params.meetingId = null;
+    params.sessionId = null;
+    params.channels = null;
+    params.source = null;
+    params.meetingName = null;
 
     params.presentationId = null;
     params.presentationName = null;
 
-    params.pageId =null;
+    params.pageId = null;
     params.uri = null;
     params.xOffset = null;
     params.yOffset = null;
     params.widthRatio = null;
-    params.heightRatio = null;   
+    params.heightRatio = null;
 
 
-    params.byId =null;
-    params.byName=null;
+    params.byId = null;
+    params.byName = null;
 
     return params;
 }
@@ -3662,18 +3654,16 @@ exports.testResizeAndMovePagePresentationEvent__forNada = function (test) {
     var params = sampleResizeAndMovePagePresentationEvent__Nada();
 
     library.resizeAndMovePagePresentationEventToJson(params,
-        function (text) {
-        },
+        function (text) {},
         function (errors) {
             //Check if all parameters that were assigned values in sample***()
             //have been checked for not being null/""/undefined
-            console.log("comparing: " +Object.keys(params).length + " and " +  errors.length );
+            console.log("comparing: " + Object.keys(params).length + " and " + errors.length);
             test.equals(Object.keys(params).length, errors.length);
         });
 
     test.done();
 }
-
 
 
 
@@ -3685,16 +3675,16 @@ function sampleBroadcastResizeAndMovePagePresentationEvent() {
     params.channels = "someChannels";
     params.source = "someSource";
     params.meetingName = "someMeetingName";
-  
+
     params.presentationId = "pres-123";
     params.presentationName = "Flight School";
-        
+
     params.pageId = "pres-123/1";
-    params.uri = "http://www.example.com/presentations/pres-123/1.swf";        
+    params.uri = "http://www.example.com/presentations/pres-123/1.swf";
     params.xOffset = 0;
     params.yOffset = 0;
     params.widthRatio = 100;
-    params.heightRatio = 100;   
+    params.heightRatio = 100;
 
     params.byId = "someById";
     params.byName = "someByName";
@@ -3711,14 +3701,14 @@ exports.testBroadcastResizeAndMovePagePresentationEvent = function (test) {
             testingJson = text;
         },
         function (errors) {
-            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in "+event_type);
+            test.equals(0, errors.length, "Some of the parameters were undefined/null/\"\" in " + event_type);
             test.done();
         });
     var testValue;
     try {
         testValue = JSON.parse(testingJson);
     } catch (e) {
-        test.ok(false,"ERROR while parsing " + e);
+        test.ok(false, "ERROR while parsing " + e);
     }
 
     test.equals(testValue.header.name, event_type);
@@ -3746,27 +3736,28 @@ exports.testBroadcastResizeAndMovePagePresentationEvent = function (test) {
 
     test.done();
 }
+
 function sampleBroadcastResizeAndMovePagePresentationEvent__Nada() {
     var params = [];
-    params.meetingId= null;
-    params.sessionId =null;
-    params.channels =null;
-    params.source =null;
-    params.meetingName=null;
+    params.meetingId = null;
+    params.sessionId = null;
+    params.channels = null;
+    params.source = null;
+    params.meetingName = null;
 
     params.presentationId = null;
     params.presentationName = null;
 
-    params.pageId =null;
+    params.pageId = null;
     params.uri = null;
     params.xOffset = null;
     params.yOffset = null;
     params.widthRatio = null;
-    params.heightRatio = null;   
+    params.heightRatio = null;
 
 
-    params.byId =null;
-    params.byName=null;
+    params.byId = null;
+    params.byName = null;
 
     return params;
 }
@@ -3774,18 +3765,13 @@ exports.testBroadcastResizeAndMovePagePresentationEvent__forNada = function (tes
     var params = sampleBroadcastResizeAndMovePagePresentationEvent__Nada();
 
     library.broadcastResizeAndMovePagePresentationEventToJson(params,
-        function (text) {
-        },
+        function (text) {},
         function (errors) {
             //Check if all parameters that were assigned values in sample***()
             //have been checked for not being null/""/undefined
-            console.log("comparing: " +Object.keys(params).length + " and " +  errors.length );
+            console.log("comparing: " + Object.keys(params).length + " and " + errors.length);
             test.equals(Object.keys(params).length, errors.length);
         });
 
     test.done();
 }
-
-
-
-
