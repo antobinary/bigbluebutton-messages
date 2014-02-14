@@ -1,4 +1,5 @@
-
+library = require("../message_library")
+extras = require("node-assert-extras")
 #
 #
 #UNIT TESTS
@@ -12,13 +13,10 @@
 #
 #for each event_type
 # --valid date in timestamp
-#
-#
-#
 
-library = require("../message_library")
-extras = require("node-assert-extras")
+#-- what happens if the event_name given does not match any of our pre-defined options?!
 
+#
 
 sampleWhiteBoardUpdateEvent = ->
   params = {}
@@ -78,18 +76,6 @@ sampleCreateMeetingRequestEvent = ->
   params.metadataCustomerId = "acme-customer"
   params.metadataCustomerName = "ACME"
   params
-#TODO must check if it's a real date
-#TODO must check if it's a real date
-#TODO
-
-#Phone_numbers testing
-
-#test.done();
-
-# test.done()
-#TODO
-
-#Phone_numbers testing
 
 sampleMeetingCreatedEvent = ->
   params = {}
