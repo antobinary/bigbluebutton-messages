@@ -1,13 +1,13 @@
 {
   "name": "bigbluebutton-messages",
-  "version": "0.0.2",
-  "entry point": "message_library.js",
+  "version": "0.0.3",
+  "entry point": "simple_message_library.coffee",
   "git repository": "git://github.com/antobinary/bigbluebutton-messages.git",
   "author": {
     "name": "Anton Georgiev"
   },
   "description": "bigbluebutton-messages",
-  "main": "message_library.js",
+  "main": "simple_message_library.coffee",
   "repository": {
     "type": "git",
     "url": "git://github.com/antobinary/bigbluebutton-messages.git"
