@@ -6,6 +6,10 @@
   "author": {
     "name": "Anton Georgiev"
   },
+  "dependencies": {
+    "assert" : "*",
+    "node-assert-extras": "*"
+  },
   "description": "bigbluebutton-messages",
   "main": "simple_message_library.coffee",
   "repository": {
