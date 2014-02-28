@@ -21,20 +21,25 @@ WHITEBOARD_DRAW_EVENT = "whiteboard_draw_event"
 WHITEBOARD_UPDATE_EVENT = "whiteboard_update_event"
 
 
+SHARE_PRESENTATION_EVENT = "share_presentation_event"
+
 
 module.exports.WHITEBOARD_DRAW_EVENT = WHITEBOARD_DRAW_EVENT
 module.exports.WHITEBOARD_UPDATE_EVENT = WHITEBOARD_UPDATE_EVENT
+
+module.exports.SHARE_PRESENTATION_EVENT = SHARE_PRESENTATION_EVENT
 
 #list of events to be selected from
 module.exports.getEvents =
   0: "Please select an event type"
   1: WHITEBOARD_DRAW_EVENT
   2: WHITEBOARD_UPDATE_EVENT
+  3: SHARE_PRESENTATION_EVENT
 
 
 # TODO: Add some documentation using http://usejsdoc.org/
 # Document requried and optional parameters
-module.exports.whiteboardDrawEventToJson = (params, onSuccess, onFailure) ->
+module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
   
   requiredParams = [
     "meetingId"
@@ -126,11 +131,12 @@ module.exports.whiteboardDrawEventToJson = (params, onSuccess, onFailure) ->
     message = {}
     message.header = header
     message.payload = payload
-    console.log "MESSAGE_LIBRARY:" + " success "+message.header.name+"toJson"
+    console.log "inMSGLIB:" + "Object=" + message + "\n"
+    console.log "inMSGLIB:" + "json=" + JSON.stringify(message) + "\n"
     onSuccess JSON.stringify(message)     
   return
 
-module.exports.whiteboardUpdateEventToJson = (params, onSuccess, onFailure) ->
+module.exports.whiteboard_update_event_to_json = (params, onSuccess, onFailure) ->
   requiredParams = [
     "meetingId"
     "sessionId"
@@ -195,16 +201,81 @@ module.exports.whiteboardUpdateEventToJson = (params, onSuccess, onFailure) ->
     message = {}
     message.header = header
     message.payload = payload
+
+    console.log "inMSGLIB:" + "Object=" + message + "\n"
+    console.log "inMSGLIB:" + "json=" + JSON.stringify(message) + "\n"
+    
     onSuccess JSON.stringify(message)     
   return
 
+module.exports.share_presentation_event_to_json = (params, onSuccess, onFailure) ->
+  
+  requiredParams = [
+    "meetingId"
+    "sessionId"
+    "channels"
+    "source"
+    "meetingName"
+    "byId"
+    "byName"
+    "presentationId"
+    "presentationName"
+    "pages"
+  ]
+  errors = checkForValidity params, requiredParams
+  if errors.length > 0
+    onFailure errors     
+  else
+    header = {}
+    header.destination = {}
+    header.destination.to = params.channels
+    header.name = SHARE_PRESENTATION_EVENT
+    header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+    header.source = params.source
+    payload = {}
+    payload.meeting = {} # this was not present in the scala file
+    payload.meeting.name = params.meetingName # this was not present in the scala file
+    payload.meeting.id = params.meetingId # this was not present in the scala file
+    payload.session = params.sessionId # this was not present in the scala file
+    payload.presentation = {}
+    payload.presentation.id = params.presentationId
+    payload.presentation.name = params.presentationName
+
+    payload.presentation.pages = params.pages #TODO this is a new property!!!
+        #TODO check if the arrays of the correct structure...
 
 
 
-module.exports.whiteboardDrawEventToJavascriptObject = (message, onSuccess, onFailure) ->
+    payload.by = {}
+    payload.by.id = params.byId
+    payload.by.name = params.byName
+    message = {}
+    message.header = header
+    message.payload = payload
+
+    extras.isString header.destination.to
+    extras.isString header.name
+    extras.isString header.timestamp
+    extras.isString header.source
+    extras.isString payload.meeting.name
+    extras.isString payload.meeting.id
+    extras.isString payload.session
+    extras.isString payload.by.id
+    extras.isString payload.by.name
+    extras.isString payload.presentation.id
+    extras.isString payload.presentation.name
+
+    for page in params.pages
+      extras.isString page.svg, "svg"
+      extras.isString page.png, "png" 
+      extras.isString page.swf, "swf"
+
+    onSuccess JSON.stringify(message)     
+  return
+
+module.exports.whiteboard_draw_event_to_javascript_object = (message, onSuccess, onFailure) ->
   try
     msgObject = JSON.parse(message)
-
     assert.equal msgObject.header.name, WHITEBOARD_DRAW_EVENT
     #check if data is of the expected type
     extras.isString msgObject.header.destination.to
@@ -231,19 +302,18 @@ module.exports.whiteboardDrawEventToJavascriptObject = (message, onSuccess, onFa
     extras.isNumber msgObject.payload.data.background.alpha
     extras.isBoolean msgObject.payload.data.square
 
-    console.log "MESSAGE_LIBRARY:" + " success "+msgObject.header.name+" toJavascriptObject"
+    #console.log "MESSAGE_LIBRARY:" + " success "+msgObject.header.name+" toJavascriptObject"
 
     onSuccess msgObject
   catch err
     onFailure err
   return
 
-
-module.exports.whiteboardUpdateEventToJavascriptObject = (message, onSuccess, onFailure) ->
+module.exports.whiteboard_update_event_to_javascript_object = (message, onSuccess, onFailure) ->
   try
     msgObject = JSON.parse(message)
 
-    assert.equal msgObject.header.name, WHITEBOARD_DRAW_EVENT
+    assert.equal msgObject.header.name, WHITEBOARD_UPDATE_EVENT
     #check if data is of the expected type
     extras.isString msgObject.header.destination.to
     extras.isString msgObject.header.name
@@ -269,7 +339,7 @@ module.exports.whiteboardUpdateEventToJavascriptObject = (message, onSuccess, on
     extras.isNumber msgObject.payload.data.background.alpha
     extras.isBoolean msgObject.payload.data.square
 
-    console.log "MESSAGE_LIBRARY:" + " success "+msgObject.header.name+" toJavascriptObject"
+    #console.log "MESSAGE_LIBRARY:" + " success "+msgObject.header.name+" toJavascriptObject"
 
 
     onSuccess msgObject
@@ -277,11 +347,72 @@ module.exports.whiteboardUpdateEventToJavascriptObject = (message, onSuccess, on
     onFailure err
   return
 
-###
-module.exports.whiteboardUpdateEventToJavascriptObject = (message, onSuccess, onFailure) ->
+module.exports.share_presentation_event_to_javascript_object = (message, onSuccess, onFailure) ->
   try
     msgObject = JSON.parse(message)
+
+    assert.equal msgObject.header.name, SHARE_PRESENTATION_EVENT
+    #check if data is of the expected type
+    extras.isString msgObject.header.destination.to
+    extras.isString msgObject.header.name
+    extras.isString msgObject.header.timestamp
+    extras.isString msgObject.header.source
+    extras.isString msgObject.payload.meeting.name
+    extras.isString msgObject.payload.meeting.id
+    extras.isString msgObject.payload.session
+    extras.isString msgObject.payload.by.id
+    extras.isString msgObject.payload.by.name
+    extras.isString msgObject.payload.presentation.id
+    extras.isString msgObject.payload.presentation.name
+
+    for page in msgObject.payload.presentation.pages
+      extras.isString page.svg, "svg"
+      extras.isString page.png, "png"
+      extras.isString page.swf, "swf"
+
     onSuccess msgObject
   catch err
     onFailure err
-  return###
+  return
+
+
+
+
+
+
+
+module.exports.getEventType = (message, onSuccess, onFailure) ->    
+  #console.log "\nwithin getEventType:" + message
+  if typeof message is "object" # if jsobject
+      try
+        if message.header?.name? #shorten?!
+          eventType = message.header.name
+          extras.isString eventType
+          onSuccess eventType
+          return
+        else
+          eventType = null
+      catch err
+        onFailure err
+        return
+  else if typeof message is "string" #if json
+    try
+        message = JSON.parse message
+        if message.header?.name?
+          eventType = message.header.name
+          extras.isString eventType
+          onSuccess eventType
+          return
+        else
+          eventType = null
+    catch e
+        onFailure e
+    
+  else
+    onFailure "could not get the event type"
+
+
+
+
+
+
