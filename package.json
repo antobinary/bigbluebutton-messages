@@ -1,6 +1,6 @@
 {
   "name": "bigbluebutton-messages",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "entry point": "simple_message_library.coffee",
   "git repository": "git://github.com/antobinary/bigbluebutton-messages.git",
   "author": {
