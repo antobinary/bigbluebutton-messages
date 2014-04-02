@@ -33,6 +33,11 @@ module.exports.PAGE_CHANGED_EVENT = PAGE_CHANGED_EVENT
 ANTON_CUSTOM = "anton_custom" #TEMP 
 module.exports.ANTON_CUSTOM = ANTON_CUSTOM #TEMP
 
+USER_JOINED_EVENT = "user_joined_event"
+module.exports.USER_JOINED_EVENT = USER_JOINED_EVENT
+
+USER_LEFT_EVENT = "user_left_event"
+module.exports.USER_LEFT_EVENT = USER_LEFT_EVENT
 
 
 #list of events to be selected from
@@ -43,6 +48,8 @@ module.exports.getEvents =
   3: SHARE_PRESENTATION_EVENT
   4: PAGE_CHANGED_EVENT
   5: ANTON_CUSTOM #this event does not go through the library. We just need the title to appear in the Events dropdown
+  6: USER_JOINED_EVENT
+  7: USER_LEFT_EVENT
 
 #returns the event type (the name of the event)
 module.exports.getEventType = (message, onSuccess, onFailure) ->    
@@ -533,12 +540,248 @@ module.exports.page_changed_event_to_javascript_object = (message, onSuccess, on
     onFailure err
   return
 
+#USER_JOINED_EVENT
+module.exports.user_joined_event_to_json = (params, onSuccess, onFailure) ->
+  requiredParams = [
+    "channelsDestination"
+    "source"
+    "meetingName"
+    "meetingId"
+    "sessionId"
+    "studentId"
+    "program"
+    "userId"
+    "userExternalId"
+    "userName"
+    "role"
+    "pin"
+    "welcome"
+    "logoutUrl"
+    "avatarUrl"
+    "isPresenter"
+    "handRaised"
+    "muted"
+    "locked"
+    "talking"
+    "callerName"
+    "callerNumber"
+    "mediaStreams"
+  ]
+  errors = checkForValidity params, requiredParams
+  if errors.length > 0
+    onFailure errors
+  else
+    header = {}
+    header.destination = {}
+    header.destination.to = params.channelsDestination
+    header.name = USER_JOINED_EVENT
+    header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+    header.source = params.source
+    payload = {}
+    payload.meeting = {}
+    payload.meeting.name = params.meetingName
+    payload.meeting.id = params.meetingId
+    payload.session = params.sessionId
+    payload.user = {}
+    payload.user.id = params.userId
+    payload.user.external_id = params.userExternalId
+    payload.user.name = params.userName
+    payload.user.role = params.role
+    payload.user.pin = params.pin
+    payload.user.welcome_message = params.welcome
+    payload.user.logout_url = params.logoutUrl
+    payload.user.avatar_url = params.avatarUrl
+    payload.user.is_presenter = params.isPresenter
+    payload.user.status = {}
+    payload.user.status.hand_raised = params.handRaised
+    payload.user.status.muted = params.muted
+    payload.user.status.locked = params.locked
+    payload.user.status.talking = params.talking
+    payload.user.caller_id = {}
+    payload.user.caller_id.name = params.callerName
+    payload.user.caller_id.number = params.callerNumber
+    payload.user.media_streams = params.mediaStreams
+    payload.user.metadata = {}
+    payload.user.metadata.student_id = params.studentId
+    payload.user.metadata.program = params.program
+    message = {}
+    message.header = header
+    message.payload = payload
+
+    assert.equal header.name, USER_JOINED_EVENT
+    extras.isString header.destination.to
+    extras.isString header.name
+    extras.isString header.timestamp
+    extras.isString header.source
+    extras.isString payload.meeting.name
+    extras.isString payload.meeting.id
+    extras.isString payload.session
+    extras.isString payload.user.id
+    extras.isString payload.user.external_id
+    extras.isString payload.user.name
+    extras.isString payload.user.role
+    extras.isNumber payload.user.pin
+    extras.isString payload.user.welcome_message
+    extras.isString payload.user.logout_url
+    extras.isString payload.user.avatar_url
+    extras.isBoolean payload.user.is_presenter
+    extras.isBoolean payload.user.status.hand_raised
+    extras.isBoolean payload.user.status.muted
+    extras.isBoolean payload.user.status.locked
+    extras.isBoolean payload.user.status.talking
+    extras.isString payload.user.caller_id.name
+    extras.isString payload.user.caller_id.number
+    isArray = payload.user.media_streams.constructor.toString().indexOf("Array")
+    
+    if isArray
+      streams = payload.user.media_streams
+      for index of streams
+        aStream = streams[index]
+        extras.isNotUndefined aStream.media_type
+        extras.isNotNull aStream.media_type
+        extras.isString aStream.media_type
+        extras.isNotUndefined aStream.uri
+        extras.isNotNull aStream.uri
+        extras.isString aStream.uri
+        extras.isNotUndefined aStream.metadata
+        extras.isNotNull aStream.metadata
+        extras.isObject aStream.metadata
+        extras.isNotUndefined aStream.metadata.foo
+        extras.isNotNull aStream.metadata.foo
+        extras.isString aStream.metadata.foo
+    extras.isString payload.user.metadata.student_id
+    extras.isString payload.user.metadata.program
+
+    onSuccess JSON.stringify(message)
+  return
+module.exports.user_joined_event_to_javascript_object = (message, onSuccess, onFailure) ->
+  try
+    msgObject = JSON.parse(message)
+
+    assert.equal msgObject.header.name, USER_JOINED_EVENT
+    #check if data is of the expected type
+    extras.isString msgObject.header.destination.to
+    extras.isString msgObject.header.name
+    extras.isString msgObject.header.timestamp
+    extras.isString msgObject.header.source
+    extras.isString msgObject.payload.meeting.name
+    extras.isString msgObject.payload.meeting.id
+    extras.isString msgObject.payload.session
+    extras.isString msgObject.payload.user.id
+    extras.isString msgObject.payload.user.external_id
+    extras.isString msgObject.payload.user.name
+    extras.isString msgObject.payload.user.role
+    extras.isNumber msgObject.payload.user.pin
+    extras.isString msgObject.payload.user.welcome_message
+    extras.isString msgObject.payload.user.logout_url
+    extras.isString msgObject.payload.user.avatar_url
+    extras.isBoolean msgObject.payload.user.is_presenter
+    extras.isBoolean msgObject.payload.user.status.hand_raised
+    extras.isBoolean msgObject.payload.user.status.muted
+    extras.isBoolean msgObject.payload.user.status.locked
+    extras.isBoolean msgObject.payload.user.status.talking
+    extras.isString msgObject.payload.user.caller_id.name
+    extras.isString msgObject.payload.user.caller_id.number
+    isArray = msgObject.payload.user.media_streams.constructor.toString().indexOf("Array")
+    
+    if isArray
+      streams = msgObject.payload.user.media_streams
+      for index of streams
+        aStream = streams[index]
+        extras.isNotUndefined aStream.media_type
+        extras.isNotNull aStream.media_type
+        extras.isString aStream.media_type
+        extras.isNotUndefined aStream.uri
+        extras.isNotNull aStream.uri
+        extras.isString aStream.uri
+        extras.isNotUndefined aStream.metadata
+        extras.isNotNull aStream.metadata
+        extras.isObject aStream.metadata
+        extras.isNotUndefined aStream.metadata.foo
+        extras.isNotNull aStream.metadata.foo
+        extras.isString aStream.metadata.foo
+    extras.isString msgObject.payload.user.metadata.student_id
+    extras.isString msgObject.payload.user.metadata.program
+
+    onSuccess msgObject
+  catch err
+    onFailure err
+  return
+
+#USER_LEFT_EVENT
+module.exports.user_left_event_to_json = (params, onSuccess, onFailure) ->
+  requiredParams = [
+    "channelsDestination"
+    "source"
+    "meetingName"
+    "meetingId"
+    "sessionId"
+    "userId"
+    "userName"
+  ]
+  errors = checkForValidity params, requiredParams
+  if errors.length > 0
+    onFailure errors
+  else
+    header = {}
+    header.destination = {}
+    header.destination.to = params.channelsDestination
+    header.name = USER_LEFT_EVENT
+    header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
+    header.source = params.source
+    payload = {}
+    payload.meeting = {}
+    payload.meeting.name = params.meetingName
+    payload.meeting.id = params.meetingId
+    payload.session = params.sessionId
+    payload.user = {}
+    payload.user.id = params.userId
+    payload.user.name = params.userName
+
+    message = {}
+    message.header = header
+    message.payload = payload
+
+    extras.isString header.destination.to
+    extras.isString header.name
+    extras.isString header.timestamp
+    extras.isString header.source
+    extras.isString payload.meeting.name
+    extras.isString payload.meeting.id
+    extras.isString payload.session
+    extras.isString payload.user.id
+    extras.isString payload.user.name
+
+    onSuccess JSON.stringify(message)
+  return
+
+module.exports.user_left_event_to_javascript_object = (message, onSuccess, onFailure) ->
+  try
+    msgObject = JSON.parse(message)
+
+    assert.equal msgObject.header.name, USER_LEFT_EVENT
+    #check if data is of the expected type
+    extras.isString msgObject.header.destination.to
+    extras.isString msgObject.header.name
+    extras.isString msgObject.header.timestamp
+    extras.isString msgObject.header.source
+    extras.isString msgObject.payload.meeting.name
+    extras.isString msgObject.payload.meeting.id
+    extras.isString msgObject.payload.session
+    extras.isString msgObject.payload.user.id
+    extras.isString msgObject.payload.user.name
+
+    onSuccess msgObject
+  catch err
+    onFailure err
+  return
+
 
 #MANUAL events means that these functions are here to support the "message-library-tool".
 #That tool allows for viewing and editing the json message before sending it to pubsub.
 #The tool uses jsobject with different structure from the params object that is typically passed
 #to the functions in this library.
-#These functions (*_manual) can be removed from the library in Production where we do not need the tool anymore
+#These functions (*_manual) can be removed from the library in Production when we do not need the tool anymore
 module.exports.whiteboard_draw_event_to_json_manual = (params, onSuccess, onFailure) ->
 
   try
@@ -656,4 +899,71 @@ module.exports.page_changed_event_to_json_manual = (params, onSuccess, onFailure
   extras.isString params.payload.presentation.slide.swf, "swf"
 
   onSuccess json
+module.exports.user_joined_event_to_json_manual = (params, onSuccess, onFailure) ->
+  try
+    json = JSON.stringify(params)
+  catch e
+    onFailure e
 
+  extras.isString params.header.destination.to
+  extras.isString params.header.name
+  extras.isString params.header.timestamp
+  extras.isString params.header.source
+  extras.isString params.payload.meeting.name
+  extras.isString params.payload.meeting.id
+  extras.isString params.payload.session
+
+  extras.isString params.payload.user.id
+  extras.isString params.payload.user.external_id
+  extras.isString params.payload.user.name
+  extras.isString params.payload.user.role
+  extras.isNumber params.payload.user.pin
+  extras.isString params.payload.user.welcome_message
+  extras.isString params.payload.user.logout_url
+  extras.isString params.payload.user.avatar_url
+  extras.isBoolean params.payload.user.is_presenter
+  extras.isBoolean params.payload.user.status.hand_raised
+  extras.isBoolean params.payload.user.status.muted
+  extras.isBoolean params.payload.user.status.locked
+  extras.isBoolean params.payload.user.status.talking
+  extras.isString params.payload.user.caller_id.name
+  extras.isString params.payload.user.caller_id.number
+  isArray = params.payload.user.media_streams.constructor.toString().indexOf("Array")
+  
+  if isArray
+    streams = params.payload.user.media_streams
+    for index of streams
+      aStream = streams[index]
+      extras.isNotUndefined aStream.media_type
+      extras.isNotNull aStream.media_type
+      extras.isString aStream.media_type
+      extras.isNotUndefined aStream.uri
+      extras.isNotNull aStream.uri
+      extras.isString aStream.uri
+      extras.isNotUndefined aStream.metadata
+      extras.isNotNull aStream.metadata
+      extras.isObject aStream.metadata
+      extras.isNotUndefined aStream.metadata.foo
+      extras.isNotNull aStream.metadata.foo
+      extras.isString aStream.metadata.foo
+  extras.isString params.payload.user.metadata.student_id
+  extras.isString params.payload.user.metadata.program
+
+  onSuccess json
+module.exports.user_left_event_to_json_manual = (params, onSuccess, onFailure) -> 
+  try
+    json = JSON.stringify(params)
+  catch e
+    onFailure e
+
+  extras.isString params.header.destination.to
+  extras.isString params.header.name
+  extras.isString params.header.timestamp
+  extras.isString params.header.source
+  extras.isString params.payload.meeting.name
+  extras.isString params.payload.meeting.id
+  extras.isString params.payload.session
+  extras.isString params.payload.user.id
+  extras.isString params.payload.user.name
+
+  onSuccess json 
