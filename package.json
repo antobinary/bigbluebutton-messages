@@ -17,5 +17,10 @@
   "readmeFilename": "README.md",
   "bugs": {
     "url": "https://github.com/antobinary/bigbluebutton-messages/issues"
-  }
+  },
+  "dependencies": {
+     "joi": "3.1.0"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {}
 }
