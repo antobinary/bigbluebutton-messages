@@ -2,10 +2,7 @@ extras = require "node-assert-extras"
 assert = require "assert"
 
 paramExist = (param) ->
-  #TODO check for empty array
-  return false  if typeof param is "undefined" or param is null or param is ""
-  true
-
+  param?.length > 0
 
 checkForValidity = (params, requiredParams) ->
   errors = []
