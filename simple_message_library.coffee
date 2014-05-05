@@ -1,9 +1,16 @@
 extras = require "node-assert-extras"
 assert = require "assert"
 
-paramExist = (param) ->
-  param?.length > 0
+messageNames = require "./messagenames"
 
+paramExist = (param) ->
+  #param?.length > 0
+
+  #must resolve why this didn't work
+
+  #TODO check for empty array
+  return false if typeof param is "undefined" or param is null or param is ""
+  true
 checkForValidity = (params, requiredParams) ->
   errors = []
   for key of requiredParams
@@ -14,39 +21,17 @@ checkForValidity = (params, requiredParams) ->
   errors
 
 
-WHITEBOARD_DRAW_EVENT = "whiteboard_draw_event"
-module.exports.WHITEBOARD_DRAW_EVENT = WHITEBOARD_DRAW_EVENT
-
-WHITEBOARD_UPDATE_EVENT = "whiteboard_update_event"
-module.exports.WHITEBOARD_UPDATE_EVENT = WHITEBOARD_UPDATE_EVENT
-
-SHARE_PRESENTATION_EVENT = "share_presentation_event"
-module.exports.SHARE_PRESENTATION_EVENT = SHARE_PRESENTATION_EVENT
-
-PAGE_CHANGED_EVENT = "page_changed_event"
-module.exports.PAGE_CHANGED_EVENT = PAGE_CHANGED_EVENT
-
-#this event does not go through the library. We just need the title to appear in the Events dropdown
-ANTON_CUSTOM = "anton_custom" #TEMP 
-module.exports.ANTON_CUSTOM = ANTON_CUSTOM #TEMP
-
-USER_JOINED_EVENT = "user_joined_event"
-module.exports.USER_JOINED_EVENT = USER_JOINED_EVENT
-
-USER_LEFT_EVENT = "user_left_event"
-module.exports.USER_LEFT_EVENT = USER_LEFT_EVENT
-
 
 #list of events to be selected from
 module.exports.getEvents =
   0: "Please select an event type"
-  1: WHITEBOARD_DRAW_EVENT
-  2: WHITEBOARD_UPDATE_EVENT
-  3: SHARE_PRESENTATION_EVENT
-  4: PAGE_CHANGED_EVENT
-  5: ANTON_CUSTOM #this event does not go through the library. We just need the title to appear in the Events dropdown
-  6: USER_JOINED_EVENT
-  7: USER_LEFT_EVENT
+  1: messageNames.WHITEBOARD_DRAW_EVENT
+  2: messageNames.WHITEBOARD_UPDATE_EVENT
+  3: messageNames.SHARE_PRESENTATION_EVENT
+  4: messageNames.PAGE_CHANGED_EVENT
+  5: messageNames.ANTON_CUSTOM #this event does not go through the library. We just need the title to appear in the Events dropdown
+  6: messageNames.USER_JOINED_EVENT
+  7: messageNames.USER_LEFT_EVENT
 
 #returns the event type (the name of the event)
 module.exports.getEventType = (message, onSuccess, onFailure) ->    
@@ -131,7 +116,7 @@ module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
     header = {}
     header.destination = {}
     header.destination.to = params.channels
-    header.name = WHITEBOARD_DRAW_EVENT
+    header.name = messageNames.WHITEBOARD_DRAW_EVENT
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
@@ -162,7 +147,7 @@ module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
     payload.by.id = params.byId
     payload.by.name = params.byName
 
-    assert.equal header.name, WHITEBOARD_DRAW_EVENT
+    assert.equal header.name, messageNames.WHITEBOARD_DRAW_EVENT
     #check if data is of the expected type
     extras.isString header.destination.to
     extras.isString header.name
@@ -198,7 +183,7 @@ module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
 module.exports.whiteboard_draw_event_to_javascript_object = (message, onSuccess, onFailure) ->
   try
     msgObject = JSON.parse(message)
-    assert.equal msgObject.header.name, WHITEBOARD_DRAW_EVENT
+    assert.equal msgObject.header.name, messageNames.WHITEBOARD_DRAW_EVENT
     #check if data is of the expected type
     extras.isString msgObject.header.destination.to
     extras.isString msgObject.header.name
@@ -264,7 +249,7 @@ module.exports.whiteboard_update_event_to_json = (params, onSuccess, onFailure) 
     header = {}
     header.destination = {}
     header.destination.to = params.channels
-    header.name = WHITEBOARD_UPDATE_EVENT
+    header.name = messageNames.WHITEBOARD_UPDATE_EVENT
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
@@ -307,7 +292,7 @@ module.exports.whiteboard_update_event_to_javascript_object = (message, onSucces
   try
     msgObject = JSON.parse(message)
 
-    assert.equal msgObject.header.name, WHITEBOARD_UPDATE_EVENT
+    assert.equal msgObject.header.name, messageNames.WHITEBOARD_UPDATE_EVENT
     #check if data is of the expected type
     extras.isString msgObject.header.destination.to
     extras.isString msgObject.header.name
@@ -363,7 +348,7 @@ module.exports.share_presentation_event_to_json = (params, onSuccess, onFailure)
     header = {}
     header.destination = {}
     header.destination.to = params.channels
-    header.name = SHARE_PRESENTATION_EVENT
+    header.name = messageNames.SHARE_PRESENTATION_EVENT
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
@@ -407,7 +392,7 @@ module.exports.share_presentation_event_to_javascript_object = (message, onSucce
   try
     msgObject = JSON.parse(message)
 
-    assert.equal msgObject.header.name, SHARE_PRESENTATION_EVENT
+    assert.equal msgObject.header.name, messageNames.SHARE_PRESENTATION_EVENT
     #check if data is of the expected type
     extras.isString msgObject.header.destination.to
     extras.isString msgObject.header.name
@@ -458,7 +443,7 @@ module.exports.page_changed_event_to_json = (params, onSuccess, onFailure) ->
     header = {}
     header.destination = {}
     header.destination.to = params.channels
-    header.name = PAGE_CHANGED_EVENT
+    header.name = messageNames.PAGE_CHANGED_EVENT
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
@@ -512,7 +497,7 @@ module.exports.page_changed_event_to_javascript_object = (message, onSuccess, on
   try
     msgObject = JSON.parse(message)
 
-    assert.equal msgObject.header.name, PAGE_CHANGED_EVENT
+    assert.equal msgObject.header.name, messageNames.PAGE_CHANGED_EVENT
     #check if data is of the expected type
     extras.isString msgObject.header.destination.to
     extras.isString msgObject.header.name
@@ -571,7 +556,7 @@ module.exports.user_joined_event_to_json = (params, onSuccess, onFailure) ->
     header = {}
     header.destination = {}
     header.destination.to = params.channelsDestination
-    header.name = USER_JOINED_EVENT
+    header.name = messageNames.USER_JOINED_EVENT
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
@@ -605,7 +590,7 @@ module.exports.user_joined_event_to_json = (params, onSuccess, onFailure) ->
     message.header = header
     message.payload = payload
 
-    assert.equal header.name, USER_JOINED_EVENT
+    assert.equal header.name, messageNames.USER_JOINED_EVENT
     extras.isString header.destination.to
     extras.isString header.name
     extras.isString header.timestamp
@@ -655,7 +640,7 @@ module.exports.user_joined_event_to_javascript_object = (message, onSuccess, onF
   try
     msgObject = JSON.parse(message)
 
-    assert.equal msgObject.header.name, USER_JOINED_EVENT
+    assert.equal msgObject.header.name, messageNames.USER_JOINED_EVENT
     #check if data is of the expected type
     extras.isString msgObject.header.destination.to
     extras.isString msgObject.header.name
@@ -723,7 +708,7 @@ module.exports.user_left_event_to_json = (params, onSuccess, onFailure) ->
     header = {}
     header.destination = {}
     header.destination.to = params.channelsDestination
-    header.name = USER_LEFT_EVENT
+    header.name = messageNames.USER_LEFT_EVENT
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
@@ -756,7 +741,7 @@ module.exports.user_left_event_to_javascript_object = (message, onSuccess, onFai
   try
     msgObject = JSON.parse(message)
 
-    assert.equal msgObject.header.name, USER_LEFT_EVENT
+    assert.equal msgObject.header.name, messageNames.USER_LEFT_EVENT
     #check if data is of the expected type
     extras.isString msgObject.header.destination.to
     extras.isString msgObject.header.name
@@ -786,7 +771,7 @@ module.exports.whiteboard_draw_event_to_json_manual = (params, onSuccess, onFail
   catch e
     onFailure e
 
-  assert.equal params.header.name, WHITEBOARD_DRAW_EVENT
+  assert.equal params.header.name, messageNames.WHITEBOARD_DRAW_EVENT
   extras.isString params.header.destination.to
   extras.isString params.header.name
   extras.isString params.header.timestamp
@@ -818,7 +803,7 @@ module.exports.whiteboard_update_event_to_json_manual = (params, onSuccess, onFa
   catch e
     onFailure e
 
-  assert.equal params.header.name, WHITEBOARD_UPDATE_EVENT
+  assert.equal params.header.name, messageNames.WHITEBOARD_UPDATE_EVENT
   extras.isString params.header.destination.to
   extras.isString params.header.name
   extras.isString params.header.timestamp

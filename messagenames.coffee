@@ -48,4 +48,7 @@ class MessageNames
   @RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = "resize_and_move_page_presentation_event"
   @BROADCAST_RESIZE_AND_MOVE_PAGE_PRESENTATION_EVENT = "broadcast_resize_and_move_page_presentation_event"
 
-exports.MessageNames = MessageNames
+  #this event does not go through the library. We just need the title to appear in the Events dropdown in the tool
+  @ANTON_CUSTOM = "anton_custom"
+
+module.exports = MessageNames
