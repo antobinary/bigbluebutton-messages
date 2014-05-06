@@ -64,6 +64,10 @@ var schemas = {
   "whiteboard_draw_event" : Joi.object({
     "header": Joi.object(common_schemas.header),
     "payload": Joi.object(merge(common_schemas.payload, common_schemas.whiteboard))
+  }),
+  "whiteboard_update_event" : Joi.object({
+    "header": Joi.object(common_schemas.header),
+    "payload": Joi.object(merge(common_schemas.payload, common_schemas.whiteboard))
   })
 };
 

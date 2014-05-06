@@ -238,41 +238,29 @@ module.exports.whiteboard_update_event_to_json = (params, onSuccess, onFailure) 
     message = {}
     message.header = header
     message.payload = payload
-    
-    onSuccess JSON.stringify(message)     
-  return
+
+    #Validation
+    schema = Schemas[messageNames.WHITEBOARD_UPDATE_EVENT]
+
+    Joi.validate(message, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
 module.exports.whiteboard_update_event_to_javascript_object = (message, onSuccess, onFailure) ->
   try
     msgObject = JSON.parse(message)
 
-    assert.equal msgObject.header.name, messageNames.WHITEBOARD_UPDATE_EVENT
-    #check if data is of the expected type
-    extras.isString msgObject.header.destination.to
-    extras.isString msgObject.header.name
-    extras.isString msgObject.header.timestamp
-    extras.isString msgObject.header.source
-    extras.isString msgObject.payload.meeting.name
-    extras.isString msgObject.payload.meeting.id
-    extras.isString msgObject.payload.session
-    extras.isString msgObject.payload.whiteboard_id
-    extras.isString msgObject.payload.shape_id
-    extras.isString msgObject.payload.shape_type
-    extras.isNumber msgObject.payload.data.coordinate.first_x
-    extras.isNumber msgObject.payload.data.coordinate.first_y
-    extras.isNumber msgObject.payload.data.coordinate.last_x
-    extras.isNumber msgObject.payload.data.coordinate.last_y
-    extras.isString msgObject.payload.data.line.line_type
-    extras.isNumber msgObject.payload.data.line.color
-    extras.isNumber msgObject.payload.data.weight
-    extras.isString msgObject.payload.by.id
-    extras.isString msgObject.payload.by.name
-    extras.isBoolean msgObject.payload.data.background.visible
-    extras.isNumber msgObject.payload.data.background.color
-    extras.isNumber msgObject.payload.data.background.alpha
-    extras.isBoolean msgObject.payload.data.square
+    #Validation
+    schema = Schemas[messageNames.WHITEBOARD_UPDATE_EVENT]
 
-    #console.log "MESSAGE_LIBRARY:" + " success "+msgObject.header.name+" toJavascriptObject"
-
+    Joi.validate(msgObject, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
 
     onSuccess msgObject
   catch err
@@ -734,35 +722,18 @@ module.exports.whiteboard_draw_event_to_json_manual = (params, onSuccess, onFail
 module.exports.whiteboard_update_event_to_json_manual = (params, onSuccess, onFailure) ->
   try
     json = JSON.stringify(params)
+
+    #Validation
+    schema = Schemas[messageNames.WHITEBOARD_UPDATE_EVENT]
+
+    Joi.validate(json, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
   catch e
     onFailure e
-
-  assert.equal params.header.name, messageNames.WHITEBOARD_UPDATE_EVENT
-  extras.isString params.header.destination.to
-  extras.isString params.header.name
-  extras.isString params.header.timestamp
-  extras.isString params.header.source
-  extras.isString params.payload.meeting.name
-  extras.isString params.payload.meeting.id
-  extras.isString params.payload.session
-  extras.isString params.payload.whiteboard_id
-  extras.isString params.payload.shape_id
-  extras.isString params.payload.shape_type
-  extras.isNumber params.payload.data.coordinate.first_x
-  extras.isNumber params.payload.data.coordinate.first_y
-  extras.isNumber params.payload.data.coordinate.last_x
-  extras.isNumber params.payload.data.coordinate.last_y
-  extras.isString params.payload.data.line.line_type
-  extras.isNumber params.payload.data.line.color
-  extras.isNumber params.payload.data.weight
-  extras.isString params.payload.by.id
-  extras.isString params.payload.by.name
-  extras.isBoolean params.payload.data.background.visible
-  extras.isNumber params.payload.data.background.color
-  extras.isNumber params.payload.data.background.alpha
-  extras.isBoolean params.payload.data.square
-
-  onSuccess json   
 module.exports.share_presentation_event_to_json_manual = (params, onSuccess, onFailure) ->
   
   try
