@@ -7,9 +7,7 @@
     "name": "Anton Georgiev"
   },
   "dependencies": {
-    "assert" : "*",
-    "node-assert-extras": "*",
-    "joi": "*"
+    "joi": "4.0.0"
   },
   "description": "bigbluebutton-messages",
   "main": "simple_message_library.coffee",
@@ -22,10 +20,5 @@
   "readmeFilename": "README.md",
   "bugs": {
     "url": "https://github.com/antobinary/bigbluebutton-messages/issues"
-  },
-  "dependencies": {
-     "joi": "3.1.0"
-  },
-  "devDependencies": {},
-  "optionalDependencies": {}
+  }
 }
