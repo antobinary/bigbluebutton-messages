@@ -1,6 +1,6 @@
-extras = require "node-assert-extras"
-assert = require "assert"
+Joi    = require "joi"
 
+Schemas = require "./schemas"
 messageNames = require "./messagenames"
 
 paramExist = (param) ->
@@ -83,6 +83,9 @@ module.exports.getEventType = (message, onSuccess, onFailure) ->
 # TODO: Add some documentation using http://usejsdoc.org/
 # Document requried and optional parameters
 
+
+
+
 #WHITEBOARD_DRAW_EVENT
 module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
   
@@ -109,6 +112,7 @@ module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
     "byId"
     "byName"
   ]
+
   errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors     
@@ -147,39 +151,21 @@ module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
     payload.by.id = params.byId
     payload.by.name = params.byName
 
-    assert.equal header.name, messageNames.WHITEBOARD_DRAW_EVENT
-    #check if data is of the expected type
-    extras.isString header.destination.to
-    extras.isString header.name
-    extras.isString header.timestamp
-    extras.isString header.source
-    extras.isString payload.meeting.name
-    extras.isString payload.meeting.id
-    extras.isString payload.session
-    extras.isString payload.whiteboard_id
-    extras.isString payload.shape_id
-    extras.isString payload.shape_type
-    extras.isNumber payload.data.coordinate.first_x
-    extras.isNumber payload.data.coordinate.first_y
-    extras.isNumber payload.data.coordinate.last_x
-    extras.isNumber payload.data.coordinate.last_y
-    extras.isString payload.data.line.line_type
-    extras.isNumber payload.data.line.color
-    extras.isNumber payload.data.weight
-    extras.isString payload.by.id
-    extras.isString payload.by.name
-    extras.isBoolean payload.data.background.visible
-    extras.isNumber payload.data.background.color
-    extras.isNumber payload.data.background.alpha
-    extras.isBoolean payload.data.square
 
     message = {}
     message.header = header
     message.payload = payload
-    #console.log "inMSGLIB:" + "Object=" + message + "\n"
-    #console.log "inMSGLIB:" + "json=" + JSON.stringify(message) + "\n"
-    onSuccess JSON.stringify(message)     
-  return
+
+    #Validation
+    schema = Schemas[messageNames.WHITEBOARD_DRAW_EVENT]
+
+    Joi.validate(message, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
+
 module.exports.whiteboard_draw_event_to_javascript_object = (message, onSuccess, onFailure) ->
   try
     msgObject = JSON.parse(message)
@@ -770,8 +756,16 @@ module.exports.whiteboard_draw_event_to_json_manual = (params, onSuccess, onFail
     json = JSON.stringify(params)
   catch e
     onFailure e
+  a = Schemas[messageNames.WHITEBOARD_DRAW_EVENT]
 
-  assert.equal params.header.name, messageNames.WHITEBOARD_DRAW_EVENT
+  Joi.validate(json, a, (err, value) ->
+    if err
+      onFailure err
+    else
+      onSuccess value
+    )
+
+  ###assert.equal params.header.name, messageNames.WHITEBOARD_DRAW_EVENT
   extras.isString params.header.destination.to
   extras.isString params.header.name
   extras.isString params.header.timestamp
@@ -794,9 +788,13 @@ module.exports.whiteboard_draw_event_to_json_manual = (params, onSuccess, onFail
   extras.isBoolean params.payload.data.background.visible
   extras.isNumber params.payload.data.background.color
   extras.isNumber params.payload.data.background.alpha
-  extras.isBoolean params.payload.data.square
+  extras.isBoolean params.payload.data.square###
 
-  onSuccess json 
+  #onSuccess json 
+
+
+
+
 module.exports.whiteboard_update_event_to_json_manual = (params, onSuccess, onFailure) ->
   try
     json = JSON.stringify(params)
