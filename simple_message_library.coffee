@@ -3,24 +3,14 @@ Joi    = require "joi"
 Schemas = require "./schemas"
 messageNames = require "./messagenames"
 
-paramExist = (param) ->
-  #param?.length > 0
-
-  #must resolve why this didn't work
-
-  #TODO check for empty array
-  return false if typeof param is "undefined" or param is null or param is ""
-  true
 checkForValidity = (params, requiredParams) ->
   errors = []
   for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
+    unless params[requiredParams[key]]?
       error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
       console.log error_msg
       errors.push error_msg
   errors
-
-
 
 #list of events to be selected from
 module.exports.getEvents =
@@ -29,7 +19,7 @@ module.exports.getEvents =
   2: messageNames.WHITEBOARD_UPDATE_EVENT
   3: messageNames.SHARE_PRESENTATION_EVENT
   4: messageNames.PAGE_CHANGED_EVENT
-  5: messageNames.ANTON_CUSTOM #this event does not go through the library. We just need the title to appear in the Events dropdown
+  5: messageNames.ANTON_CUSTOM #does not go through the library. Adds the title to the Events dropdown
   6: messageNames.USER_JOINED_EVENT
   7: messageNames.USER_LEFT_EVENT
 
@@ -124,10 +114,10 @@ module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
-    payload.meeting = {} # this was not present in the scala file
-    payload.meeting.name = params.meetingName # this was not present in the scala file
-    payload.meeting.id = params.meetingId # this was not present in the scala file
-    payload.session = params.sessionId # this was not present in the scala file
+    payload.meeting = {}
+    payload.meeting.name = params.meetingName
+    payload.meeting.id = params.meetingId
+    payload.session = params.sessionId
     payload.whiteboard_id = params.whiteboardId
     payload.shape_id = params.shapeId
     payload.shape_type = params.shapeType
@@ -151,7 +141,6 @@ module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
     payload.by.id = params.byId
     payload.by.name = params.byName
 
-
     message = {}
     message.header = header
     message.payload = payload
@@ -169,35 +158,16 @@ module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
 module.exports.whiteboard_draw_event_to_javascript_object = (message, onSuccess, onFailure) ->
   try
     msgObject = JSON.parse(message)
-    assert.equal msgObject.header.name, messageNames.WHITEBOARD_DRAW_EVENT
-    #check if data is of the expected type
-    extras.isString msgObject.header.destination.to
-    extras.isString msgObject.header.name
-    extras.isString msgObject.header.timestamp
-    extras.isString msgObject.header.source
-    extras.isString msgObject.payload.meeting.name
-    extras.isString msgObject.payload.meeting.id
-    extras.isString msgObject.payload.session
-    extras.isString msgObject.payload.whiteboard_id
-    extras.isString msgObject.payload.shape_id
-    extras.isString msgObject.payload.shape_type
-    extras.isNumber msgObject.payload.data.coordinate.first_x
-    extras.isNumber msgObject.payload.data.coordinate.first_y
-    extras.isNumber msgObject.payload.data.coordinate.last_x
-    extras.isNumber msgObject.payload.data.coordinate.last_y
-    extras.isString msgObject.payload.data.line.line_type
-    extras.isNumber msgObject.payload.data.line.color
-    extras.isNumber msgObject.payload.data.weight
-    extras.isString msgObject.payload.by.id
-    extras.isString msgObject.payload.by.name
-    extras.isBoolean msgObject.payload.data.background.visible
-    extras.isNumber msgObject.payload.data.background.color
-    extras.isNumber msgObject.payload.data.background.alpha
-    extras.isBoolean msgObject.payload.data.square
 
-    #console.log "MESSAGE_LIBRARY:" + " success "+msgObject.header.name+" toJavascriptObject"
+    #Validation
+    schema = Schemas[messageNames.WHITEBOARD_DRAW_EVENT]
 
-    onSuccess msgObject
+    Joi.validate(msgObject, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
   catch err
     onFailure err
   return
@@ -239,10 +209,10 @@ module.exports.whiteboard_update_event_to_json = (params, onSuccess, onFailure) 
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
-    payload.meeting = {} # this was not present in the scala file
-    payload.meeting.name = params.meetingName # this was not present in the scala file
-    payload.meeting.id = params.meetingId # this was not present in the scala file
-    payload.session = params.sessionId # this was not present in the scala file
+    payload.meeting = {}
+    payload.meeting.name = params.meetingName
+    payload.meeting.id = params.meetingId
+    payload.session = params.sessionId
     payload.whiteboard_id = params.whiteboardId
     payload.shape_id = params.shapeId
     payload.shape_type = params.shapeType
@@ -268,9 +238,6 @@ module.exports.whiteboard_update_event_to_json = (params, onSuccess, onFailure) 
     message = {}
     message.header = header
     message.payload = payload
-
-    console.log "inMSGLIB:" + "Object=" + message + "\n"
-    console.log "inMSGLIB:" + "json=" + JSON.stringify(message) + "\n"
     
     onSuccess JSON.stringify(message)     
   return
@@ -338,10 +305,10 @@ module.exports.share_presentation_event_to_json = (params, onSuccess, onFailure)
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
-    payload.meeting = {} # this was not present in the scala file
-    payload.meeting.name = params.meetingName # this was not present in the scala file
-    payload.meeting.id = params.meetingId # this was not present in the scala file
-    payload.session = params.sessionId # this was not present in the scala file
+    payload.meeting = {}
+    payload.meeting.name = params.meetingName
+    payload.meeting.id = params.meetingId
+    payload.session = params.sessionId
     payload.presentation = {}
     payload.presentation.id = params.presentationId
     payload.presentation.name = params.presentationName
@@ -751,50 +718,19 @@ module.exports.user_left_event_to_javascript_object = (message, onSuccess, onFai
 #to the functions in this library.
 #These functions (*_manual) can be removed from the library in Production when we do not need the tool anymore
 module.exports.whiteboard_draw_event_to_json_manual = (params, onSuccess, onFailure) ->
-
   try
     json = JSON.stringify(params)
+
+    schema = Schemas[messageNames.WHITEBOARD_DRAW_EVENT]
+
+    Joi.validate(json, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess value
+      )
   catch e
     onFailure e
-  a = Schemas[messageNames.WHITEBOARD_DRAW_EVENT]
-
-  Joi.validate(json, a, (err, value) ->
-    if err
-      onFailure err
-    else
-      onSuccess value
-    )
-
-  ###assert.equal params.header.name, messageNames.WHITEBOARD_DRAW_EVENT
-  extras.isString params.header.destination.to
-  extras.isString params.header.name
-  extras.isString params.header.timestamp
-  extras.isString params.header.source
-  extras.isString params.payload.meeting.name
-  extras.isString params.payload.meeting.id
-  extras.isString params.payload.session
-  extras.isString params.payload.whiteboard_id
-  extras.isString params.payload.shape_id
-  extras.isString params.payload.shape_type
-  extras.isNumber params.payload.data.coordinate.first_x
-  extras.isNumber params.payload.data.coordinate.first_y
-  extras.isNumber params.payload.data.coordinate.last_x
-  extras.isNumber params.payload.data.coordinate.last_y
-  extras.isString params.payload.data.line.line_type
-  extras.isNumber params.payload.data.line.color
-  extras.isNumber params.payload.data.weight
-  extras.isString params.payload.by.id
-  extras.isString params.payload.by.name
-  extras.isBoolean params.payload.data.background.visible
-  extras.isNumber params.payload.data.background.color
-  extras.isNumber params.payload.data.background.alpha
-  extras.isBoolean params.payload.data.square###
-
-  #onSuccess json 
-
-
-
-
 module.exports.whiteboard_update_event_to_json_manual = (params, onSuccess, onFailure) ->
   try
     json = JSON.stringify(params)
