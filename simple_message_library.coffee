@@ -295,25 +295,15 @@ module.exports.share_presentation_event_to_json = (params, onSuccess, onFailure)
     message.header = header
     message.payload = payload
 
-    extras.isString header.destination.to
-    extras.isString header.name
-    extras.isString header.timestamp
-    extras.isString header.source
-    extras.isString payload.meeting.name
-    extras.isString payload.meeting.id
-    extras.isString payload.session
-    extras.isString payload.by.id
-    extras.isString payload.by.name
-    extras.isString payload.presentation.id
-    extras.isString payload.presentation.name
+    #Validation
+    schema = Schemas[messageNames.SHARE_PRESENTATION_EVENT]
 
-    for page in params.pages
-      extras.isString page.svg, "svg"
-      extras.isString page.png, "png" 
-      extras.isString page.swf, "swf"
-
-    onSuccess JSON.stringify(message)     
-  return
+    Joi.validate(message, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
 
 #PAGE_CHANGED_EVENT
 module.exports.page_changed_event_to_json = (params, onSuccess, onFailure) ->
@@ -346,10 +336,10 @@ module.exports.page_changed_event_to_json = (params, onSuccess, onFailure) ->
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
-    payload.meeting = {} # this was not present in the scala file
-    payload.meeting.name = params.meetingName # this was not present in the scala file
-    payload.meeting.id = params.meetingId # this was not present in the scala file
-    payload.session = params.sessionId # this was not present in the scala file
+    payload.meeting = {}
+    payload.meeting.name = params.meetingName
+    payload.meeting.id = params.meetingId
+    payload.session = params.sessionId
     payload.presentation = {}
     payload.presentation.id = params.presentationId
     payload.presentation.name = params.presentationName
@@ -371,27 +361,15 @@ module.exports.page_changed_event_to_json = (params, onSuccess, onFailure) ->
     message.header = header
     message.payload = payload
 
-    extras.isString header.destination.to
-    extras.isString header.name
-    extras.isString header.timestamp
-    extras.isString header.source
-    extras.isString payload.meeting.name
-    extras.isString payload.meeting.id
-    extras.isString payload.session
-    extras.isString payload.by.id
-    extras.isString payload.by.name
-    extras.isString payload.presentation.id
-    extras.isString payload.presentation.name
+    #Validation
+    schema = Schemas[messageNames.PAGE_CHANGED_EVENT]
 
-    extras.isString payload.presentation.page.id
-    extras.isNumber payload.presentation.page.num
-
-    extras.isString payload.presentation.slide.png, "png"
-    extras.isString payload.presentation.slide.svg, "svg"
-    extras.isString payload.presentation.slide.swf, "swf"
-
-    onSuccess JSON.stringify(message)     
-  return
+    Joi.validate(message, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
 
 #USER_JOINED_EVENT
 module.exports.user_joined_event_to_json = (params, onSuccess, onFailure) ->
@@ -551,57 +529,35 @@ module.exports.whiteboard_update_event_to_json_manual = (params, onSuccess, onFa
   catch e
     onFailure e
 module.exports.share_presentation_event_to_json_manual = (params, onSuccess, onFailure) ->
-  
   try
     json = JSON.stringify(params)
+
+    #Validation
+    schema = Schemas[messageNames.SHARE_PRESENTATION_EVENT]
+
+    Joi.validate(json, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
   catch e
     onFailure e
-
-
-  extras.isString params.header.destination.to
-  extras.isString params.header.name
-  extras.isString params.header.timestamp
-  extras.isString params.header.source
-  extras.isString params.payload.meeting.name
-  extras.isString params.payload.meeting.id
-  extras.isString params.payload.session
-  extras.isString params.payload.by.id
-  extras.isString params.payload.by.name
-  extras.isString params.payload.presentation.id
-  extras.isString params.payload.presentation.name
-
-  for page in params.payload.presentation.pages
-    extras.isString page.svg, "svg"
-    extras.isString page.png, "png" 
-    extras.isString page.swf, "swf"
-
-  onSuccess json
 module.exports.page_changed_event_to_json_manual = (params, onSuccess, onFailure) ->
   try
     json = JSON.stringify(params)
+
+    #Validation
+    schema = Schemas[messageNames.PAGE_CHANGED_EVENT]
+
+    Joi.validate(json, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
   catch e
     onFailure e
-
-  extras.isString params.header.destination.to
-  extras.isString params.header.name
-  extras.isString params.header.timestamp
-  extras.isString params.header.source
-  extras.isString params.payload.meeting.name
-  extras.isString params.payload.meeting.id
-  extras.isString params.payload.session
-  extras.isString params.payload.by.id
-  extras.isString params.payload.by.name
-  extras.isString params.payload.presentation.id
-  extras.isString params.payload.presentation.name
-
-  extras.isString params.payload.presentation.page.id
-  extras.isNumber params.payload.presentation.page.num
-
-  extras.isString params.payload.presentation.slide.png, "png"
-  extras.isString params.payload.presentation.slide.svg, "svg"
-  extras.isString params.payload.presentation.slide.swf, "swf"
-
-  onSuccess json
 module.exports.user_joined_event_to_json_manual = (params, onSuccess, onFailure) ->
   try
     json = JSON.stringify(params)

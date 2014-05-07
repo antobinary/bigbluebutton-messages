@@ -78,6 +78,11 @@ var common_schemas = {
     "muted": Joi.boolean().required(),
     "locked": Joi.boolean().required(),
     "talking": Joi.boolean().required()
+  },
+
+  "by": {
+    "id": Joi.string().required(),
+    "name": Joi.string().required()
   }
 
 };
@@ -95,14 +100,17 @@ var schemas = {
     "header": Joi.object(common_schemas.header),
     "payload": Joi.object(merge(common_schemas.payload, common_schemas.whiteboard))
   }),
+
   "whiteboard_update_event": Joi.object({
     "header": Joi.object(common_schemas.header),
     "payload": Joi.object(merge(common_schemas.payload, common_schemas.whiteboard))
   }),
+
   "user_left_event": Joi.object({
     "header": Joi.object(common_schemas.header),
     "payload": Joi.object(merge(common_schemas.payload, common_schemas.user))
   }),
+
   "user_joined_event": Joi.object({
     "header": Joi.object(common_schemas.header),
     "payload": Joi.object(merge(common_schemas.payload, {
@@ -120,6 +128,42 @@ var schemas = {
       "caller_id": common_schemas.caller_id,
       "metadata": common_schemas.metadata,
       "media_streams": common_schemas.media_streams
+    }))
+  }),
+
+  "share_presentation_event": Joi.object({
+    "header": Joi.object(common_schemas.header),
+    "payload": Joi.object(merge(common_schemas.payload, {
+      "by": Joi.object(common_schemas.by),
+      "presentation": Joi.object({
+        "id": Joi.string().required(),
+        "name": Joi.string().required(),
+        "pages": Joi.array({
+          "svg": Joi.string().required(),
+          "png": Joi.string().required(),
+          "swf": Joi.string().required()
+        }).required()
+      })
+    }))
+  }),
+
+  "page_changed_event": Joi.object({
+    "header": Joi.object(common_schemas.header),
+    "payload": Joi.object(merge(common_schemas.payload, {
+      "by": Joi.object(common_schemas.by),
+      "presentation": Joi.object({
+        "id": Joi.string().required(),
+        "name": Joi.string().required(),
+        "page": Joi.object({
+          "id": Joi.string().required(),
+          "num": Joi.number().required()
+        }).required(),
+        "slide": Joi.object({
+          "svg": Joi.string().required(),
+          "png": Joi.string().required(),
+          "swf": Joi.string().required()
+        })
+      })
     }))
   })
 };
