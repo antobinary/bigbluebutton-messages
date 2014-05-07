@@ -48,6 +48,37 @@ var common_schemas = {
       "id" : Joi.string().required(),
       "name" : Joi.string().required()
     })
+  },
+  "user" : {
+    "user" : {
+      "id" : Joi.string().required(),
+      "name" : Joi.string().required()
+    }
+  },
+
+  "metadata" : {
+    "student_id": Joi.string().required(),
+    "program": Joi.string().required()
+  },
+
+  "media_streams": Joi.array({
+    "media_type": Joi.string().required(),
+    "uri": Joi.string().required(),
+    "metadata": Joi.object({
+        "foo": Joi.string().required()
+    })
+  }).required(),
+
+  "caller_id" : {
+    "name": Joi.string().required(),
+    "number": Joi.string().required()
+  },
+
+  "status" : {
+    "hand_raised": Joi.boolean().required(),
+    "muted": Joi.boolean().required(),
+    "locked": Joi.boolean().required(),
+    "talking": Joi.boolean().required()
   }
 
 };
@@ -68,7 +99,35 @@ var schemas = {
   "whiteboard_update_event" : Joi.object({
     "header": Joi.object(common_schemas.header),
     "payload": Joi.object(merge(common_schemas.payload, common_schemas.whiteboard))
-  })
+  }),
+  "user_left_event" : Joi.object({
+    "header": Joi.object(common_schemas.header),
+    "payload": Joi.object(merge(common_schemas.payload, common_schemas.user))
+  }),
+  "user_joined_event": Joi.object(userJoinedEvent)
 };
 
+var userJoinedEvent = {
+  "header": Joi.object(common_schemas.header),
+  "payload": Joi.object(merge(common_schemas.payload, {
+    "user": Joi.object(merge(common_schemas.user, 
+      {
+        "external_id": Joi.string().required(),
+        "role": Joi.string().required(),
+        "pin": Joi.number().required(),
+        "welcome_message": Joi.string().required(),
+        "logout_url": Joi.string().required(),
+        "avatar_url": Joi.string().required(),
+        "is_presenter": Joi.boolean().required()
+        
+      }
+    )),
+    "status": common_schemas.status,
+    "caller_id": common_schemas.caller_id,
+    "metadata": common_schemas.metadata,
+    "media_streams": common_schemas.media_streams
+  }))
+};
+
+   
 module.exports = schemas;

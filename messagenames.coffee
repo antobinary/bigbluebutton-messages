@@ -51,4 +51,5 @@ class MessageNames
   #this event does not go through the library. We just need the title to appear in the Events dropdown in the tool
   @ANTON_CUSTOM = "anton_custom"
 
+  @PAGE_CHANGED_EVENT = "page_changed_event"
 module.exports = MessageNames
