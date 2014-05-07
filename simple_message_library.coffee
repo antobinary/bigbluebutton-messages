@@ -1,6 +1,6 @@
-Joi    = require "joi"
+Joi = require "joi"
 
-Schemas = require "./schemas"
+Schemas      = require "./schemas"
 messageNames = require "./messagenames"
 
 checkForValidity = (params, requiredParams) ->
@@ -74,6 +74,26 @@ module.exports.getEventType = (message, onSuccess, onFailure) ->
 # Document requried and optional parameters
 
 
+# Converts the JSON to Javascript Object and triggers a validation against a schema
+#    @message - JSON of the message
+#    @eventName - the type of message: e.x. "whiteboard_draw_event"
+#    @onSuccess - callback function to be executed should the conversion succeed
+#    @onFailure - callback function to be executed should the conversion fail
+module.exports.convertAndValidateJSON = (message, eventName, onSuccess, onFailure) ->
+  try
+    object = JSON.parse(message)
+
+    #Validation
+    schema = Schemas[eventName]
+
+    Joi.validate(object, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value) #TODO double check at some point
+      )
+  catch err
+    onFailure err
 
 
 #WHITEBOARD_DRAW_EVENT
@@ -154,22 +174,6 @@ module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
       else
         onSuccess JSON.stringify(value)
       )
-module.exports.whiteboard_draw_event_to_javascript_object = (message, onSuccess, onFailure) ->
-  try
-    msgObject = JSON.parse(message)
-
-    #Validation
-    schema = Schemas[messageNames.WHITEBOARD_DRAW_EVENT]
-
-    Joi.validate(msgObject, schema, (err, value) ->
-      if err
-        onFailure err
-      else
-        onSuccess JSON.stringify(value)
-      )
-  catch err
-    onFailure err
-  return
 
 #WHITEBOARD_UPDATE_EVENT
 module.exports.whiteboard_update_event_to_json = (params, onSuccess, onFailure) ->
@@ -247,24 +251,6 @@ module.exports.whiteboard_update_event_to_json = (params, onSuccess, onFailure) 
       else
         onSuccess JSON.stringify(value)
       )
-module.exports.whiteboard_update_event_to_javascript_object = (message, onSuccess, onFailure) ->
-  try
-    msgObject = JSON.parse(message)
-
-    #Validation
-    schema = Schemas[messageNames.WHITEBOARD_UPDATE_EVENT]
-
-    Joi.validate(msgObject, schema, (err, value) ->
-      if err
-        onFailure err
-      else
-        onSuccess JSON.stringify(value)
-      )
-
-    onSuccess msgObject
-  catch err
-    onFailure err
-  return
 
 #SHARE_PRESENTATION_EVENT
 module.exports.share_presentation_event_to_json = (params, onSuccess, onFailure) ->
@@ -327,33 +313,6 @@ module.exports.share_presentation_event_to_json = (params, onSuccess, onFailure)
       extras.isString page.swf, "swf"
 
     onSuccess JSON.stringify(message)     
-  return
-module.exports.share_presentation_event_to_javascript_object = (message, onSuccess, onFailure) ->
-  try
-    msgObject = JSON.parse(message)
-
-    assert.equal msgObject.header.name, messageNames.SHARE_PRESENTATION_EVENT
-    #check if data is of the expected type
-    extras.isString msgObject.header.destination.to
-    extras.isString msgObject.header.name
-    extras.isString msgObject.header.timestamp
-    extras.isString msgObject.header.source
-    extras.isString msgObject.payload.meeting.name
-    extras.isString msgObject.payload.meeting.id
-    extras.isString msgObject.payload.session
-    extras.isString msgObject.payload.by.id
-    extras.isString msgObject.payload.by.name
-    extras.isString msgObject.payload.presentation.id
-    extras.isString msgObject.payload.presentation.name
-
-    for page in msgObject.payload.presentation.pages
-      extras.isString page.svg, "svg"
-      extras.isString page.png, "png"
-      extras.isString page.swf, "swf"
-
-    onSuccess msgObject
-  catch err
-    onFailure err
   return
 
 #PAGE_CHANGED_EVENT
@@ -433,34 +392,6 @@ module.exports.page_changed_event_to_json = (params, onSuccess, onFailure) ->
 
     onSuccess JSON.stringify(message)     
   return
-module.exports.page_changed_event_to_javascript_object = (message, onSuccess, onFailure) ->
-  try
-    msgObject = JSON.parse(message)
-
-    assert.equal msgObject.header.name, messageNames.PAGE_CHANGED_EVENT
-    #check if data is of the expected type
-    extras.isString msgObject.header.destination.to
-    extras.isString msgObject.header.name
-    extras.isString msgObject.header.timestamp
-    extras.isString msgObject.header.source
-    extras.isString msgObject.payload.meeting.name
-    extras.isString msgObject.payload.meeting.id
-    extras.isString msgObject.payload.session
-    extras.isString msgObject.payload.by.id
-    extras.isString msgObject.payload.by.name
-    extras.isString msgObject.payload.presentation.id
-    extras.isString msgObject.payload.presentation.name
-    extras.isString msgObject.payload.presentation.page.id
-    extras.isNumber msgObject.payload.presentation.page.num
-
-    extras.isString msgObject.payload.presentation.slide.svg, "svg"
-    extras.isString msgObject.payload.presentation.slide.png, "png"
-    extras.isString msgObject.payload.presentation.slide.swf, "swf"
-
-    onSuccess msgObject
-  catch err
-    onFailure err
-  return
 
 #USER_JOINED_EVENT
 module.exports.user_joined_event_to_json = (params, onSuccess, onFailure) ->
@@ -539,22 +470,6 @@ module.exports.user_joined_event_to_json = (params, onSuccess, onFailure) ->
       else
         onSuccess JSON.stringify(value)
       )
-module.exports.user_joined_event_to_javascript_object = (message, onSuccess, onFailure) ->
-  try
-    msgObject = JSON.parse(message)
-
-    #Validation
-    schema = Schemas[messageNames.USER_JOINED_EVENT]
-
-    Joi.validate(msgObject, schema, (err, value) ->
-      if err
-        onFailure err
-      else
-        onSuccess JSON.stringify(value)
-      )
-  catch err
-    onFailure err
-  return
 
 #USER_LEFT_EVENT
 module.exports.user_left_event_to_json = (params, onSuccess, onFailure) ->
@@ -599,22 +514,6 @@ module.exports.user_left_event_to_json = (params, onSuccess, onFailure) ->
       else
         onSuccess JSON.stringify(value)
       )
-module.exports.user_left_event_to_javascript_object = (message, onSuccess, onFailure) ->
-  try
-    msgObject = JSON.parse(message)
-
-    #Validation
-    schema = Schemas[messageNames.USER_LEFT_EVENT]
-
-    Joi.validate(msgObject, schema, (err, value) ->
-      if err
-        onFailure err
-      else
-        onSuccess JSON.stringify(value)
-      )
-  catch err
-    onFailure err
-  return
 
 
 #MANUAL events means that these functions are here to support the "message-library-tool".
