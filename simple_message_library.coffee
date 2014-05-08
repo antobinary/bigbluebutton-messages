@@ -588,3 +588,21 @@ module.exports.user_left_event_to_json_manual = (params, onSuccess, onFailure) -
       )
   catch e
     onFailure e
+
+
+
+module.exports.validateEventJSON = (params, eventName, onSuccess, onFailure) ->
+  try
+    json = JSON.stringify(params)
+
+    #Validation
+    schema = Schemas[eventName]
+
+    Joi.validate(json, schema, (err, value) ->
+      if err
+        onFailure "validation error: " + err
+      else
+        onSuccess JSON.stringify(value)
+      )
+  catch e
+    onFailure e
