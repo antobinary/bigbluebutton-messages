@@ -38,15 +38,15 @@ var common_schemas = {
       }),
       "line": Joi.object({
         "color": Joi.number().required(),
-        "line_type": Joi.string().required()
+        "line_type": Joi.string().required(),
+        "weight": Joi.number().required()
       }),
       "background": Joi.object({
         "visible": Joi.boolean().required(),
         "color": Joi.number().required(),
         "alpha": Joi.number().required()
       }),
-      "weight": Joi.number().required(),
-      "square": Joi.boolean().required()
+      "square": Joi.boolean() //" draw line" does not have it
     }),
     "by": Joi.object({
       "id": Joi.string().required(),
