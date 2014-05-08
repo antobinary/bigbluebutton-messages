@@ -20,6 +20,11 @@ var common_schemas = {
     "session": Joi.string().required()
   },
 
+  "meeting": {
+      "name": Joi.string().required(),
+      "id": Joi.string().required()
+    },
+
   "whiteboard": {
     "whiteboard_id": Joi.string(),
     "shape_id": Joi.string().required(),
@@ -48,11 +53,10 @@ var common_schemas = {
       "name": Joi.string().required()
     })
   },
+
   "user": {
-    "user": {
-      "id": Joi.string().required(),
-      "name": Joi.string().required()
-    }
+    "id": Joi.string().required(),
+    "name": Joi.string().required()
   },
 
   "metadata": {
@@ -108,27 +112,32 @@ var schemas = {
 
   "user_left_event": Joi.object({
     "header": Joi.object(common_schemas.header),
-    "payload": Joi.object(merge(common_schemas.payload, common_schemas.user))
+    "payload": Joi.object(merge(common_schemas.payload, {
+      "user": Joi.object(common_schemas.user)
+    }))
   }),
 
   "user_joined_event": Joi.object({
     "header": Joi.object(common_schemas.header),
-    "payload": Joi.object(merge(common_schemas.payload, {
-      "user": Joi.object(merge(common_schemas.user, {
+    "payload": Joi.object({
+      "meeting": Joi.object(common_schemas.meeting),
+      "session": Joi.string().required(),
+      "user": Joi.object({
+        "id": Joi.string().required(),
         "external_id": Joi.string().required(),
+        "name": Joi.string().required(),
         "role": Joi.string().required(),
         "pin": Joi.number().required(),
         "welcome_message": Joi.string().required(),
         "logout_url": Joi.string().required(),
         "avatar_url": Joi.string().required(),
-        "is_presenter": Joi.boolean().required()
-
-      })),
-      "status": common_schemas.status,
-      "caller_id": common_schemas.caller_id,
-      "metadata": common_schemas.metadata,
-      "media_streams": common_schemas.media_streams
-    }))
+        "is_presenter": Joi.boolean().required(),
+        "status": Joi.object(common_schemas.status),
+        "caller_id": Joi.object(common_schemas.caller_id),
+        "media_streams": Joi.array(common_schemas.media_streams),
+        "metadata": Joi.object(common_schemas.metadata)
+      })
+    })
   }),
 
   "share_presentation_event": Joi.object({
@@ -167,5 +176,6 @@ var schemas = {
     }))
   })
 };
+
 
 module.exports = schemas;
