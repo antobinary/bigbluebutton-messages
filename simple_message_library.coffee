@@ -1,55 +1,27 @@
-extras = require "node-assert-extras"
-assert = require "assert"
+Joi = require "joi"
 
-paramExist = (param) ->
-  #TODO check for empty array
-  return false  if typeof param is "undefined" or param is null or param is ""
-  true
-
+Schemas      = require "./schemas"
+messageNames = require "./messagenames"
 
 checkForValidity = (params, requiredParams) ->
   errors = []
   for key of requiredParams
-    unless paramExist(params[requiredParams[key]])
+    unless params[requiredParams[key]]?
       error_msg = "Missing parameter [" + requiredParams[key] + "]=\"" + params[requiredParams[key]] + "\""
       console.log error_msg
       errors.push error_msg
   errors
 
-
-WHITEBOARD_DRAW_EVENT = "whiteboard_draw_event"
-module.exports.WHITEBOARD_DRAW_EVENT = WHITEBOARD_DRAW_EVENT
-
-WHITEBOARD_UPDATE_EVENT = "whiteboard_update_event"
-module.exports.WHITEBOARD_UPDATE_EVENT = WHITEBOARD_UPDATE_EVENT
-
-SHARE_PRESENTATION_EVENT = "share_presentation_event"
-module.exports.SHARE_PRESENTATION_EVENT = SHARE_PRESENTATION_EVENT
-
-PAGE_CHANGED_EVENT = "page_changed_event"
-module.exports.PAGE_CHANGED_EVENT = PAGE_CHANGED_EVENT
-
-#this event does not go through the library. We just need the title to appear in the Events dropdown
-ANTON_CUSTOM = "anton_custom" #TEMP 
-module.exports.ANTON_CUSTOM = ANTON_CUSTOM #TEMP
-
-USER_JOINED_EVENT = "user_joined_event"
-module.exports.USER_JOINED_EVENT = USER_JOINED_EVENT
-
-USER_LEFT_EVENT = "user_left_event"
-module.exports.USER_LEFT_EVENT = USER_LEFT_EVENT
-
-
 #list of events to be selected from
 module.exports.getEvents =
   0: "Please select an event type"
-  1: WHITEBOARD_DRAW_EVENT
-  2: WHITEBOARD_UPDATE_EVENT
-  3: SHARE_PRESENTATION_EVENT
-  4: PAGE_CHANGED_EVENT
-  5: ANTON_CUSTOM #this event does not go through the library. We just need the title to appear in the Events dropdown
-  6: USER_JOINED_EVENT
-  7: USER_LEFT_EVENT
+  1: messageNames.WHITEBOARD_DRAW_EVENT
+  2: messageNames.WHITEBOARD_UPDATE_EVENT
+  3: messageNames.SHARE_PRESENTATION_EVENT
+  4: messageNames.PAGE_CHANGED_EVENT
+  5: messageNames.USER_JOINED_EVENT
+  6: messageNames.USER_LEFT_EVENT
+  7: messageNames.ANTON_CUSTOM #does not go through the library. Adds the title to the Events dropdown
 
 #returns the event type (the name of the event)
 module.exports.getEventType = (message, onSuccess, onFailure) ->    
@@ -101,6 +73,29 @@ module.exports.getEventType = (message, onSuccess, onFailure) ->
 # TODO: Add some documentation using http://usejsdoc.org/
 # Document requried and optional parameters
 
+
+# Converts the JSON to Javascript Object and triggers a validation against a schema
+#    @message - JSON of the message
+#    @eventName - the type of message: e.x. "whiteboard_draw_event"
+#    @onSuccess - callback function to be executed should the conversion succeed
+#    @onFailure - callback function to be executed should the conversion fail
+module.exports.convertAndValidateJSON = (message, eventName, onSuccess, onFailure) ->
+  try
+    object = JSON.parse(message)
+
+    #Validation
+    schema = Schemas[eventName]
+
+    Joi.validate(object, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value) #TODO double check at some point
+      )
+  catch err
+    onFailure err
+
+
 #WHITEBOARD_DRAW_EVENT
 module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
   
@@ -127,6 +122,7 @@ module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
     "byId"
     "byName"
   ]
+
   errors = checkForValidity params, requiredParams
   if errors.length > 0
     onFailure errors     
@@ -134,14 +130,14 @@ module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
     header = {}
     header.destination = {}
     header.destination.to = params.channels
-    header.name = WHITEBOARD_DRAW_EVENT
+    header.name = messageNames.WHITEBOARD_DRAW_EVENT
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
-    payload.meeting = {} # this was not present in the scala file
-    payload.meeting.name = params.meetingName # this was not present in the scala file
-    payload.meeting.id = params.meetingId # this was not present in the scala file
-    payload.session = params.sessionId # this was not present in the scala file
+    payload.meeting = {}
+    payload.meeting.name = params.meetingName
+    payload.meeting.id = params.meetingId
+    payload.session = params.sessionId
     payload.whiteboard_id = params.whiteboardId
     payload.shape_id = params.shapeId
     payload.shape_type = params.shapeType
@@ -154,7 +150,7 @@ module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
     data.line = {}
     data.line.line_type = params.lineType
     data.line.color = params.lineColor
-    data.weight = params.lineWeight
+    data.line.weight = params.lineWeight
     data.background = {}
     data.background.visible = params.background_visible
     data.background.color = params.background_color
@@ -165,74 +161,19 @@ module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
     payload.by.id = params.byId
     payload.by.name = params.byName
 
-    assert.equal header.name, WHITEBOARD_DRAW_EVENT
-    #check if data is of the expected type
-    extras.isString header.destination.to
-    extras.isString header.name
-    extras.isString header.timestamp
-    extras.isString header.source
-    extras.isString payload.meeting.name
-    extras.isString payload.meeting.id
-    extras.isString payload.session
-    extras.isString payload.whiteboard_id
-    extras.isString payload.shape_id
-    extras.isString payload.shape_type
-    extras.isNumber payload.data.coordinate.first_x
-    extras.isNumber payload.data.coordinate.first_y
-    extras.isNumber payload.data.coordinate.last_x
-    extras.isNumber payload.data.coordinate.last_y
-    extras.isString payload.data.line.line_type
-    extras.isNumber payload.data.line.color
-    extras.isNumber payload.data.weight
-    extras.isString payload.by.id
-    extras.isString payload.by.name
-    extras.isBoolean payload.data.background.visible
-    extras.isNumber payload.data.background.color
-    extras.isNumber payload.data.background.alpha
-    extras.isBoolean payload.data.square
-
     message = {}
     message.header = header
     message.payload = payload
-    #console.log "inMSGLIB:" + "Object=" + message + "\n"
-    #console.log "inMSGLIB:" + "json=" + JSON.stringify(message) + "\n"
-    onSuccess JSON.stringify(message)     
-  return
-module.exports.whiteboard_draw_event_to_javascript_object = (message, onSuccess, onFailure) ->
-  try
-    msgObject = JSON.parse(message)
-    assert.equal msgObject.header.name, WHITEBOARD_DRAW_EVENT
-    #check if data is of the expected type
-    extras.isString msgObject.header.destination.to
-    extras.isString msgObject.header.name
-    extras.isString msgObject.header.timestamp
-    extras.isString msgObject.header.source
-    extras.isString msgObject.payload.meeting.name
-    extras.isString msgObject.payload.meeting.id
-    extras.isString msgObject.payload.session
-    extras.isString msgObject.payload.whiteboard_id
-    extras.isString msgObject.payload.shape_id
-    extras.isString msgObject.payload.shape_type
-    extras.isNumber msgObject.payload.data.coordinate.first_x
-    extras.isNumber msgObject.payload.data.coordinate.first_y
-    extras.isNumber msgObject.payload.data.coordinate.last_x
-    extras.isNumber msgObject.payload.data.coordinate.last_y
-    extras.isString msgObject.payload.data.line.line_type
-    extras.isNumber msgObject.payload.data.line.color
-    extras.isNumber msgObject.payload.data.weight
-    extras.isString msgObject.payload.by.id
-    extras.isString msgObject.payload.by.name
-    extras.isBoolean msgObject.payload.data.background.visible
-    extras.isNumber msgObject.payload.data.background.color
-    extras.isNumber msgObject.payload.data.background.alpha
-    extras.isBoolean msgObject.payload.data.square
 
-    #console.log "MESSAGE_LIBRARY:" + " success "+msgObject.header.name+" toJavascriptObject"
+    #Validation
+    schema = Schemas[messageNames.WHITEBOARD_DRAW_EVENT]
 
-    onSuccess msgObject
-  catch err
-    onFailure err
-  return
+    Joi.validate(message, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
 
 #WHITEBOARD_UPDATE_EVENT
 module.exports.whiteboard_update_event_to_json = (params, onSuccess, onFailure) ->
@@ -267,14 +208,14 @@ module.exports.whiteboard_update_event_to_json = (params, onSuccess, onFailure) 
     header = {}
     header.destination = {}
     header.destination.to = params.channels
-    header.name = WHITEBOARD_UPDATE_EVENT
+    header.name = messageNames.WHITEBOARD_UPDATE_EVENT
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
-    payload.meeting = {} # this was not present in the scala file
-    payload.meeting.name = params.meetingName # this was not present in the scala file
-    payload.meeting.id = params.meetingId # this was not present in the scala file
-    payload.session = params.sessionId # this was not present in the scala file
+    payload.meeting = {}
+    payload.meeting.name = params.meetingName
+    payload.meeting.id = params.meetingId
+    payload.session = params.sessionId
     payload.whiteboard_id = params.whiteboardId
     payload.shape_id = params.shapeId
     payload.shape_type = params.shapeType
@@ -287,7 +228,7 @@ module.exports.whiteboard_update_event_to_json = (params, onSuccess, onFailure) 
     data.line = {}
     data.line.line_type = params.lineType
     data.line.color = params.lineColor
-    data.weight = params.lineWeight
+    data.line.weight = params.lineWeight
     data.background = {}
     data.background.visible = params.background_visible
     data.background.color = params.background_color
@@ -301,48 +242,15 @@ module.exports.whiteboard_update_event_to_json = (params, onSuccess, onFailure) 
     message.header = header
     message.payload = payload
 
-    console.log "inMSGLIB:" + "Object=" + message + "\n"
-    console.log "inMSGLIB:" + "json=" + JSON.stringify(message) + "\n"
-    
-    onSuccess JSON.stringify(message)     
-  return
-module.exports.whiteboard_update_event_to_javascript_object = (message, onSuccess, onFailure) ->
-  try
-    msgObject = JSON.parse(message)
+    #Validation
+    schema = Schemas[messageNames.WHITEBOARD_UPDATE_EVENT]
 
-    assert.equal msgObject.header.name, WHITEBOARD_UPDATE_EVENT
-    #check if data is of the expected type
-    extras.isString msgObject.header.destination.to
-    extras.isString msgObject.header.name
-    extras.isString msgObject.header.timestamp
-    extras.isString msgObject.header.source
-    extras.isString msgObject.payload.meeting.name
-    extras.isString msgObject.payload.meeting.id
-    extras.isString msgObject.payload.session
-    extras.isString msgObject.payload.whiteboard_id
-    extras.isString msgObject.payload.shape_id
-    extras.isString msgObject.payload.shape_type
-    extras.isNumber msgObject.payload.data.coordinate.first_x
-    extras.isNumber msgObject.payload.data.coordinate.first_y
-    extras.isNumber msgObject.payload.data.coordinate.last_x
-    extras.isNumber msgObject.payload.data.coordinate.last_y
-    extras.isString msgObject.payload.data.line.line_type
-    extras.isNumber msgObject.payload.data.line.color
-    extras.isNumber msgObject.payload.data.weight
-    extras.isString msgObject.payload.by.id
-    extras.isString msgObject.payload.by.name
-    extras.isBoolean msgObject.payload.data.background.visible
-    extras.isNumber msgObject.payload.data.background.color
-    extras.isNumber msgObject.payload.data.background.alpha
-    extras.isBoolean msgObject.payload.data.square
-
-    #console.log "MESSAGE_LIBRARY:" + " success "+msgObject.header.name+" toJavascriptObject"
-
-
-    onSuccess msgObject
-  catch err
-    onFailure err
-  return
+    Joi.validate(message, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
 
 #SHARE_PRESENTATION_EVENT
 module.exports.share_presentation_event_to_json = (params, onSuccess, onFailure) ->
@@ -366,14 +274,14 @@ module.exports.share_presentation_event_to_json = (params, onSuccess, onFailure)
     header = {}
     header.destination = {}
     header.destination.to = params.channels
-    header.name = SHARE_PRESENTATION_EVENT
+    header.name = messageNames.SHARE_PRESENTATION_EVENT
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
-    payload.meeting = {} # this was not present in the scala file
-    payload.meeting.name = params.meetingName # this was not present in the scala file
-    payload.meeting.id = params.meetingId # this was not present in the scala file
-    payload.session = params.sessionId # this was not present in the scala file
+    payload.meeting = {}
+    payload.meeting.name = params.meetingName
+    payload.meeting.id = params.meetingId
+    payload.session = params.sessionId
     payload.presentation = {}
     payload.presentation.id = params.presentationId
     payload.presentation.name = params.presentationName
@@ -387,52 +295,15 @@ module.exports.share_presentation_event_to_json = (params, onSuccess, onFailure)
     message.header = header
     message.payload = payload
 
-    extras.isString header.destination.to
-    extras.isString header.name
-    extras.isString header.timestamp
-    extras.isString header.source
-    extras.isString payload.meeting.name
-    extras.isString payload.meeting.id
-    extras.isString payload.session
-    extras.isString payload.by.id
-    extras.isString payload.by.name
-    extras.isString payload.presentation.id
-    extras.isString payload.presentation.name
+    #Validation
+    schema = Schemas[messageNames.SHARE_PRESENTATION_EVENT]
 
-    for page in params.pages
-      extras.isString page.svg, "svg"
-      extras.isString page.png, "png" 
-      extras.isString page.swf, "swf"
-
-    onSuccess JSON.stringify(message)     
-  return
-module.exports.share_presentation_event_to_javascript_object = (message, onSuccess, onFailure) ->
-  try
-    msgObject = JSON.parse(message)
-
-    assert.equal msgObject.header.name, SHARE_PRESENTATION_EVENT
-    #check if data is of the expected type
-    extras.isString msgObject.header.destination.to
-    extras.isString msgObject.header.name
-    extras.isString msgObject.header.timestamp
-    extras.isString msgObject.header.source
-    extras.isString msgObject.payload.meeting.name
-    extras.isString msgObject.payload.meeting.id
-    extras.isString msgObject.payload.session
-    extras.isString msgObject.payload.by.id
-    extras.isString msgObject.payload.by.name
-    extras.isString msgObject.payload.presentation.id
-    extras.isString msgObject.payload.presentation.name
-
-    for page in msgObject.payload.presentation.pages
-      extras.isString page.svg, "svg"
-      extras.isString page.png, "png"
-      extras.isString page.swf, "swf"
-
-    onSuccess msgObject
-  catch err
-    onFailure err
-  return
+    Joi.validate(message, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
 
 #PAGE_CHANGED_EVENT
 module.exports.page_changed_event_to_json = (params, onSuccess, onFailure) ->
@@ -461,14 +332,14 @@ module.exports.page_changed_event_to_json = (params, onSuccess, onFailure) ->
     header = {}
     header.destination = {}
     header.destination.to = params.channels
-    header.name = PAGE_CHANGED_EVENT
+    header.name = messageNames.PAGE_CHANGED_EVENT
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
-    payload.meeting = {} # this was not present in the scala file
-    payload.meeting.name = params.meetingName # this was not present in the scala file
-    payload.meeting.id = params.meetingId # this was not present in the scala file
-    payload.session = params.sessionId # this was not present in the scala file
+    payload.meeting = {}
+    payload.meeting.name = params.meetingName
+    payload.meeting.id = params.meetingId
+    payload.session = params.sessionId
     payload.presentation = {}
     payload.presentation.id = params.presentationId
     payload.presentation.name = params.presentationName
@@ -490,55 +361,15 @@ module.exports.page_changed_event_to_json = (params, onSuccess, onFailure) ->
     message.header = header
     message.payload = payload
 
-    extras.isString header.destination.to
-    extras.isString header.name
-    extras.isString header.timestamp
-    extras.isString header.source
-    extras.isString payload.meeting.name
-    extras.isString payload.meeting.id
-    extras.isString payload.session
-    extras.isString payload.by.id
-    extras.isString payload.by.name
-    extras.isString payload.presentation.id
-    extras.isString payload.presentation.name
+    #Validation
+    schema = Schemas[messageNames.PAGE_CHANGED_EVENT]
 
-    extras.isString payload.presentation.page.id
-    extras.isNumber payload.presentation.page.num
-
-    extras.isString payload.presentation.slide.png, "png"
-    extras.isString payload.presentation.slide.svg, "svg"
-    extras.isString payload.presentation.slide.swf, "swf"
-
-    onSuccess JSON.stringify(message)     
-  return
-module.exports.page_changed_event_to_javascript_object = (message, onSuccess, onFailure) ->
-  try
-    msgObject = JSON.parse(message)
-
-    assert.equal msgObject.header.name, PAGE_CHANGED_EVENT
-    #check if data is of the expected type
-    extras.isString msgObject.header.destination.to
-    extras.isString msgObject.header.name
-    extras.isString msgObject.header.timestamp
-    extras.isString msgObject.header.source
-    extras.isString msgObject.payload.meeting.name
-    extras.isString msgObject.payload.meeting.id
-    extras.isString msgObject.payload.session
-    extras.isString msgObject.payload.by.id
-    extras.isString msgObject.payload.by.name
-    extras.isString msgObject.payload.presentation.id
-    extras.isString msgObject.payload.presentation.name
-    extras.isString msgObject.payload.presentation.page.id
-    extras.isNumber msgObject.payload.presentation.page.num
-
-    extras.isString msgObject.payload.presentation.slide.svg, "svg"
-    extras.isString msgObject.payload.presentation.slide.png, "png"
-    extras.isString msgObject.payload.presentation.slide.swf, "swf"
-
-    onSuccess msgObject
-  catch err
-    onFailure err
-  return
+    Joi.validate(message, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
 
 #USER_JOINED_EVENT
 module.exports.user_joined_event_to_json = (params, onSuccess, onFailure) ->
@@ -574,7 +405,7 @@ module.exports.user_joined_event_to_json = (params, onSuccess, onFailure) ->
     header = {}
     header.destination = {}
     header.destination.to = params.channelsDestination
-    header.name = USER_JOINED_EVENT
+    header.name = messageNames.USER_JOINED_EVENT
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
@@ -608,105 +439,15 @@ module.exports.user_joined_event_to_json = (params, onSuccess, onFailure) ->
     message.header = header
     message.payload = payload
 
-    assert.equal header.name, USER_JOINED_EVENT
-    extras.isString header.destination.to
-    extras.isString header.name
-    extras.isString header.timestamp
-    extras.isString header.source
-    extras.isString payload.meeting.name
-    extras.isString payload.meeting.id
-    extras.isString payload.session
-    extras.isString payload.user.id
-    extras.isString payload.user.external_id
-    extras.isString payload.user.name
-    extras.isString payload.user.role
-    extras.isNumber payload.user.pin
-    extras.isString payload.user.welcome_message
-    extras.isString payload.user.logout_url
-    extras.isString payload.user.avatar_url
-    extras.isBoolean payload.user.is_presenter
-    extras.isBoolean payload.user.status.hand_raised
-    extras.isBoolean payload.user.status.muted
-    extras.isBoolean payload.user.status.locked
-    extras.isBoolean payload.user.status.talking
-    extras.isString payload.user.caller_id.name
-    extras.isString payload.user.caller_id.number
-    isArray = payload.user.media_streams.constructor.toString().indexOf("Array")
-    
-    if isArray
-      streams = payload.user.media_streams
-      for index of streams
-        aStream = streams[index]
-        extras.isNotUndefined aStream.media_type
-        extras.isNotNull aStream.media_type
-        extras.isString aStream.media_type
-        extras.isNotUndefined aStream.uri
-        extras.isNotNull aStream.uri
-        extras.isString aStream.uri
-        extras.isNotUndefined aStream.metadata
-        extras.isNotNull aStream.metadata
-        extras.isObject aStream.metadata
-        extras.isNotUndefined aStream.metadata.foo
-        extras.isNotNull aStream.metadata.foo
-        extras.isString aStream.metadata.foo
-    extras.isString payload.user.metadata.student_id
-    extras.isString payload.user.metadata.program
+    #Validation
+    schema = Schemas[messageNames.USER_JOINED_EVENT]
 
-    onSuccess JSON.stringify(message)
-  return
-module.exports.user_joined_event_to_javascript_object = (message, onSuccess, onFailure) ->
-  try
-    msgObject = JSON.parse(message)
-
-    assert.equal msgObject.header.name, USER_JOINED_EVENT
-    #check if data is of the expected type
-    extras.isString msgObject.header.destination.to
-    extras.isString msgObject.header.name
-    extras.isString msgObject.header.timestamp
-    extras.isString msgObject.header.source
-    extras.isString msgObject.payload.meeting.name
-    extras.isString msgObject.payload.meeting.id
-    extras.isString msgObject.payload.session
-    extras.isString msgObject.payload.user.id
-    extras.isString msgObject.payload.user.external_id
-    extras.isString msgObject.payload.user.name
-    extras.isString msgObject.payload.user.role
-    extras.isNumber msgObject.payload.user.pin
-    extras.isString msgObject.payload.user.welcome_message
-    extras.isString msgObject.payload.user.logout_url
-    extras.isString msgObject.payload.user.avatar_url
-    extras.isBoolean msgObject.payload.user.is_presenter
-    extras.isBoolean msgObject.payload.user.status.hand_raised
-    extras.isBoolean msgObject.payload.user.status.muted
-    extras.isBoolean msgObject.payload.user.status.locked
-    extras.isBoolean msgObject.payload.user.status.talking
-    extras.isString msgObject.payload.user.caller_id.name
-    extras.isString msgObject.payload.user.caller_id.number
-    isArray = msgObject.payload.user.media_streams.constructor.toString().indexOf("Array")
-    
-    if isArray
-      streams = msgObject.payload.user.media_streams
-      for index of streams
-        aStream = streams[index]
-        extras.isNotUndefined aStream.media_type
-        extras.isNotNull aStream.media_type
-        extras.isString aStream.media_type
-        extras.isNotUndefined aStream.uri
-        extras.isNotNull aStream.uri
-        extras.isString aStream.uri
-        extras.isNotUndefined aStream.metadata
-        extras.isNotNull aStream.metadata
-        extras.isObject aStream.metadata
-        extras.isNotUndefined aStream.metadata.foo
-        extras.isNotNull aStream.metadata.foo
-        extras.isString aStream.metadata.foo
-    extras.isString msgObject.payload.user.metadata.student_id
-    extras.isString msgObject.payload.user.metadata.program
-
-    onSuccess msgObject
-  catch err
-    onFailure err
-  return
+    Joi.validate(message, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
 
 #USER_LEFT_EVENT
 module.exports.user_left_event_to_json = (params, onSuccess, onFailure) ->
@@ -726,7 +467,7 @@ module.exports.user_left_event_to_json = (params, onSuccess, onFailure) ->
     header = {}
     header.destination = {}
     header.destination.to = params.channelsDestination
-    header.name = USER_LEFT_EVENT
+    header.name = messageNames.USER_LEFT_EVENT
     header.timestamp = new Date().toUTCString()# TODO: Generate ISO8601 timestamps (https://github.com/csnover/js-iso8601)
     header.source = params.source
     payload = {}
@@ -742,228 +483,35 @@ module.exports.user_left_event_to_json = (params, onSuccess, onFailure) ->
     message.header = header
     message.payload = payload
 
-    extras.isString header.destination.to
-    extras.isString header.name
-    extras.isString header.timestamp
-    extras.isString header.source
-    extras.isString payload.meeting.name
-    extras.isString payload.meeting.id
-    extras.isString payload.session
-    extras.isString payload.user.id
-    extras.isString payload.user.name
+    #Validation
+    schema = Schemas[messageNames.USER_LEFT_EVENT]
 
-    onSuccess JSON.stringify(message)
-  return
+    Joi.validate(message, schema, (err, value) ->
+      if err
+        onFailure err
+      else
+        onSuccess JSON.stringify(value)
+      )
 
-module.exports.user_left_event_to_javascript_object = (message, onSuccess, onFailure) ->
+
+# This function is used in the message-library-tool.
+# The JSON you see, edit and send from the form in the tool goes through this validation.
+#    @object    - javascript object of the event
+#    @eventName - the type of message: e.x. "whiteboard_draw_event"
+#    @onSuccess - callback function to be executed should the conversion succeed
+#    @onFailure - callback function to be executed should the conversion fail
+module.exports.validateEventJSON = (object, eventName, onSuccess, onFailure) ->
   try
-    msgObject = JSON.parse(message)
+    json = JSON.stringify(object)
 
-    assert.equal msgObject.header.name, USER_LEFT_EVENT
-    #check if data is of the expected type
-    extras.isString msgObject.header.destination.to
-    extras.isString msgObject.header.name
-    extras.isString msgObject.header.timestamp
-    extras.isString msgObject.header.source
-    extras.isString msgObject.payload.meeting.name
-    extras.isString msgObject.payload.meeting.id
-    extras.isString msgObject.payload.session
-    extras.isString msgObject.payload.user.id
-    extras.isString msgObject.payload.user.name
+    #Validation
+    schema = Schemas[eventName]
 
-    onSuccess msgObject
-  catch err
-    onFailure err
-  return
-
-
-#MANUAL events means that these functions are here to support the "message-library-tool".
-#That tool allows for viewing and editing the json message before sending it to pubsub.
-#The tool uses jsobject with different structure from the params object that is typically passed
-#to the functions in this library.
-#These functions (*_manual) can be removed from the library in Production when we do not need the tool anymore
-module.exports.whiteboard_draw_event_to_json_manual = (params, onSuccess, onFailure) ->
-
-  try
-    json = JSON.stringify(params)
+    Joi.validate(json, schema, (err, value) ->
+      if err
+        onFailure "validation error: " + err
+      else
+        onSuccess JSON.stringify(value)
+      )
   catch e
     onFailure e
-
-  assert.equal params.header.name, WHITEBOARD_DRAW_EVENT
-  extras.isString params.header.destination.to
-  extras.isString params.header.name
-  extras.isString params.header.timestamp
-  extras.isString params.header.source
-  extras.isString params.payload.meeting.name
-  extras.isString params.payload.meeting.id
-  extras.isString params.payload.session
-  extras.isString params.payload.whiteboard_id
-  extras.isString params.payload.shape_id
-  extras.isString params.payload.shape_type
-  extras.isNumber params.payload.data.coordinate.first_x
-  extras.isNumber params.payload.data.coordinate.first_y
-  extras.isNumber params.payload.data.coordinate.last_x
-  extras.isNumber params.payload.data.coordinate.last_y
-  extras.isString params.payload.data.line.line_type
-  extras.isNumber params.payload.data.line.color
-  extras.isNumber params.payload.data.weight
-  extras.isString params.payload.by.id
-  extras.isString params.payload.by.name
-  extras.isBoolean params.payload.data.background.visible
-  extras.isNumber params.payload.data.background.color
-  extras.isNumber params.payload.data.background.alpha
-  extras.isBoolean params.payload.data.square
-
-  onSuccess json 
-module.exports.whiteboard_update_event_to_json_manual = (params, onSuccess, onFailure) ->
-  try
-    json = JSON.stringify(params)
-  catch e
-    onFailure e
-
-  assert.equal params.header.name, WHITEBOARD_UPDATE_EVENT
-  extras.isString params.header.destination.to
-  extras.isString params.header.name
-  extras.isString params.header.timestamp
-  extras.isString params.header.source
-  extras.isString params.payload.meeting.name
-  extras.isString params.payload.meeting.id
-  extras.isString params.payload.session
-  extras.isString params.payload.whiteboard_id
-  extras.isString params.payload.shape_id
-  extras.isString params.payload.shape_type
-  extras.isNumber params.payload.data.coordinate.first_x
-  extras.isNumber params.payload.data.coordinate.first_y
-  extras.isNumber params.payload.data.coordinate.last_x
-  extras.isNumber params.payload.data.coordinate.last_y
-  extras.isString params.payload.data.line.line_type
-  extras.isNumber params.payload.data.line.color
-  extras.isNumber params.payload.data.weight
-  extras.isString params.payload.by.id
-  extras.isString params.payload.by.name
-  extras.isBoolean params.payload.data.background.visible
-  extras.isNumber params.payload.data.background.color
-  extras.isNumber params.payload.data.background.alpha
-  extras.isBoolean params.payload.data.square
-
-  onSuccess json   
-module.exports.share_presentation_event_to_json_manual = (params, onSuccess, onFailure) ->
-  
-  try
-    json = JSON.stringify(params)
-  catch e
-    onFailure e
-
-
-  extras.isString params.header.destination.to
-  extras.isString params.header.name
-  extras.isString params.header.timestamp
-  extras.isString params.header.source
-  extras.isString params.payload.meeting.name
-  extras.isString params.payload.meeting.id
-  extras.isString params.payload.session
-  extras.isString params.payload.by.id
-  extras.isString params.payload.by.name
-  extras.isString params.payload.presentation.id
-  extras.isString params.payload.presentation.name
-
-  for page in params.payload.presentation.pages
-    extras.isString page.svg, "svg"
-    extras.isString page.png, "png" 
-    extras.isString page.swf, "swf"
-
-  onSuccess json
-module.exports.page_changed_event_to_json_manual = (params, onSuccess, onFailure) ->
-  try
-    json = JSON.stringify(params)
-  catch e
-    onFailure e
-
-  extras.isString params.header.destination.to
-  extras.isString params.header.name
-  extras.isString params.header.timestamp
-  extras.isString params.header.source
-  extras.isString params.payload.meeting.name
-  extras.isString params.payload.meeting.id
-  extras.isString params.payload.session
-  extras.isString params.payload.by.id
-  extras.isString params.payload.by.name
-  extras.isString params.payload.presentation.id
-  extras.isString params.payload.presentation.name
-
-  extras.isString params.payload.presentation.page.id
-  extras.isNumber params.payload.presentation.page.num
-
-  extras.isString params.payload.presentation.slide.png, "png"
-  extras.isString params.payload.presentation.slide.svg, "svg"
-  extras.isString params.payload.presentation.slide.swf, "swf"
-
-  onSuccess json
-module.exports.user_joined_event_to_json_manual = (params, onSuccess, onFailure) ->
-  try
-    json = JSON.stringify(params)
-  catch e
-    onFailure e
-
-  extras.isString params.header.destination.to
-  extras.isString params.header.name
-  extras.isString params.header.timestamp
-  extras.isString params.header.source
-  extras.isString params.payload.meeting.name
-  extras.isString params.payload.meeting.id
-  extras.isString params.payload.session
-
-  extras.isString params.payload.user.id
-  extras.isString params.payload.user.external_id
-  extras.isString params.payload.user.name
-  extras.isString params.payload.user.role
-  extras.isNumber params.payload.user.pin
-  extras.isString params.payload.user.welcome_message
-  extras.isString params.payload.user.logout_url
-  extras.isString params.payload.user.avatar_url
-  extras.isBoolean params.payload.user.is_presenter
-  extras.isBoolean params.payload.user.status.hand_raised
-  extras.isBoolean params.payload.user.status.muted
-  extras.isBoolean params.payload.user.status.locked
-  extras.isBoolean params.payload.user.status.talking
-  extras.isString params.payload.user.caller_id.name
-  extras.isString params.payload.user.caller_id.number
-  isArray = params.payload.user.media_streams.constructor.toString().indexOf("Array")
-  
-  if isArray
-    streams = params.payload.user.media_streams
-    for index of streams
-      aStream = streams[index]
-      extras.isNotUndefined aStream.media_type
-      extras.isNotNull aStream.media_type
-      extras.isString aStream.media_type
-      extras.isNotUndefined aStream.uri
-      extras.isNotNull aStream.uri
-      extras.isString aStream.uri
-      extras.isNotUndefined aStream.metadata
-      extras.isNotNull aStream.metadata
-      extras.isObject aStream.metadata
-      extras.isNotUndefined aStream.metadata.foo
-      extras.isNotNull aStream.metadata.foo
-      extras.isString aStream.metadata.foo
-  extras.isString params.payload.user.metadata.student_id
-  extras.isString params.payload.user.metadata.program
-
-  onSuccess json
-module.exports.user_left_event_to_json_manual = (params, onSuccess, onFailure) -> 
-  try
-    json = JSON.stringify(params)
-  catch e
-    onFailure e
-
-  extras.isString params.header.destination.to
-  extras.isString params.header.name
-  extras.isString params.header.timestamp
-  extras.isString params.header.source
-  extras.isString params.payload.meeting.name
-  extras.isString params.payload.meeting.id
-  extras.isString params.payload.session
-  extras.isString params.payload.user.id
-  extras.isString params.payload.user.name
-
-  onSuccess json 

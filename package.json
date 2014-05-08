@@ -1,14 +1,13 @@
 {
   "name": "bigbluebutton-messages",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "entry point": "simple_message_library.coffee",
   "git repository": "git://github.com/antobinary/bigbluebutton-messages.git",
   "author": {
     "name": "Anton Georgiev"
   },
   "dependencies": {
-    "assert" : "*",
-    "node-assert-extras": "*"
+    "joi": "4.0.0"
   },
   "description": "bigbluebutton-messages",
   "main": "simple_message_library.coffee",
