@@ -150,7 +150,7 @@ module.exports.whiteboard_draw_event_to_json = (params, onSuccess, onFailure) ->
     data.line = {}
     data.line.line_type = params.lineType
     data.line.color = params.lineColor
-    data.weight = params.lineWeight
+    data.line.weight = params.lineWeight
     data.background = {}
     data.background.visible = params.background_visible
     data.background.color = params.background_color
@@ -228,7 +228,7 @@ module.exports.whiteboard_update_event_to_json = (params, onSuccess, onFailure) 
     data.line = {}
     data.line.line_type = params.lineType
     data.line.color = params.lineColor
-    data.weight = params.lineWeight
+    data.line.weight = params.lineWeight
     data.background = {}
     data.background.visible = params.background_visible
     data.background.color = params.background_color
@@ -494,106 +494,15 @@ module.exports.user_left_event_to_json = (params, onSuccess, onFailure) ->
       )
 
 
-#MANUAL events means that these functions are here to support the "message-library-tool".
-#That tool allows for viewing and editing the json message before sending it to pubsub.
-#The tool uses jsobject with different structure from the params object that is typically passed
-#to the functions in this library.
-#These functions (*_manual) can be removed from the library in Production when we do not need the tool anymore
-module.exports.whiteboard_draw_event_to_json_manual = (params, onSuccess, onFailure) ->
+# This function is used in the message-library-tool.
+# The JSON you see, edit and send from the form in the tool goes through this validation.
+#    @object    - javascript object of the event
+#    @eventName - the type of message: e.x. "whiteboard_draw_event"
+#    @onSuccess - callback function to be executed should the conversion succeed
+#    @onFailure - callback function to be executed should the conversion fail
+module.exports.validateEventJSON = (object, eventName, onSuccess, onFailure) ->
   try
-    json = JSON.stringify(params)
-
-    schema = Schemas[messageNames.WHITEBOARD_DRAW_EVENT]
-
-    Joi.validate(json, schema, (err, value) ->
-      if err
-        onFailure err
-      else
-        onSuccess value
-      )
-  catch e
-    onFailure e
-module.exports.whiteboard_update_event_to_json_manual = (params, onSuccess, onFailure) ->
-  try
-    json = JSON.stringify(params)
-
-    #Validation
-    schema = Schemas[messageNames.WHITEBOARD_UPDATE_EVENT]
-
-    Joi.validate(json, schema, (err, value) ->
-      if err
-        onFailure err
-      else
-        onSuccess JSON.stringify(value)
-      )
-  catch e
-    onFailure e
-module.exports.share_presentation_event_to_json_manual = (params, onSuccess, onFailure) ->
-  try
-    json = JSON.stringify(params)
-
-    #Validation
-    schema = Schemas[messageNames.SHARE_PRESENTATION_EVENT]
-
-    Joi.validate(json, schema, (err, value) ->
-      if err
-        onFailure err
-      else
-        onSuccess JSON.stringify(value)
-      )
-  catch e
-    onFailure e
-module.exports.page_changed_event_to_json_manual = (params, onSuccess, onFailure) ->
-  try
-    json = JSON.stringify(params)
-
-    #Validation
-    schema = Schemas[messageNames.PAGE_CHANGED_EVENT]
-
-    Joi.validate(json, schema, (err, value) ->
-      if err
-        onFailure err
-      else
-        onSuccess JSON.stringify(value)
-      )
-  catch e
-    onFailure e
-module.exports.user_joined_event_to_json_manual = (params, onSuccess, onFailure) ->
-  try
-    json = JSON.stringify(params)
-
-    #Validation
-    schema = Schemas[messageNames.USER_JOINED_EVENT]
-
-    Joi.validate(json, schema, (err, value) ->
-      if err
-        onFailure err
-      else
-        onSuccess JSON.stringify(value)
-      )
-  catch e
-    onFailure e
-module.exports.user_left_event_to_json_manual = (params, onSuccess, onFailure) -> 
-  try
-    json = JSON.stringify(params)
-
-    #Validation
-    schema = Schemas[messageNames.USER_LEFT_EVENT]
-
-    Joi.validate(json, schema, (err, value) ->
-      if err
-        onFailure err
-      else
-        onSuccess JSON.stringify(value)
-      )
-  catch e
-    onFailure e
-
-
-
-module.exports.validateEventJSON = (params, eventName, onSuccess, onFailure) ->
-  try
-    json = JSON.stringify(params)
+    json = JSON.stringify(object)
 
     #Validation
     schema = Schemas[eventName]
