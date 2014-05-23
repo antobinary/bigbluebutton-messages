@@ -12,19 +12,8 @@ checkForValidity = (params, requiredParams) ->
       errors.push error_msg
   errors
 
-#list of events to be selected from
-module.exports.getEvents =
-  0: "Please select an event type"
-  1: messageNames.WHITEBOARD_DRAW_EVENT
-  2: messageNames.WHITEBOARD_UPDATE_EVENT
-  3: messageNames.SHARE_PRESENTATION_EVENT
-  4: messageNames.PAGE_CHANGED_EVENT
-  5: messageNames.USER_JOINED_EVENT
-  6: messageNames.USER_LEFT_EVENT
-  7: messageNames.ANTON_CUSTOM #does not go through the library. Adds the title to the Events dropdown
-
 #returns the event type (the name of the event)
-module.exports.getEventType = (message, onSuccess, onFailure) ->    
+module.exports.getEventType = (message, onSuccess, onFailure) ->
   ###  try
     if typeof message is "object" # if jsobject
       if message.header?.name?
